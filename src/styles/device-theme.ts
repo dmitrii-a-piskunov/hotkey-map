@@ -86,9 +86,13 @@ export const deviceTheme = {
     sizeMain: 0.3,
     sizeRu: 0.28,
     /** Цифровой ряд: верхний символ и цифра слева, русский символ справа */
-    sizeShift: 0.22,
+    sizeShift: 0.24,
     /** Модификаторы: значок и слово, слева по центру по высоте */
-    sizeMod: 0.17,
+    sizeMod: 0.19,
+    /** Значки ← ⇥ ⇧ ↵ на Backspace, Tab, Shift, Enter — чуть крупнее слова */
+    sizeIcon: 0.3,
+    /** Стрелки на клавишах-стрелках */
+    sizeArrow: 0.34,
     weightMain: 700,
     weightRu: 500,
     weightMod: 700,

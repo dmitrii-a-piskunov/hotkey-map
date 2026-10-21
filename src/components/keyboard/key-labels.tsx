@@ -15,6 +15,9 @@ const SHIFT: CSSProperties = { fontSize: `${legend.sizeShift}em`, fontWeight: le
 /** Символ русской раскладки на цифрах — размером с верхний символ */
 const RU_SYMBOL: CSSProperties = { ...RU, fontSize: SHIFT.fontSize }
 const MOD: CSSProperties = { fontSize: `${legend.sizeMod}em`, fontWeight: legend.weightMod }
+/** Значок модификатора: размер относительно слова, чтобы стоять с ним в одной строке */
+const ICON: CSSProperties = { fontSize: `${legend.sizeIcon / legend.sizeMod}em` }
+const ARROW: CSSProperties = { fontSize: `${legend.sizeArrow}em`, fontWeight: legend.weightMain }
 
 const TOP_LEFT: CSSProperties = { top: 0, left: 0 }
 const BOTTOM_LEFT: CSSProperties = { bottom: 0, left: 0 }
@@ -88,14 +91,15 @@ function Labels({ keyDef, labelLang }: { keyDef: KeyDef; labelLang: LabelLang })
   // Стрелки — один символ по центру
   if (en.length === 1 && !icon) {
     return (
-      <span className="legend legend-center" style={MAIN}>
+      <span className="legend legend-center" style={ARROW}>
         {en}
       </span>
     )
   }
   return (
     <span className="legend legend-mod" style={{ ...MOD, left: 0 }}>
-      {icon ? `${icon} ${en}` : en}
+      {icon && <span style={ICON}>{icon}</span>}
+      {icon ? ` ${en}` : en}
     </span>
   )
 }
