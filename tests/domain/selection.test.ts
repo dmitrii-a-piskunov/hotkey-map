@@ -40,7 +40,7 @@ describe('rangeSelect', () => {
   })
 
   it('never includes Fn', () => {
-    expect(rangeSelect(aulaF75, 'AltRight', 'ControlRight')).toEqual(['AltRight', 'ControlRight'])
+    expect(rangeSelect(aulaF75, 'Space', 'ControlRight')).toEqual(['Space', 'ControlRight'])
   })
 
   it('returns nothing for unknown codes', () => {
@@ -161,7 +161,7 @@ describe('neighbor', () => {
   })
 
   it('skips Fn', () => {
-    expect(neighbor(aulaF75, 'AltRight', 'right')).toBe('ControlRight')
+    expect(neighbor(aulaF75, 'Space', 'right')).toBe('ControlRight')
     expect(neighbor(aulaF75, 'Slash', 'down')).not.toBe('Fn')
   })
 
@@ -216,8 +216,8 @@ describe('selectAll', () => {
 })
 
 describe('selectableKeys', () => {
-  it('has 80 selectable keys of 81 (all but Fn)', () => {
-    expect(aulaF75.keys).toHaveLength(81)
-    expect(selectableKeys(aulaF75)).toHaveLength(80)
+  it('has 79 selectable keys of 80 (all but Fn)', () => {
+    expect(aulaF75.keys).toHaveLength(80)
+    expect(selectableKeys(aulaF75)).toHaveLength(79)
   })
 })

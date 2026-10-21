@@ -31,9 +31,9 @@ beforeEach(() => {
 })
 
 describe('devices rendering', () => {
-  it('renders 81 keys and 7 mouse inputs', () => {
+  it('renders 80 keys and 7 mouse inputs', () => {
     render(<App />)
-    expect(document.querySelectorAll('[data-kind="key"]')).toHaveLength(81)
+    expect(document.querySelectorAll('[data-kind="key"]')).toHaveLength(80)
     expect(document.querySelectorAll('[data-kind="mouse"]')).toHaveLength(7)
   })
 
