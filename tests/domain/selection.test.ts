@@ -216,8 +216,8 @@ describe('selectAll', () => {
 })
 
 describe('selectableKeys', () => {
-  it('has 79 selectable keys of 80 (all but Fn)', () => {
+  it('has 78 selectable keys of 80 (all but Fn and Win)', () => {
     expect(aulaF75.keys).toHaveLength(80)
-    expect(selectableKeys(aulaF75)).toHaveLength(79)
+    expect(selectableKeys(aulaF75)).toHaveLength(78)
   })
 })

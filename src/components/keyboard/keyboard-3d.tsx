@@ -7,10 +7,14 @@ import {
   type Bounds,
   type Vec,
 } from '@/components/devices/projection'
-import { CAP_COLORS_3D, CAP_VARS, rejectHatch } from '@/components/keyboard/cap-style'
+import { CAP_COLORS_3D, CAP_VARS, KNOB_CODE, rejectHatch } from '@/components/keyboard/cap-style'
 import { KeyLabels } from '@/components/keyboard/key-labels'
 import type { KeyboardProps } from '@/components/keyboard/keyboard'
-import { keyboard3d, type CapShape3d } from '@/components/keyboard/keyboard-3d-geometry'
+import {
+  keyboard3d,
+  type CapShape3d,
+  type Keyboard3d,
+} from '@/components/keyboard/keyboard-3d-geometry'
 import type { LabelLang } from '@/domain/input'
 import type { ClickModifiers, InputCode } from '@/domain/selection'
 import type { KeyDef } from '@/layouts/aula-f75'
@@ -145,27 +149,9 @@ export function Keyboard3D({
         {scene.indicator && (
           <polygon points={px(scene.indicator)} fill={deviceTheme.indicator.color} />
         )}
-        {scene.knob && (
-          <g>
-            <polygon points={px(scene.knob.side)} fill={`url(#${id}-knob)`} />
-            <polygon
-              points={px(scene.knob.top)}
-              fill={knobTheme.cap}
-              stroke={knobTheme.ring}
-              strokeWidth={knobTheme.ringWidth * unit * scene.knob.scale}
-              strokeLinejoin="round"
-            />
-          </g>
-        )}
+        {scene.knob && <polygon points={px(scene.knob.side)} fill={`url(#${id}-knob)`} />}
       </svg>
-      {scene.knob && (
-        <div
-          role="img"
-          aria-label={`${ru.devices.knob}. ${ru.devices.notAssignable}`}
-          className="absolute"
-          style={knobBox(scene.knob.top, box, unit)}
-        />
-      )}
+      {scene.knob && <Knob3D knob={scene.knob} origin={box} unit={unit} onSelect={onSelect} />}
       {scene.keys.map(({ key, up, down }) => {
         const isPressed = pressed.has(key.code)
         const shape = isPressed ? down : up
@@ -188,12 +174,49 @@ export function Keyboard3D({
   )
 }
 
-function knobBox(points: Vec[], origin: Vec, unit: number): CSSProperties {
-  const b = boundsOf(points)
-  return {
-    left: (b.x - origin.x) * unit,
-    top: (b.y - origin.y) * unit,
-    width: b.w * unit,
-    height: b.h * unit,
-  }
+interface Knob3DProps {
+  knob: NonNullable<Keyboard3d['knob']>
+  origin: Vec
+  unit: number
+  onSelect: (code: InputCode, mods: ClickModifiers) => void
 }
+
+/**
+ * Крышка регулятора: квадрат со скруглением 50 % переведён в проекцию —
+ * получается точный эллипс, на который ложатся ободок и штриховка отказа.
+ */
+const Knob3D = memo(function Knob3D({ knob, origin, unit, onSelect }: Knob3DProps) {
+  const box = boundsOf(knob.topQuad)
+  const quad = knob.topQuad.map((p) => ({
+    x: (p.x - box.x) * unit,
+    y: (p.y - box.y) * unit,
+  })) as [Vec, Vec, Vec, Vec]
+  const size = knob.d * unit
+  return (
+    <InputCap
+      code={KNOB_CODE}
+      kind="knob"
+      left={(box.x - origin.x) * unit}
+      top={(box.y - origin.y) * unit}
+      width={box.w * unit}
+      height={box.h * unit}
+      ariaLabel={`${ru.devices.knob}. ${ru.devices.notAssignable}`}
+      selected={false}
+      pressed={false}
+      disabled
+      className="knob knob-3d"
+      onSelect={onSelect}
+    >
+      <div
+        className="knob-top"
+        style={{
+          width: size,
+          height: size,
+          background: knobTheme.cap,
+          border: `${knobTheme.ringWidth * unit}px solid ${knobTheme.ring}`,
+          transform: rectToQuad(size, size, quad),
+        }}
+      />
+    </InputCap>
+  )
+})

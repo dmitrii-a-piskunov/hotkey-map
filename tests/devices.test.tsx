@@ -239,4 +239,13 @@ describe('not assignable keys', () => {
     expect(input('Fn')).not.toHaveAttribute('data-rejected')
     vi.useRealTimers()
   })
+
+  it('Win and the knob flash too and stay unselected', () => {
+    render(<App />)
+    fireEvent.click(input('MetaLeft'))
+    expect(input('MetaLeft')).toHaveAttribute('data-rejected')
+    fireEvent.click(input('Knob'))
+    expect(input('Knob')).toHaveAttribute('data-rejected')
+    expect(selectedCodes()).toEqual([])
+  })
 })

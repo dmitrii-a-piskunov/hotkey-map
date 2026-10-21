@@ -185,6 +185,39 @@
     pointer-events: none;
   }
 
+  .knob-top {
+    position: absolute;
+    border-radius: 50%;
+  }
+
+  .knob-3d .knob-top {
+    top: 0;
+    left: 0;
+    transform-origin: 0 0;
+  }
+
+  /* 3D knob: the box covers the whole ellipse, only the cap takes clicks */
+  .knob-3d {
+    pointer-events: none;
+  }
+
+  .knob-3d .knob-top {
+    pointer-events: auto;
+  }
+
+  .knob[data-rejected] .knob-top {
+    outline: var(--reject-ring);
+  }
+
+  .knob[data-rejected] .knob-top::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--reject-hatch);
+    pointer-events: none;
+  }
+
   .legend-box {
     position: absolute;
   }

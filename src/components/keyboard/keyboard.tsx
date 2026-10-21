@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react'
 import { InputCap } from '@/components/devices/input-cap'
 import { keyboardWidth, keyWells } from '@/components/devices/device-geometry'
-import { CAP_VARS, rejectHatch } from '@/components/keyboard/cap-style'
+import { CAP_VARS, KNOB_CODE, rejectHatch } from '@/components/keyboard/cap-style'
 import { KeyLabels } from '@/components/keyboard/key-labels'
 import { Keyboard3D } from '@/components/keyboard/keyboard-3d'
 import type { LabelLang } from '@/domain/input'
@@ -20,6 +20,12 @@ const TOP_STYLE: CSSProperties = {
   right: `${cap.topInset.side}em`,
   bottom: `${cap.topInset.bottom}em`,
   borderRadius: `${cap.topRadius}em`,
+}
+
+const KNOB_STYLE: CSSProperties = { background: knobTheme.ring, borderRadius: '50%' }
+const KNOB_TOP_STYLE: CSSProperties = {
+  inset: `${cap.topInset.side}em`,
+  background: knobTheme.cap,
 }
 
 export interface KeyboardProps {
@@ -56,7 +62,6 @@ function Keyboard2D({ layout, unit, labelLang, selected, pressed, onSelect }: Ke
 
   const toX = (x: number) => (bezel.left + x) * unit
   const toY = (y: number) => (bezel.top + y) * unit
-  const knobInset = cap.topInset.side
 
   return (
     <div role="group" aria-label={ru.devices.keyboard} className="device-body" style={style}>
@@ -89,32 +94,24 @@ function Keyboard2D({ layout, unit, labelLang, selected, pressed, onSelect }: Ke
         />
       )}
       {layout.knob && (
-        <>
-          <div
-            aria-hidden="true"
-            className="absolute rounded-full"
-            style={{
-              left: toX(layout.knob.cx - layout.knob.d / 2),
-              top: toY(layout.knob.cy - layout.knob.d / 2),
-              width: layout.knob.d * unit,
-              height: layout.knob.d * unit,
-              background: `linear-gradient(${knobTheme.side}, ${knobTheme.sideDark})`,
-            }}
-          />
-          <div
-            role="img"
-            aria-label={`${ru.devices.knob}. ${ru.devices.notAssignable}`}
-            className="absolute rounded-full"
-            style={{
-              left: toX(layout.knob.cx - layout.knob.d / 2 + knobInset),
-              top: toY(layout.knob.cy - layout.knob.d / 2 + knobInset),
-              width: (layout.knob.d - knobInset * 2) * unit,
-              height: (layout.knob.d - knobInset * 2) * unit,
-              background: knobTheme.cap,
-              border: `${knobTheme.ringWidth}em solid ${knobTheme.ring}`,
-            }}
-          />
-        </>
+        // Регулятор сверху: светлый ободок и тёмная крышка. Клик — вспышка отказа
+        <InputCap
+          code={KNOB_CODE}
+          kind="knob"
+          left={toX(layout.knob.cx - layout.knob.d / 2)}
+          top={toY(layout.knob.cy - layout.knob.d / 2)}
+          width={layout.knob.d * unit}
+          height={layout.knob.d * unit}
+          ariaLabel={`${ru.devices.knob}. ${ru.devices.notAssignable}`}
+          selected={false}
+          pressed={false}
+          disabled
+          className="knob"
+          style={KNOB_STYLE}
+          onSelect={onSelect}
+        >
+          <div className="knob-top" style={KNOB_TOP_STYLE} />
+        </InputCap>
       )}
       {layout.keys.map((k) => (
         <InputCap

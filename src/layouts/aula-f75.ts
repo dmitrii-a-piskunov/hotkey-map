@@ -219,8 +219,8 @@ const keys: KeyDef[] = [
 
   // Ряд 5: нижний. Справа от пробела только Fn и Ctrl, затем зазор
   key('ControlLeft', 0, 5, 'Ctrl', { w: 1.25 }),
-  // Win браузер не перехватывает: бинд только кликом
-  key('MetaLeft', 1.25, 5, 'Win', { w: 1.25, capturable: false }),
+  // Win забирает Windows: в играх на неё не назначают
+  key('MetaLeft', 1.25, 5, 'Win', { w: 1.25, assignable: false, capturable: false }),
   key('AltLeft', 2.5, 5, 'Alt', { w: 1.25 }),
   key('Space', 3.75, 5, '', { w: 6.25 }),
   // Fn обрабатывается прошивкой клавиатуры, игры и браузер его не видят

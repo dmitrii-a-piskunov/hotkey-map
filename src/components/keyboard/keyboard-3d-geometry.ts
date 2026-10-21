@@ -11,7 +11,6 @@ import {
   makeCamera,
   projectRaised,
   roundedRect,
-  scaleAt,
   type Bounds,
   type Camera,
   type Vec,
@@ -19,7 +18,7 @@ import {
 import type { KeyboardLayout, KeyDef } from '@/layouts/aula-f75'
 import { deviceTheme } from '@/styles/device-theme'
 
-const { case: caseTheme, cap, knob: knobTheme, view3d } = deviceTheme
+const { case: caseTheme, cap, view3d } = deviceTheme
 
 /** Видимую грань уже этой ширины не рисуем, в юнитах */
 const MIN_FACE = 0.005
@@ -50,7 +49,8 @@ export interface Keyboard3d {
   caseFront: Vec[]
   wells: Vec[][]
   indicator: Vec[] | null
-  knob: { side: Vec[]; top: Vec[]; scale: number } | null
+  /** Регулятор: боковина и углы квадрата вокруг крышки на экране (ЛВ, ПВ, ПН, ЛН) */
+  knob: { side: Vec[]; topQuad: [Vec, Vec, Vec, Vec]; d: number } | null
   keys: Key3d[]
 }
 
@@ -133,15 +133,19 @@ export function keyboard3d(layout: KeyboardLayout): Keyboard3d {
     const shift = perspectiveShift(kn.cx, layout.width)
     const base = circle(kn.cx, kn.cy, r).map((p) => projectRaised(cam, p.x, p.y, 0))
     // Цилиндр: верх того же диаметра, что низ, поднят до верха клавиш и
-    // сдвинут по той же перспективе. Крышку рисуем чуть меньше — на половину
-    // ободка, чтобы ободок не выходил за край цилиндра
-    const raise = (rr: number) =>
-      circle(kn.cx + shift, kn.cy, rr).map((p) => projectRaised(cam, p.x, p.y, capTop))
-    const top = raise(r - knobTheme.ringWidth / 2)
+    // сдвинут по той же перспективе
+    const tx = kn.cx + shift
+    const up = (px: number, py: number) => projectRaised(cam, px, py, capTop)
+    const top = circle(tx, kn.cy, r).map((p) => up(p.x, p.y))
     knob = {
-      side: convexHull([...base, ...raise(r)]),
-      top,
-      scale: scaleAt(cam, kn.cy, capTop),
+      side: convexHull([...base, ...top]),
+      topQuad: [
+        up(tx - r, kn.cy - r),
+        up(tx + r, kn.cy - r),
+        up(tx + r, kn.cy + r),
+        up(tx - r, kn.cy + r),
+      ],
+      d: kn.d,
     }
   }
 
