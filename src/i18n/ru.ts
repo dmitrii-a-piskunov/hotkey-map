@@ -3,6 +3,19 @@ export const ru = {
     title: 'Hotkey Map',
     tagline: 'Игровые бинды на экранной копии клавиатуры и мыши',
     version: 'Версия',
-    placeholder: 'Каркас приложения готов. Клавиатура появится на этапе 1.',
+  },
+  header: {
+    inputMode: 'Режим ввода',
+    modeCheck: 'Проверка нажатий',
+    modeNav: 'Навигация',
+    labelLang: 'Язык подписей',
+    view: 'Вид клавиатуры',
+  },
+  devices: {
+    stage: 'Клавиатура и мышь',
+    keyboard: 'Клавиатура',
+    mouse: 'Мышь',
+    notAssignable: 'Не назначается',
+    knob: 'Регулятор',
   },
 } as const

@@ -24,6 +24,20 @@
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
+
+  /* Devices (FR-01, FR-02) */
+  --stage: oklch(0.96 0.003 260);
+  --kb-case: oklch(0.32 0.02 260);
+  --kb-case-side: oklch(0.24 0.02 260);
+  --key-top: oklch(0.93 0.004 260);
+  --key-side: oklch(0.78 0.008 260);
+  --key-label: oklch(0.22 0.01 260);
+  --key-label-alt: oklch(0.52 0.19 260);
+  --key-disabled: oklch(0.7 0.01 260);
+  --key-selected: oklch(0.65 0.2 45);
+  --knob: oklch(0.55 0.01 260);
+  --marquee: oklch(0.65 0.2 45 / 15%);
+  --marquee-border: oklch(0.65 0.2 45 / 70%);
 }
 
 .dark {
@@ -45,9 +59,23 @@
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
+
+  --stage: oklch(0.18 0.01 260);
+  --kb-case: oklch(0.27 0.02 260);
+  --kb-case-side: oklch(0.2 0.02 260);
+  --key-top: oklch(0.9 0.005 260);
+  --key-side: oklch(0.68 0.01 260);
+  --key-label: oklch(0.2 0.01 260);
+  --key-label-alt: oklch(0.5 0.19 260);
+  --key-disabled: oklch(0.62 0.01 260);
+  --key-selected: oklch(0.75 0.18 55);
+  --knob: oklch(0.5 0.01 260);
+  --marquee: oklch(0.75 0.18 55 / 15%);
+  --marquee-border: oklch(0.75 0.18 55 / 70%);
 }
 
 @theme inline {
+  --font-keycap: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -78,5 +106,113 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/*
+ * CSS 3D for the keyboard and mouse (FR-01, FR-02, section 8.3).
+ * The plane tilts away from the viewer; caps stand on it at --cap-depth,
+ * their front face hangs down to the case surface.
+ */
+@layer components {
+  .device-scene {
+    perspective: 1800px;
+    perspective-origin: 50% 0%;
+  }
+
+  .device-plane {
+    transform-style: preserve-3d;
+    transition: transform 200ms ease-out;
+  }
+
+  .device-scene[data-view='3d'] .device-plane {
+    transform: rotateX(30deg);
+  }
+
+  .device-body {
+    position: relative;
+    transform-style: preserve-3d;
+    background: var(--kb-case);
+    box-shadow: 0 1.5em 2.5em -1em oklch(0 0 0 / 45%);
+  }
+
+  .device-body-front {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: var(--case-depth);
+    transform-origin: top;
+    transform: rotateX(-90deg);
+    background: var(--kb-case-side);
+    border-radius: 0 0 0.4em 0.4em;
+  }
+
+  .cap {
+    position: absolute;
+    transform-style: preserve-3d;
+    transform: translateZ(var(--cap-depth));
+    transition: transform 100ms ease-out;
+    cursor: pointer;
+  }
+
+  .cap[data-pressed] {
+    transform: translateZ(calc(var(--cap-depth) * 0.3));
+  }
+
+  .cap-top {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: var(--cap-radius, 0.3em);
+    background: var(--key-top);
+    color: var(--key-label);
+    font-family: var(--font-keycap);
+    box-shadow: inset 0 -0.12em 0 oklch(0 0 0 / 12%);
+  }
+
+  .cap-front {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: var(--cap-depth);
+    transform-origin: top;
+    transform: rotateX(-90deg);
+    background: var(--key-side);
+    border-radius: 0 0 0.3em 0.3em;
+  }
+
+  .cap[data-selected] .cap-top {
+    outline: 0.25em solid var(--key-selected);
+    outline-offset: 0.06em;
+  }
+
+  .cap[data-disabled] {
+    cursor: default;
+  }
+
+  .cap[data-disabled] .cap-top {
+    background: var(--key-disabled);
+  }
+
+  .device-scene[data-view='2d'] .device-body-front,
+  .device-scene[data-view='2d'] .cap-front {
+    display: none;
+  }
+
+  .device-scene[data-view='2d'] .cap {
+    transform: none;
+  }
+
+  .device-scene[data-view='2d'] .cap[data-pressed] {
+    transform: scale(0.94);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .device-plane,
+    .cap {
+      transition: none;
+    }
   }
 }
