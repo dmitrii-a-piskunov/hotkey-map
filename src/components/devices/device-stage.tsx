@@ -65,10 +65,10 @@ function toLocal(container: HTMLElement, r: Rect): Rect {
   return { x: r.x - box.left, y: r.y - box.top, w: r.w, h: r.h }
 }
 
-/** Клавиши под рамкой — по экранным прямоугольникам, одинаково в 2D и 3D */
+/** Клавиши и кнопки мыши под рамкой — по экранным прямоугольникам, одинаково в 2D и 3D */
 function keyHitBoxes(container: HTMLElement): HitBox[] {
   const nodes = container.querySelectorAll<HTMLElement>(
-    '[data-kind="key"][data-input-code]:not([data-disabled])',
+    ':is([data-kind="key"], [data-kind="mouse"])[data-input-code]:not([data-disabled])',
   )
   return Array.from(nodes, (node) => {
     const r = node.getBoundingClientRect()

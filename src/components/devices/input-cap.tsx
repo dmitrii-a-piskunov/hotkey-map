@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 
 export interface InputCapProps {
   code: InputCode
-  /** Клавиатура, регулятор или мышь: рамкой выделяются только клавиши (FR-13) */
+  /** Клавиатура, регулятор или мышь; рамкой выделяются клавиши и кнопки мыши (FR-13) */
   kind: 'key' | 'knob' | 'mouse'
   /** Положение и размер в пикселях */
   left: number

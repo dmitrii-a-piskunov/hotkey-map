@@ -15,7 +15,7 @@ import {
   type InputCode,
   type SelectionState,
 } from '@/domain/selection'
-import { keyboardLayout } from './devices'
+import { selectableInputs } from './devices'
 
 /** «Проверка нажатий» или «Навигация» (ТЗ, FR-03) */
 export type InputMode = 'check' | 'nav'
@@ -59,11 +59,11 @@ export const useDevicesStore = create<DevicesState>()((set) => ({
   ...initialDevicesData,
 
   click: (code, mods) => {
-    set((s) => ({ selection: clickSelect(s.selection, code, mods, keyboardLayout) }))
+    set((s) => ({ selection: clickSelect(s.selection, code, mods, selectableInputs) }))
   },
   selectOnly: (code) => {
     set((s) => ({
-      selection: clickSelect(s.selection, code, { ctrl: false, shift: false }, keyboardLayout),
+      selection: clickSelect(s.selection, code, { ctrl: false, shift: false }, selectableInputs),
     }))
   },
   setSelection: (selection) => {
@@ -73,7 +73,7 @@ export const useDevicesStore = create<DevicesState>()((set) => ({
     set({ selection: emptySelection })
   },
   navigate: (dir, extend) => {
-    set((s) => ({ selection: navigate(s.selection, dir, extend, keyboardLayout) }))
+    set((s) => ({ selection: navigate(s.selection, dir, extend, selectableInputs) }))
   },
   selectAllOccupied: () => {
     // Биндов пока нет (этап 4), поэтому занятых клавиш нет

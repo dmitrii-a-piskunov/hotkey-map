@@ -249,3 +249,29 @@ describe('not assignable keys', () => {
     expect(selectedCodes()).toEqual([])
   })
 })
+
+describe('mouse in ranges and marquee (FR-13)', () => {
+  it('Shift+click from a key to a mouse button selects both and keys between', () => {
+    render(<App />)
+    fireEvent.click(input('KeyQ'))
+    fireEvent.click(input('MouseLeft'), { shiftKey: true })
+    expect(selectedCodes()).toEqual(expect.arrayContaining(['KeyQ', 'PageUp', 'MouseLeft']))
+  })
+
+  it('marquee selects mouse buttons', () => {
+    render(<App />)
+    const boxes: Record<string, DOMRect> = {
+      PageUp: new DOMRect(100, 100, 40, 40),
+      Mouse5: new DOMRect(160, 100, 10, 30),
+    }
+    for (const el of document.querySelectorAll<HTMLElement>('[data-input-code]')) {
+      const box = boxes[el.dataset.inputCode ?? ''] ?? new DOMRect(-100, -100, 1, 1)
+      el.getBoundingClientRect = () => box
+    }
+    const stage = screen.getByTestId('device-stage')
+    fireEvent.pointerDown(stage, { button: 0, pointerId: 1, clientX: 90, clientY: 90 })
+    fireEvent.pointerMove(stage, { pointerId: 1, clientX: 180, clientY: 120 })
+    fireEvent.pointerUp(stage, { pointerId: 1, clientX: 180, clientY: 120 })
+    expect(selectedCodes()).toEqual(['Mouse5', 'PageUp'])
+  })
+})
