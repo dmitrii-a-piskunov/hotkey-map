@@ -1,6 +1,6 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { App } from '@/app/app'
 import { initialDevicesData, useDevicesStore } from '@/features/devices/store'
 import { ru } from '@/i18n/ru'
@@ -224,5 +224,19 @@ describe('header switches', () => {
     expect(useDevicesStore.getState().labelLang).toBe('ru')
     await user.click(screen.getByRole('radio', { name: '2D' }))
     expect(screen.getByTestId('device-stage')).toHaveAttribute('data-view', '2d')
+  })
+})
+
+describe('not assignable keys', () => {
+  it('Fn flashes a red frame on click', () => {
+    vi.useFakeTimers()
+    render(<App />)
+    fireEvent.click(input('Fn'))
+    expect(input('Fn')).toHaveAttribute('data-rejected')
+    act(() => {
+      vi.advanceTimersByTime(1000)
+    })
+    expect(input('Fn')).not.toHaveAttribute('data-rejected')
+    vi.useRealTimers()
   })
 })

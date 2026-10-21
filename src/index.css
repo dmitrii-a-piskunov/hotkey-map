@@ -160,12 +160,29 @@
 
   .cap3d-top {
     position: absolute;
+    top: 0;
+    left: 0;
+    background: var(--cap-top-3d);
+    border-radius: var(--cap-top-radius);
     color: var(--legend);
-    transform-origin: top;
+    transform-origin: 0 0;
   }
 
   .cap3d[data-selected] .cap3d-top {
     outline: var(--ring);
+  }
+
+  .cap3d[data-rejected] .cap3d-top {
+    outline: var(--reject-ring);
+  }
+
+  .cap3d[data-rejected] .cap3d-top::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--reject-hatch);
+    pointer-events: none;
   }
 
   .legend-box {
@@ -190,12 +207,35 @@
     transform: translateY(-50%);
   }
 
+  .mouse-callout {
+    stroke: var(--muted-foreground);
+    fill: var(--muted-foreground);
+  }
+
+  .mouse-callout-label {
+    position: absolute;
+    color: var(--muted-foreground);
+    white-space: nowrap;
+    line-height: 1;
+    pointer-events: none;
+  }
+
   .mouse-zone {
     border-radius: 9999px;
   }
 
   .mouse-zone-ring[data-pressed] {
     background: var(--zone-pressed);
+  }
+
+  .key[data-rejected]::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: var(--reject-ring);
+    border-radius: inherit;
+    background: var(--reject-hatch);
+    pointer-events: none;
   }
 
   .key[data-selected]::after,

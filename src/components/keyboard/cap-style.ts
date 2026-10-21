@@ -44,6 +44,7 @@ export const CAP_VARS = Object.fromEntries(
       {
         '--cap-top': c.top,
         '--cap-side': c.side,
+        '--cap-top-3d': `linear-gradient(${c3.topFar}, ${c3.topNear})`,
         '--cap-side-3d': c3.side,
         '--cap-side-dark-3d': c3.sideDark,
         '--legend': c.legend,
@@ -52,3 +53,12 @@ export const CAP_VARS = Object.fromEntries(
     ]
   }),
 ) as Record<CapStyle, CSSProperties>
+
+/**
+ * Диагональная штриховка для клика по неназначаемой клавише: так отказ не
+ * спутать с выделением и цветами групп. Полоса — толщиной рамки конфликта.
+ */
+export function rejectHatch(width: number, cssUnit: 'px' | 'em'): string {
+  const { color } = deviceTheme.state.conflict
+  return `repeating-linear-gradient(45deg, ${color} 0 ${width}${cssUnit}, transparent ${width}${cssUnit} ${width * 3}${cssUnit})`
+}

@@ -19,8 +19,7 @@ import {
 import type { KeyboardLayout, KeyDef } from '@/layouts/aula-f75'
 import { deviceTheme } from '@/styles/device-theme'
 
-const { case: caseTheme, cap, view3d } = deviceTheme
-const { capShape3d } = view3d
+const { case: caseTheme, cap, knob: knobTheme, view3d } = deviceTheme
 
 /** Видимую грань уже этой ширины не рисуем, в юнитах */
 const MIN_FACE = 0.005
@@ -30,13 +29,10 @@ export interface CapShape3d {
   left: Vec[] | null
   right: Vec[] | null
   front: Vec[]
-  top: Vec[]
-  /** Прямоугольник под подписи — границы верхней грани */
-  topBox: Bounds
-  /** Масштаб перспективы у верхней грани: им масштабируются подписи */
-  scale: number
-  /** Сжатие верхней грани по вертикали: подписи сжимаются так же */
-  squash: number
+  /** Углы верхней грани на экране: ЛВ, ПВ, ПН, ЛН */
+  topQuad: [Vec, Vec, Vec, Vec]
+  /** Размер верхней грани в плоскости клавиатуры, в юнитах */
+  topSize: { w: number; h: number }
   /** Границы всей клавиши */
   box: Bounds
 }
@@ -82,7 +78,6 @@ function capShape(cam: Camera, k: KeyDef, width: number, height: number): CapSha
   const tTR = raised(tx + tw, ty)
   const tBR = raised(tx + tw, ty + th)
   const tBL = raised(tx, ty + th)
-  const top = roundedRect(tx, ty, tw, th, capShape3d.topRadius).map((p) => raised(p.x, p.y))
   const left = tTL.x - bTL.x > MIN_FACE ? [bTL, tTL, tBL, bBL] : null
   const right = bTR.x - tTR.x > MIN_FACE ? [tTR, bTR, bBR, tBR] : null
   const front = [tBL, tBR, bBR, bBL]
@@ -90,11 +85,9 @@ function capShape(cam: Camera, k: KeyDef, width: number, height: number): CapSha
     left,
     right,
     front,
-    top,
-    topBox: boundsOf(top),
-    scale: scaleAt(cam, ty + th / 2, height),
-    squash: cam.cos,
-    box: boundsOf([bTL, bTR, bBR, bBL, ...top]),
+    topQuad: [tTL, tTR, tBR, tBL],
+    topSize: { w: tw, h: th },
+    box: boundsOf([bTL, bTR, bBR, bBL, tTL, tTR, tBR, tBL]),
   }
 }
 
@@ -139,10 +132,17 @@ export function keyboard3d(layout: KeyboardLayout): Keyboard3d {
     const r = kn.d / 2
     const shift = perspectiveShift(kn.cx, layout.width)
     const base = circle(kn.cx, kn.cy, r).map((p) => projectRaised(cam, p.x, p.y, 0))
-    const top = circle(kn.cx + shift, kn.cy, r - capShape3d.topInsetSide).map((p) =>
-      projectRaised(cam, p.x, p.y, capTop),
-    )
-    knob = { side: convexHull([...base, ...top]), top, scale: scaleAt(cam, kn.cy, capTop) }
+    // Цилиндр: верх того же диаметра, что низ, поднят до верха клавиш и
+    // сдвинут по той же перспективе. Крышку рисуем чуть меньше — на половину
+    // ободка, чтобы ободок не выходил за край цилиндра
+    const raise = (rr: number) =>
+      circle(kn.cx + shift, kn.cy, rr).map((p) => projectRaised(cam, p.x, p.y, capTop))
+    const top = raise(r - knobTheme.ringWidth / 2)
+    knob = {
+      side: convexHull([...base, ...raise(r)]),
+      top,
+      scale: scaleAt(cam, kn.cy, capTop),
+    }
   }
 
   const keys = layout.keys.map((key) => ({

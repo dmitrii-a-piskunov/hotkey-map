@@ -1,7 +1,7 @@
 import { useEffect, useId, useMemo, useRef, type CSSProperties } from 'react'
 import { InputCap } from '@/components/devices/input-cap'
 import { svgPoints, type Vec } from '@/components/devices/projection'
-import { mouseScene } from '@/components/mouse/mouse-geometry'
+import { CALLOUT_GAP, CALLOUT_SIZE, mouseScene } from '@/components/mouse/mouse-geometry'
 import { mouseCodeForWheel } from '@/domain/input'
 import type { ClickModifiers, InputCode } from '@/domain/selection'
 import type { ViewMode } from '@/features/devices/store'
@@ -144,6 +144,19 @@ export function Mouse({
         <g stroke={theme.wheelTread} strokeWidth={unit * 0.03}>
           {scene.treads.map(line)}
         </g>
+        {/* Выноски к подписям входов */}
+        <g className="mouse-callout" strokeWidth={unit * 0.02}>
+          {scene.callouts.map((c) => {
+            const p = at(c.from)
+            const q = at(c.to)
+            return (
+              <g key={c.code}>
+                <line x1={p.x} y1={p.y} x2={q.x} y2={q.y} />
+                <circle cx={p.x} cy={p.y} r={unit * 0.04} />
+              </g>
+            )
+          })}
+        </g>
         {/* Кнопки корпуса: нажатие и выделение по их части контура */}
         {scene.buttons.map((b) => (
           <g key={b.code} clipPath={`url(#${id}-${b.code})`}>
@@ -157,6 +170,26 @@ export function Mouse({
           </g>
         ))}
       </svg>
+      {scene.callouts.map((c) => {
+        const q = at(c.to)
+        const gap = unit * CALLOUT_GAP
+        return (
+          <span
+            key={c.code}
+            aria-hidden="true"
+            className="mouse-callout-label"
+            style={{
+              left: c.side === 'left' ? q.x - gap : q.x + gap,
+              top: q.y,
+              fontSize: unit * CALLOUT_SIZE,
+              fontFamily: deviceTheme.legend.font,
+              transform: c.side === 'left' ? 'translate(-100%, -50%)' : 'translateY(-50%)',
+            }}
+          >
+            {c.text}
+          </span>
+        )
+      })}
       {scene.zones.map(({ input, box: z }) => (
         <InputCap
           key={input.code}

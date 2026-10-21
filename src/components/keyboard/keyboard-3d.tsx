@@ -1,7 +1,13 @@
 import { memo, useId, useMemo, type CSSProperties } from 'react'
 import { InputCap } from '@/components/devices/input-cap'
-import { boundsOf, svgPoints, type Bounds, type Vec } from '@/components/devices/projection'
-import { CAP_COLORS_3D, CAP_VARS } from '@/components/keyboard/cap-style'
+import {
+  boundsOf,
+  rectToQuad,
+  svgPoints,
+  type Bounds,
+  type Vec,
+} from '@/components/devices/projection'
+import { CAP_COLORS_3D, CAP_VARS, rejectHatch } from '@/components/keyboard/cap-style'
 import { KeyLabels } from '@/components/keyboard/key-labels'
 import type { KeyboardProps } from '@/components/keyboard/keyboard'
 import { keyboard3d, type CapShape3d } from '@/components/keyboard/keyboard-3d-geometry'
@@ -41,15 +47,19 @@ const Key3D = memo(function Key3D({
   onSelect,
 }: Key3DProps) {
   const style = capStyleOf(k.code)
-  const { box, topBox } = shape
+  const { box, topSize } = shape
   const pts = (p: Vec[]) => svgPoints(p, box, unit)
+  // Верхняя грань — блок размером с грань в плоскости, переведённый в её
+  // трапецию одной плоской трансформацией: фон, подписи и обводка наклонены
+  const quad = shape.topQuad.map((p) => ({
+    x: (p.x - box.x) * unit,
+    y: (p.y - box.y) * unit,
+  })) as [Vec, Vec, Vec, Vec]
   const top: CSSProperties = {
-    left: (topBox.x - box.x) * unit,
-    top: (topBox.y - box.y) * unit,
-    width: topBox.w * unit,
-    height: (topBox.h * unit) / shape.squash,
-    fontSize: unit * shape.scale,
-    transform: `scaleY(${shape.squash})`,
+    width: topSize.w * unit,
+    height: topSize.h * unit,
+    fontSize: unit,
+    transform: rectToQuad(topSize.w * unit, topSize.h * unit, quad),
   }
   return (
     <InputCap
@@ -71,7 +81,6 @@ const Key3D = memo(function Key3D({
         {shape.left && <polygon points={pts(shape.left)} fill="var(--cap-side-3d)" />}
         {shape.right && <polygon points={pts(shape.right)} fill="var(--cap-side-dark-3d)" />}
         <polygon points={pts(shape.front)} fill={`url(#${gradId}-front-${style})`} />
-        <polygon points={pts(shape.top)} fill={`url(#${gradId}-top-${style})`} />
       </svg>
       <div className="cap3d-top" style={top}>
         <KeyLabels keyDef={k} labelLang={labelLang} />
@@ -101,6 +110,9 @@ export function Keyboard3D({
     height: box.h * unit,
     fontFamily: legend.font,
     '--ring': `${state.selected.width * unit}px solid ${state.selected.color}`,
+    '--reject-ring': `${state.conflict.width * unit}px solid ${state.conflict.color}`,
+    '--reject-hatch': rejectHatch(state.conflict.width * unit, 'px'),
+    '--cap-top-radius': `${deviceTheme.view3d.capShape3d.topRadius}em`,
   } as CSSProperties
 
   return (
@@ -117,10 +129,6 @@ export function Keyboard3D({
               <linearGradient id={`${id}-front-${s}`} x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0" stopColor={CAP_COLORS_3D[s].frontTop} />
                 <stop offset="1" stopColor={CAP_COLORS_3D[s].frontBottom} />
-              </linearGradient>
-              <linearGradient id={`${id}-top-${s}`} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stopColor={CAP_COLORS_3D[s].topFar} />
-                <stop offset="1" stopColor={CAP_COLORS_3D[s].topNear} />
               </linearGradient>
             </g>
           ))}

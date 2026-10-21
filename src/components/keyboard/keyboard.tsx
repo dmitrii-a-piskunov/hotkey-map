@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react'
 import { InputCap } from '@/components/devices/input-cap'
 import { keyboardWidth, keyWells } from '@/components/devices/device-geometry'
-import { CAP_VARS } from '@/components/keyboard/cap-style'
+import { CAP_VARS, rejectHatch } from '@/components/keyboard/cap-style'
 import { KeyLabels } from '@/components/keyboard/key-labels'
 import { Keyboard3D } from '@/components/keyboard/keyboard-3d'
 import type { LabelLang } from '@/domain/input'
@@ -50,6 +50,8 @@ function Keyboard2D({ layout, unit, labelLang, selected, pressed, onSelect }: Ke
     '--case': caseTheme.color,
     '--cap-radius': `${cap.radius}em`,
     '--ring': `${state.selected.width}em solid ${state.selected.color}`,
+    '--reject-ring': `${state.conflict.width}em solid ${state.conflict.color}`,
+    '--reject-hatch': rejectHatch(state.conflict.width, 'em'),
   } as CSSProperties
 
   const toX = (x: number) => (bezel.left + x) * unit
