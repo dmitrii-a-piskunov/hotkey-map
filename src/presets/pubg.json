@@ -1,0 +1,840 @@
+{
+  "schemaVersion": 1,
+  "scope": "game",
+  "exportedAt": "2026-10-21T00:00:00.000Z",
+  "preset": true,
+  "games": [
+    {
+      "id": "2394b32e-84d7-506b-b28d-5e44e603ef59",
+      "name": "PUBG: BATTLEGROUNDS",
+      "steamAppId": 578080,
+      "rules": {
+        "maxKeysPerAction": 2,
+        "allowedModifiers": ["ctrl", "shift", "alt"]
+      },
+      "contexts": [
+        {
+          "id": "441de584-a53d-50d3-9519-1e6a866e1ddf",
+          "name": "Везде",
+          "isGlobal": true,
+          "order": 0
+        },
+        {
+          "id": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "name": "Пешком",
+          "isGlobal": false,
+          "order": 1
+        },
+        {
+          "id": "369a5072-00e6-541c-aa3d-d15dcf80d878",
+          "name": "В транспорте",
+          "isGlobal": false,
+          "order": 2
+        },
+        {
+          "id": "1a4fe595-5ad9-5efa-a5dd-7f437920fbbb",
+          "name": "Парашют",
+          "isGlobal": false,
+          "order": 3
+        },
+        {
+          "id": "0a27e422-1e2d-5f88-a61f-2b67f987db10",
+          "name": "Плавание",
+          "isGlobal": false,
+          "order": 4
+        }
+      ],
+      "categories": [
+        {
+          "id": "9f9d976e-1682-59db-9aae-00196aadf03e",
+          "name": "Движение",
+          "color": "#3B82F6"
+        },
+        {
+          "id": "f51c963c-2414-5e9c-9103-461b7f0faac8",
+          "name": "Бой",
+          "color": "#EF4444"
+        },
+        {
+          "id": "a8af104e-ed94-511d-82cb-68d9910e39cc",
+          "name": "Оружие",
+          "color": "#F97316"
+        },
+        {
+          "id": "800b0fa7-fe15-5f0f-ace5-f0e204463680",
+          "name": "Предметы",
+          "color": "#F59E0B"
+        },
+        {
+          "id": "ab8dbcfa-7183-5c92-9566-687b0575e78f",
+          "name": "Взаимодействие",
+          "color": "#10B981"
+        },
+        {
+          "id": "7928ae0a-9b88-5e90-b1f3-d37ca3d97932",
+          "name": "Камера",
+          "color": "#84CC16"
+        },
+        {
+          "id": "d86ed0aa-c763-5f71-b5ca-611a7c0e8eae",
+          "name": "Связь",
+          "color": "#EC4899"
+        },
+        {
+          "id": "b78a43f7-cd2a-55d5-8a40-7574e77d4583",
+          "name": "Транспорт",
+          "color": "#8B5CF6"
+        }
+      ],
+      "actions": [
+        {
+          "id": "ebbea82f-621f-58a5-bf87-938970bef7e6",
+          "name": "Взаимодействие",
+          "nameEn": "Interact",
+          "contextId": "441de584-a53d-50d3-9519-1e6a866e1ddf",
+          "categoryId": "ab8dbcfa-7183-5c92-9566-687b0575e78f",
+          "order": 0
+        },
+        {
+          "id": "3f075dc0-065d-568b-b833-90d8a9506b8b",
+          "name": "Инвентарь",
+          "nameEn": "Inventory",
+          "contextId": "441de584-a53d-50d3-9519-1e6a866e1ddf",
+          "categoryId": "ab8dbcfa-7183-5c92-9566-687b0575e78f",
+          "order": 1
+        },
+        {
+          "id": "f1235b9d-c214-58ec-bc89-95c30a541875",
+          "name": "Карта",
+          "nameEn": "Map",
+          "contextId": "441de584-a53d-50d3-9519-1e6a866e1ddf",
+          "categoryId": "ab8dbcfa-7183-5c92-9566-687b0575e78f",
+          "order": 2
+        },
+        {
+          "id": "2db369c9-120e-564c-8947-89b4949f726e",
+          "name": "Свободный обзор",
+          "nameEn": "Free Look",
+          "contextId": "441de584-a53d-50d3-9519-1e6a866e1ddf",
+          "categoryId": "7928ae0a-9b88-5e90-b1f3-d37ca3d97932",
+          "order": 3
+        },
+        {
+          "id": "fa495770-afd6-545b-8144-0bc818328f3d",
+          "name": "Сменить вид (от 1-го / 3-го лица)",
+          "nameEn": "Toggle Camera View",
+          "contextId": "441de584-a53d-50d3-9519-1e6a866e1ddf",
+          "categoryId": "7928ae0a-9b88-5e90-b1f3-d37ca3d97932",
+          "order": 4
+        },
+        {
+          "id": "5dded7e0-6eef-5e40-af3a-26c18612c268",
+          "name": "Голосовой чат (нажми и говори)",
+          "nameEn": "Push to Talk",
+          "contextId": "441de584-a53d-50d3-9519-1e6a866e1ddf",
+          "categoryId": "d86ed0aa-c763-5f71-b5ca-611a7c0e8eae",
+          "order": 5
+        },
+        {
+          "id": "dd703aa7-f11e-5a77-b8b2-991c32cd7e67",
+          "name": "Переключить режим голосового чата",
+          "nameEn": "Toggle Voice Channel",
+          "contextId": "441de584-a53d-50d3-9519-1e6a866e1ddf",
+          "categoryId": "d86ed0aa-c763-5f71-b5ca-611a7c0e8eae",
+          "order": 6
+        },
+        {
+          "id": "94b8ea08-72b7-5e45-94ba-c92b79e22544",
+          "name": "Метка на местности",
+          "nameEn": "Ping / Marker",
+          "contextId": "441de584-a53d-50d3-9519-1e6a866e1ddf",
+          "categoryId": "d86ed0aa-c763-5f71-b5ca-611a7c0e8eae",
+          "order": 7
+        },
+        {
+          "id": "d6c399d1-9f6b-556e-8d18-ef3e2add8957",
+          "name": "Автобег",
+          "nameEn": "Auto Run",
+          "contextId": "441de584-a53d-50d3-9519-1e6a866e1ddf",
+          "categoryId": "9f9d976e-1682-59db-9aae-00196aadf03e",
+          "order": 8
+        },
+        {
+          "id": "73b183d1-421e-5133-bfcf-742e1bdf4dc8",
+          "name": "Вперёд",
+          "nameEn": "Move Forward",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "9f9d976e-1682-59db-9aae-00196aadf03e",
+          "order": 9
+        },
+        {
+          "id": "d1fa99a7-6763-5914-8c1d-ab6c543e95ed",
+          "name": "Назад",
+          "nameEn": "Move Backward",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "9f9d976e-1682-59db-9aae-00196aadf03e",
+          "order": 10
+        },
+        {
+          "id": "c41699c6-6905-5ad5-9dda-ac431659cef3",
+          "name": "Влево",
+          "nameEn": "Move Left",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "9f9d976e-1682-59db-9aae-00196aadf03e",
+          "order": 11
+        },
+        {
+          "id": "16ecbbd6-b05d-56f7-b42e-1a9ae8b59fba",
+          "name": "Вправо",
+          "nameEn": "Move Right",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "9f9d976e-1682-59db-9aae-00196aadf03e",
+          "order": 12
+        },
+        {
+          "id": "76cfa4ad-0d02-5e93-8961-72dece690123",
+          "name": "Бег",
+          "nameEn": "Sprint",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "9f9d976e-1682-59db-9aae-00196aadf03e",
+          "order": 13
+        },
+        {
+          "id": "f537b570-4574-5f6c-abaf-3c52f408d45d",
+          "name": "Шаг",
+          "nameEn": "Walk",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "9f9d976e-1682-59db-9aae-00196aadf03e",
+          "order": 14
+        },
+        {
+          "id": "2ae97615-4bcb-5e00-97fe-cd703bb6dac2",
+          "name": "Присесть",
+          "nameEn": "Crouch",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "9f9d976e-1682-59db-9aae-00196aadf03e",
+          "order": 15
+        },
+        {
+          "id": "ad23a67a-b2fc-5712-ac20-5e3a2f9de47e",
+          "name": "Лечь",
+          "nameEn": "Prone",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "9f9d976e-1682-59db-9aae-00196aadf03e",
+          "order": 16
+        },
+        {
+          "id": "c3e7fa40-a5f1-5fc4-af0f-d1dcb954cff7",
+          "name": "Прыжок / перелезть",
+          "nameEn": "Jump / Vault",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "9f9d976e-1682-59db-9aae-00196aadf03e",
+          "order": 17
+        },
+        {
+          "id": "200a5a3f-14aa-5ea1-89c7-b2aca3680a8f",
+          "name": "Наклон влево",
+          "nameEn": "Peek Left",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "9f9d976e-1682-59db-9aae-00196aadf03e",
+          "order": 18
+        },
+        {
+          "id": "3f59eda5-d051-5230-9e18-1c97d9c1f770",
+          "name": "Наклон вправо",
+          "nameEn": "Peek Right",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "9f9d976e-1682-59db-9aae-00196aadf03e",
+          "order": 19
+        },
+        {
+          "id": "184d1d9b-caa3-5f4d-8db2-bf7a472dd9c2",
+          "name": "Огонь",
+          "nameEn": "Fire",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "f51c963c-2414-5e9c-9103-461b7f0faac8",
+          "order": 20
+        },
+        {
+          "id": "ac3b2daa-91bd-5f9e-a7f1-eb13522ce91f",
+          "name": "Прицеливание",
+          "nameEn": "Aim / ADS",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "f51c963c-2414-5e9c-9103-461b7f0faac8",
+          "order": 21
+        },
+        {
+          "id": "0041f16e-b6af-5c6d-bf04-c001df74e4ee",
+          "name": "Задержать дыхание",
+          "nameEn": "Hold Breath",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "f51c963c-2414-5e9c-9103-461b7f0faac8",
+          "order": 22
+        },
+        {
+          "id": "b82b9bfa-3f44-57fb-bad1-659c179e11cb",
+          "name": "Перезарядка",
+          "nameEn": "Reload",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "f51c963c-2414-5e9c-9103-461b7f0faac8",
+          "order": 23
+        },
+        {
+          "id": "33cf1293-0cc4-566d-b8a5-effeae09b9bb",
+          "name": "Режим огня",
+          "nameEn": "Change Fire Mode",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "f51c963c-2414-5e9c-9103-461b7f0faac8",
+          "order": 24
+        },
+        {
+          "id": "bb74cdad-a6b7-500e-950e-81bfd29eb72e",
+          "name": "Пристрелка: увеличить",
+          "nameEn": "Zeroing Up",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "f51c963c-2414-5e9c-9103-461b7f0faac8",
+          "order": 25
+        },
+        {
+          "id": "bd392537-d38c-52e2-9a16-9ffd2bb50471",
+          "name": "Пристрелка: уменьшить",
+          "nameEn": "Zeroing Down",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "f51c963c-2414-5e9c-9103-461b7f0faac8",
+          "order": 26
+        },
+        {
+          "id": "2cdcb2a4-e6c3-5d58-87be-8f818331a9e6",
+          "name": "Основное оружие 1",
+          "nameEn": "Primary Weapon 1",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "a8af104e-ed94-511d-82cb-68d9910e39cc",
+          "order": 27
+        },
+        {
+          "id": "f64a282d-a9a7-5c59-b99f-c61ec8a106b5",
+          "name": "Основное оружие 2",
+          "nameEn": "Primary Weapon 2",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "a8af104e-ed94-511d-82cb-68d9910e39cc",
+          "order": 28
+        },
+        {
+          "id": "bd6ab11e-4b25-591d-a98f-4ec749cb0f56",
+          "name": "Пистолет",
+          "nameEn": "Sidearm",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "a8af104e-ed94-511d-82cb-68d9910e39cc",
+          "order": 29
+        },
+        {
+          "id": "3994f390-2a54-586b-83dc-da190a20e67f",
+          "name": "Оружие ближнего боя",
+          "nameEn": "Melee Weapon",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "a8af104e-ed94-511d-82cb-68d9910e39cc",
+          "order": 30
+        },
+        {
+          "id": "86fdd5ba-6a34-5545-80c3-8d5af51c9a3d",
+          "name": "Метательное оружие",
+          "nameEn": "Throwable",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "a8af104e-ed94-511d-82cb-68d9910e39cc",
+          "order": 31
+        },
+        {
+          "id": "f04dca24-a4c4-5f6c-9083-5daec3116730",
+          "name": "Убрать оружие",
+          "nameEn": "Holster Weapon",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "a8af104e-ed94-511d-82cb-68d9910e39cc",
+          "order": 32
+        },
+        {
+          "id": "e01c9ebe-ccf7-5281-8bc7-3a8c93f2106d",
+          "name": "Следующее оружие",
+          "nameEn": "Next Weapon",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "a8af104e-ed94-511d-82cb-68d9910e39cc",
+          "order": 33
+        },
+        {
+          "id": "0f2153df-0444-525c-8e15-114517a4cf90",
+          "name": "Предыдущее оружие",
+          "nameEn": "Previous Weapon",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "a8af104e-ed94-511d-82cb-68d9910e39cc",
+          "order": 34
+        },
+        {
+          "id": "a0e22e8f-94f0-546f-8e7e-ab74570dae9d",
+          "name": "Медицинский набор",
+          "nameEn": "Use Med Kit",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "800b0fa7-fe15-5f0f-ace5-f0e204463680",
+          "order": 35
+        },
+        {
+          "id": "9f58d2fb-e262-5454-b524-b0ecb071c9f0",
+          "name": "Аптечка первой помощи",
+          "nameEn": "Use First Aid Kit",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "800b0fa7-fe15-5f0f-ace5-f0e204463680",
+          "order": 36
+        },
+        {
+          "id": "3d49f8db-92c8-582e-9912-0d5069808fed",
+          "name": "Бинт",
+          "nameEn": "Use Bandage",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "800b0fa7-fe15-5f0f-ace5-f0e204463680",
+          "order": 37
+        },
+        {
+          "id": "0301ec4c-e7ae-545d-91c6-a2ea61be8dd3",
+          "name": "Бустер",
+          "nameEn": "Use Boost Item",
+          "contextId": "80252c56-9955-5da4-bd8a-2ec98e48870d",
+          "categoryId": "800b0fa7-fe15-5f0f-ace5-f0e204463680",
+          "order": 38
+        },
+        {
+          "id": "8b84844c-0308-5f9c-bca1-3d10d4fdb012",
+          "name": "Газ",
+          "nameEn": "Accelerate",
+          "contextId": "369a5072-00e6-541c-aa3d-d15dcf80d878",
+          "categoryId": "b78a43f7-cd2a-55d5-8a40-7574e77d4583",
+          "order": 39
+        },
+        {
+          "id": "b962e2dd-6dc4-5ce4-9909-6531a10e5400",
+          "name": "Тормоз / назад",
+          "nameEn": "Brake / Reverse",
+          "contextId": "369a5072-00e6-541c-aa3d-d15dcf80d878",
+          "categoryId": "b78a43f7-cd2a-55d5-8a40-7574e77d4583",
+          "order": 40
+        },
+        {
+          "id": "cf8965c1-3986-5f49-84c9-92d86a872d60",
+          "name": "Руль влево",
+          "nameEn": "Steer Left",
+          "contextId": "369a5072-00e6-541c-aa3d-d15dcf80d878",
+          "categoryId": "b78a43f7-cd2a-55d5-8a40-7574e77d4583",
+          "order": 41
+        },
+        {
+          "id": "22e9f108-9f40-5f4f-86a1-400e8ab9a7c5",
+          "name": "Руль вправо",
+          "nameEn": "Steer Right",
+          "contextId": "369a5072-00e6-541c-aa3d-d15dcf80d878",
+          "categoryId": "b78a43f7-cd2a-55d5-8a40-7574e77d4583",
+          "order": 42
+        },
+        {
+          "id": "a8150bea-9e98-52e5-ab4e-8310f083fe87",
+          "name": "Ускорение",
+          "nameEn": "Boost",
+          "contextId": "369a5072-00e6-541c-aa3d-d15dcf80d878",
+          "categoryId": "b78a43f7-cd2a-55d5-8a40-7574e77d4583",
+          "order": 43
+        },
+        {
+          "id": "fde5189e-c45c-528c-982a-809bb7c716bb",
+          "name": "Ручной тормоз",
+          "nameEn": "Handbrake",
+          "contextId": "369a5072-00e6-541c-aa3d-d15dcf80d878",
+          "categoryId": "b78a43f7-cd2a-55d5-8a40-7574e77d4583",
+          "order": 44
+        },
+        {
+          "id": "158fe23c-8b3b-55ce-8d98-ffabdca37931",
+          "name": "Сигнал",
+          "nameEn": "Horn",
+          "contextId": "369a5072-00e6-541c-aa3d-d15dcf80d878",
+          "categoryId": "b78a43f7-cd2a-55d5-8a40-7574e77d4583",
+          "order": 45
+        },
+        {
+          "id": "a973e8e8-3da8-5337-b386-39844e0f1049",
+          "name": "Наклон назад",
+          "nameEn": "Air Control Pitch Up",
+          "contextId": "369a5072-00e6-541c-aa3d-d15dcf80d878",
+          "categoryId": "b78a43f7-cd2a-55d5-8a40-7574e77d4583",
+          "order": 46
+        },
+        {
+          "id": "bf7723f7-761c-5c35-8264-eeb0d773c0eb",
+          "name": "Наклон вперёд",
+          "nameEn": "Air Control Pitch Down",
+          "contextId": "369a5072-00e6-541c-aa3d-d15dcf80d878",
+          "categoryId": "b78a43f7-cd2a-55d5-8a40-7574e77d4583",
+          "order": 47
+        },
+        {
+          "id": "ee47b641-8678-575e-9992-fd7426aea1dd",
+          "name": "Место 1",
+          "nameEn": "Change Seat 1",
+          "contextId": "369a5072-00e6-541c-aa3d-d15dcf80d878",
+          "categoryId": "b78a43f7-cd2a-55d5-8a40-7574e77d4583",
+          "order": 48
+        },
+        {
+          "id": "30f95b25-7b08-5c62-b1bc-76b62d7cc2b8",
+          "name": "Место 2",
+          "nameEn": "Change Seat 2",
+          "contextId": "369a5072-00e6-541c-aa3d-d15dcf80d878",
+          "categoryId": "b78a43f7-cd2a-55d5-8a40-7574e77d4583",
+          "order": 49
+        },
+        {
+          "id": "e75705bb-2dce-54a4-ac97-3964988012da",
+          "name": "Место 3",
+          "nameEn": "Change Seat 3",
+          "contextId": "369a5072-00e6-541c-aa3d-d15dcf80d878",
+          "categoryId": "b78a43f7-cd2a-55d5-8a40-7574e77d4583",
+          "order": 50
+        },
+        {
+          "id": "04e7fefe-9acb-58be-af18-d4c5978338bb",
+          "name": "Место 4",
+          "nameEn": "Change Seat 4",
+          "contextId": "369a5072-00e6-541c-aa3d-d15dcf80d878",
+          "categoryId": "b78a43f7-cd2a-55d5-8a40-7574e77d4583",
+          "order": 51
+        },
+        {
+          "id": "6e866589-ea4e-5663-806f-ecc444697dcf",
+          "name": "Место 5",
+          "nameEn": "Change Seat 5",
+          "contextId": "369a5072-00e6-541c-aa3d-d15dcf80d878",
+          "categoryId": "b78a43f7-cd2a-55d5-8a40-7574e77d4583",
+          "order": 52
+        },
+        {
+          "id": "68bb98db-17c5-5a01-a22e-490f147fb6a0",
+          "name": "Пикирование",
+          "nameEn": "Dive",
+          "contextId": "1a4fe595-5ad9-5efa-a5dd-7f437920fbbb",
+          "categoryId": "9f9d976e-1682-59db-9aae-00196aadf03e",
+          "order": 53
+        },
+        {
+          "id": "8af7c693-bbb4-57ba-b01d-e6b83e29e551",
+          "name": "Замедлить снижение",
+          "nameEn": "Slow Descent",
+          "contextId": "1a4fe595-5ad9-5efa-a5dd-7f437920fbbb",
+          "categoryId": "9f9d976e-1682-59db-9aae-00196aadf03e",
+          "order": 54
+        },
+        {
+          "id": "f60c7a96-abb8-59b6-8d89-91febba3b851",
+          "name": "Раскрыть парашют",
+          "nameEn": "Deploy Parachute",
+          "contextId": "1a4fe595-5ad9-5efa-a5dd-7f437920fbbb",
+          "categoryId": "9f9d976e-1682-59db-9aae-00196aadf03e",
+          "order": 55
+        },
+        {
+          "id": "2d9d3705-42c8-50cf-aa36-525a7b83e8e2",
+          "name": "Всплыть",
+          "nameEn": "Swim Up",
+          "contextId": "0a27e422-1e2d-5f88-a61f-2b67f987db10",
+          "categoryId": "9f9d976e-1682-59db-9aae-00196aadf03e",
+          "order": 56
+        },
+        {
+          "id": "394f6afa-3fc9-58b0-b84a-5a95b69108e1",
+          "name": "Нырнуть",
+          "nameEn": "Swim Down",
+          "contextId": "0a27e422-1e2d-5f88-a61f-2b67f987db10",
+          "categoryId": "9f9d976e-1682-59db-9aae-00196aadf03e",
+          "order": 57
+        }
+      ],
+      "settingsTemplate": [
+        {
+          "id": "7a4d68df-e0d6-5bf1-a2f2-018a66bb79bf",
+          "order": 0,
+          "group": "Мышь",
+          "name": "DPI мыши",
+          "type": "slider",
+          "min": 100,
+          "max": 32000,
+          "step": 50,
+          "defaultValue": 800
+        },
+        {
+          "id": "c35c7e71-df54-5263-8b92-32a48435e56c",
+          "order": 1,
+          "group": "Мышь",
+          "name": "Общая чувствительность",
+          "type": "slider",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "defaultValue": 50
+        },
+        {
+          "id": "8b157088-2801-584f-9c83-c099253a7cc5",
+          "order": 2,
+          "group": "Мышь",
+          "name": "Множитель вертикальной чувствительности",
+          "type": "slider",
+          "min": 0.5,
+          "max": 2.0,
+          "step": 0.01,
+          "defaultValue": 1.0
+        },
+        {
+          "id": "64d17726-e70b-5799-94fd-4f7c146a49e8",
+          "order": 3,
+          "group": "Мышь",
+          "name": "Чувствительность прицеливания",
+          "type": "slider",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "defaultValue": 50
+        },
+        {
+          "id": "9fe09750-d09c-5106-86e7-576e986f0c9d",
+          "order": 4,
+          "group": "Мышь",
+          "name": "Чувствительность при прицеле (ADS)",
+          "type": "slider",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "defaultValue": 50
+        },
+        {
+          "id": "b6f6f1f3-ba15-5b6c-a055-bf2841a8b497",
+          "order": 5,
+          "group": "Мышь",
+          "name": "Прицел 2x",
+          "type": "slider",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "defaultValue": 50
+        },
+        {
+          "id": "37649180-7232-54d3-9be7-53f0ab7ea018",
+          "order": 6,
+          "group": "Мышь",
+          "name": "Прицел 3x",
+          "type": "slider",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "defaultValue": 50
+        },
+        {
+          "id": "ff6f9b3f-11d0-5456-ae8a-5e7555118a9a",
+          "order": 7,
+          "group": "Мышь",
+          "name": "Прицел 4x",
+          "type": "slider",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "defaultValue": 50
+        },
+        {
+          "id": "e2ef13a0-bbf7-5e4f-8406-3278f374e2c3",
+          "order": 8,
+          "group": "Мышь",
+          "name": "Прицел 6x",
+          "type": "slider",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "defaultValue": 50
+        },
+        {
+          "id": "cba07456-4b5c-5da6-af47-ff22a6ca9833",
+          "order": 9,
+          "group": "Мышь",
+          "name": "Прицел 8x",
+          "type": "slider",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "defaultValue": 50
+        },
+        {
+          "id": "56869724-297f-520d-9169-f3682f8a05e1",
+          "order": 10,
+          "group": "Мышь",
+          "name": "Прицел 15x",
+          "type": "slider",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "defaultValue": 50
+        },
+        {
+          "id": "9fe3795d-bd40-503b-80eb-a1ebf016143d",
+          "order": 11,
+          "group": "Мышь",
+          "name": "Чувствительность в транспорте",
+          "type": "slider",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "defaultValue": 50
+        },
+        {
+          "id": "9db631df-7410-5c59-9c1e-cc03c9915bb5",
+          "order": 12,
+          "group": "Мышь",
+          "name": "Чувствительность свободного обзора",
+          "type": "slider",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "defaultValue": 50
+        },
+        {
+          "id": "c0d15295-746d-58b9-af5a-5d718db68cc9",
+          "order": 13,
+          "group": "Управление",
+          "name": "Прицеливание",
+          "type": "select",
+          "options": [
+            {
+              "id": "5ae188eb-108b-575a-8b76-0a615a938481",
+              "name": "Удержание"
+            },
+            {
+              "id": "6c5fe285-6cc1-59d4-b660-611e3da8bc83",
+              "name": "Переключение"
+            },
+            {
+              "id": "98361257-d869-5901-a160-915d4a53241a",
+              "name": "Нажатие и удержание"
+            }
+          ],
+          "defaultValue": "98361257-d869-5901-a160-915d4a53241a"
+        },
+        {
+          "id": "b81e4201-db9d-5529-a127-8292deaca1a9",
+          "order": 14,
+          "group": "Управление",
+          "name": "Присесть",
+          "type": "select",
+          "options": [
+            {
+              "id": "22ad130c-572a-5741-a75d-dd2f8b87ff30",
+              "name": "Удержание"
+            },
+            {
+              "id": "c7e70162-ff69-5e1e-b287-45b92745741a",
+              "name": "Переключение"
+            }
+          ],
+          "defaultValue": "c7e70162-ff69-5e1e-b287-45b92745741a"
+        },
+        {
+          "id": "8a1036b5-a17e-5339-b51a-ec92271afdaf",
+          "order": 15,
+          "group": "Управление",
+          "name": "Лечь",
+          "type": "select",
+          "options": [
+            {
+              "id": "f996f510-7388-5ae0-a1be-b6a84e1d7f95",
+              "name": "Удержание"
+            },
+            {
+              "id": "2a4666e3-242e-52df-9aad-c7dc3e2ad145",
+              "name": "Переключение"
+            }
+          ],
+          "defaultValue": "2a4666e3-242e-52df-9aad-c7dc3e2ad145"
+        },
+        {
+          "id": "16b1de7e-c6ed-5da8-823e-78861b8ad367",
+          "order": 16,
+          "group": "Управление",
+          "name": "Наклон",
+          "type": "select",
+          "options": [
+            {
+              "id": "519aceb1-c7b7-50a7-92b1-a1f437a068b6",
+              "name": "Удержание"
+            },
+            {
+              "id": "a20d4a50-855d-59af-9449-a04e2e73e328",
+              "name": "Переключение"
+            }
+          ],
+          "defaultValue": "519aceb1-c7b7-50a7-92b1-a1f437a068b6"
+        },
+        {
+          "id": "1a67478c-54a5-5b2b-bd8e-2357d3b7333b",
+          "order": 17,
+          "group": "Управление",
+          "name": "Бег",
+          "type": "select",
+          "options": [
+            {
+              "id": "24991ef9-a12f-50f6-a939-0c2078fcfac5",
+              "name": "Удержание"
+            },
+            {
+              "id": "cc30b625-94e4-5ac7-afed-d612d8f96c92",
+              "name": "Переключение"
+            }
+          ],
+          "defaultValue": "24991ef9-a12f-50f6-a939-0c2078fcfac5"
+        },
+        {
+          "id": "8ed28cfc-591a-5402-a47c-f27aabe5f6df",
+          "order": 18,
+          "group": "Графика",
+          "name": "FOV от первого лица",
+          "type": "slider",
+          "min": 80,
+          "max": 103,
+          "step": 1,
+          "defaultValue": 90
+        },
+        {
+          "id": "3dc2d626-a45e-5781-948e-2eb737a163a9",
+          "order": 19,
+          "group": "Графика",
+          "name": "Разрешение",
+          "type": "text",
+          "defaultValue": ""
+        },
+        {
+          "id": "a807aff1-8f71-5e31-91bf-7b90a5327e3b",
+          "order": 20,
+          "group": "Звук",
+          "name": "Общая громкость",
+          "type": "slider",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "defaultValue": 100
+        }
+      ],
+      "profiles": [
+        {
+          "id": "39c555e9-2ad4-51c4-a9bd-9af2568e28a7",
+          "name": "Основной",
+          "notes": "",
+          "bindings": [],
+          "settingValues": {},
+          "keyGroups": [],
+          "createdAt": "2026-10-21T00:00:00.000Z",
+          "updatedAt": "2026-10-21T00:00:00.000Z"
+        }
+      ],
+      "createdAt": "2026-10-21T00:00:00.000Z",
+      "updatedAt": "2026-10-21T00:00:00.000Z"
+    }
+  ]
+}
