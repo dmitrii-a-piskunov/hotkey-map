@@ -100,7 +100,6 @@ export function Keyboard3D({
     width: box.w * unit,
     height: box.h * unit,
     fontFamily: legend.font,
-    '--disabled-opacity': state.disabledOpacity,
     '--ring': `${state.selected.width * unit}px solid ${state.selected.color}`,
   } as CSSProperties
 
@@ -139,7 +138,7 @@ export function Keyboard3D({
           <polygon points={px(scene.indicator)} fill={deviceTheme.indicator.color} />
         )}
         {scene.knob && (
-          <g opacity={state.disabledOpacity}>
+          <g>
             <polygon points={px(scene.knob.side)} fill={`url(#${id}-knob)`} />
             <polygon
               points={px(scene.knob.top)}

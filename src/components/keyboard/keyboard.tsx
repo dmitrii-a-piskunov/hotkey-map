@@ -49,7 +49,6 @@ function Keyboard2D({ layout, unit, labelLang, selected, pressed, onSelect }: Ke
     borderRadius: `${caseTheme.radius}em`,
     '--case': caseTheme.color,
     '--cap-radius': `${cap.radius}em`,
-    '--disabled-opacity': state.disabledOpacity,
     '--ring': `${state.selected.width}em solid ${state.selected.color}`,
   } as CSSProperties
 
@@ -98,7 +97,6 @@ function Keyboard2D({ layout, unit, labelLang, selected, pressed, onSelect }: Ke
               width: layout.knob.d * unit,
               height: layout.knob.d * unit,
               background: `linear-gradient(${knobTheme.side}, ${knobTheme.sideDark})`,
-              opacity: state.disabledOpacity,
             }}
           />
           <div
@@ -112,7 +110,6 @@ function Keyboard2D({ layout, unit, labelLang, selected, pressed, onSelect }: Ke
               height: (layout.knob.d - knobInset * 2) * unit,
               background: knobTheme.cap,
               border: `${knobTheme.ringWidth}em solid ${knobTheme.ring}`,
-              opacity: state.disabledOpacity,
             }}
           />
         </>

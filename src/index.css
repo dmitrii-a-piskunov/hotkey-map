@@ -125,11 +125,6 @@
     cursor: default;
   }
 
-  /* Fn: dim the content */
-  .cap[data-disabled] > * {
-    opacity: var(--disabled-opacity);
-  }
-
   .key {
     background: var(--cap-side);
     border-radius: var(--cap-radius);
