@@ -8,7 +8,7 @@
 
 - TypeScript (strict, без `any`), React, Vite
 - Zustand + zundo (состояние, отмена и повтор)
-- Tailwind CSS + CSS-переменные для тем, CSS 3D для клавиатуры
+- Tailwind CSS + CSS-переменные для тем; 3D-вид — перспективная проекция в JS, отрисовка в SVG (без CSS 3D)
 - shadcn/ui на базе Radix UI, иконки lucide-react
 - Zod — схемы данных, проверка импорта, миграции
 - File System Access API — основное хранение; IndexedDB (idb-keyval) — ссылка на папку и запасной режим Firefox
@@ -39,7 +39,8 @@ npm run e2e        # Playwright
 - `src/features` — игры, профили, бинды, группы, настройки, импорт и экспорт
 - `src/domain` — типы, схемы Zod, чистая логика: конфликты, правила игры, миграции, слияние
 - `src/storage` — интерфейс `StorageAdapter` и реализации `FileSystemStorage`, `IndexedDbStorage`
-- `src/layouts` — раскладки устройств (`aula-f75.ts`, мышь)
+- `src/layouts` — раскладки устройств (`aula-f75.ts`, мышь): геометрия и подписи
+- `src/styles/device-theme.ts` — цвета, размеры, подписи и параметры 3D устройств
 - `src/presets` — заготовки `dota2.json`, `pubg.json`
 - `src/i18n/ru.ts` — все строки интерфейса
 - `tests`, `e2e` — тесты
