@@ -1,5 +1,6 @@
 import { memo, type CSSProperties, type ReactNode } from 'react'
 import type { ClickModifiers, InputCode } from '@/domain/selection'
+import { cn } from '@/lib/utils'
 
 export interface InputCapProps {
   code: InputCode
@@ -10,18 +11,18 @@ export interface InputCapProps {
   top: number
   width: number
   height: number
-  /** Высота над корпусом в 3D, px */
-  depth: number
-  radius?: string
   ariaLabel: string
   selected: boolean
   pressed: boolean
   disabled?: boolean
+  className?: string
+  /** Дополнительные стили, например CSS-переменные цвета клавиши */
+  style?: CSSProperties
   onSelect: (code: InputCode, mods: ClickModifiers) => void
   children?: ReactNode
 }
 
-/** Клавиша или кнопка мыши: верхняя и передняя грани (FR-01, FR-02) */
+/** Клавиша или зона мыши: клик, состояния и обводка выделения (FR-01, FR-02) */
 export const InputCap = memo(function InputCap({
   code,
   kind,
@@ -29,24 +30,15 @@ export const InputCap = memo(function InputCap({
   top,
   width,
   height,
-  depth,
-  radius,
   ariaLabel,
   selected,
   pressed,
   disabled = false,
+  className,
+  style,
   onSelect,
   children,
 }: InputCapProps) {
-  const style = {
-    left,
-    top,
-    width,
-    height,
-    '--cap-depth': `${depth}px`,
-    '--cap-radius': radius,
-  } as CSSProperties
-
   return (
     <div
       role="button"
@@ -58,8 +50,8 @@ export const InputCap = memo(function InputCap({
       data-selected={selected || undefined}
       data-pressed={pressed || undefined}
       data-disabled={disabled || undefined}
-      className="cap"
-      style={style}
+      className={cn('cap', className)}
+      style={{ left, top, width, height, ...style }}
       onPointerDown={(e) => {
         // Нажатие на клавишу не начинает рамку
         e.stopPropagation()
@@ -69,8 +61,7 @@ export const InputCap = memo(function InputCap({
         onSelect(code, { ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey })
       }}
     >
-      <div className="cap-top">{children}</div>
-      <div className="cap-front" aria-hidden="true" />
+      {children}
     </div>
   )
 })

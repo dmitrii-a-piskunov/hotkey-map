@@ -1,100 +1,142 @@
 import type { CSSProperties } from 'react'
 import { InputCap } from '@/components/devices/input-cap'
+import { keyboardWidth, keyWells } from '@/components/devices/device-geometry'
+import { CAP_VARS } from '@/components/keyboard/cap-style'
+import { KeyLabels } from '@/components/keyboard/key-labels'
+import { Keyboard3D } from '@/components/keyboard/keyboard-3d'
 import type { LabelLang } from '@/domain/input'
 import type { ClickModifiers, InputCode } from '@/domain/selection'
-import type { KeyboardLayout, KeyDef } from '@/layouts/aula-f75'
+import type { ViewMode } from '@/features/devices/store'
+import type { KeyboardLayout } from '@/layouts/aula-f75'
 import { ru } from '@/i18n/ru'
-import { cn } from '@/lib/utils'
+import { capStyleOf, deviceTheme } from '@/styles/device-theme'
 
-/** Отступ корпуса вокруг клавиш, в юнитах */
-export const KEYBOARD_PADDING = 0.35
-/** Зазор между клавишами, в юнитах */
-const KEY_GAP = 0.08
+const { case: caseTheme, cap, legend, knob: knobTheme, state } = deviceTheme
 
-interface KeyboardProps {
+/** Верхняя грань в 2D: отступы от основания, в юнитах (1em = 1u) */
+const TOP_STYLE: CSSProperties = {
+  top: `${cap.topInset.top}em`,
+  left: `${cap.topInset.side}em`,
+  right: `${cap.topInset.side}em`,
+  bottom: `${cap.topInset.bottom}em`,
+  borderRadius: `${cap.topRadius}em`,
+}
+
+export interface KeyboardProps {
   layout: KeyboardLayout
   /** Размер юнита, px */
   unit: number
   labelLang: LabelLang
+  view: ViewMode
   selected: ReadonlySet<InputCode>
   pressed: ReadonlySet<InputCode>
   onSelect: (code: InputCode, mods: ClickModifiers) => void
 }
 
-function KeyLabels({ keyDef, labelLang }: { keyDef: KeyDef; labelLang: LabelLang }) {
-  const { en, ru: ruLabel } = keyDef.label
-  if (!ruLabel) {
-    return <span className="absolute top-[0.35em] left-[0.45em] leading-none">{en}</span>
-  }
-  // FR-04: подписи активного языка яркие, второго — бледные
-  return (
-    <>
-      <span
-        className={cn(
-          'absolute top-[0.35em] left-[0.45em] leading-none',
-          labelLang !== 'en' && 'opacity-35',
-        )}
-      >
-        {en}
-      </span>
-      <span
-        className={cn(
-          'absolute right-[0.45em] bottom-[0.3em] leading-none text-(--key-label-alt)',
-          labelLang !== 'ru' && 'opacity-35',
-        )}
-      >
-        {ruLabel}
-      </span>
-    </>
-  )
+/** Клавиатура AULA F75 (FR-01). Раскладка и тема — данные, компонент только рисует */
+export function Keyboard(props: KeyboardProps) {
+  return props.view === '3d' ? <Keyboard3D {...props} /> : <Keyboard2D {...props} />
 }
 
-/** Клавиатура AULA F75 (FR-01). Раскладка — данные, компонент только рисует */
-export function Keyboard({ layout, unit, labelLang, selected, pressed, onSelect }: KeyboardProps) {
-  const pad = KEYBOARD_PADDING * unit
-  const gap = KEY_GAP * unit
+function Keyboard2D({ layout, unit, labelLang, selected, pressed, onSelect }: KeyboardProps) {
+  const { bezel } = caseTheme
+  const gap = cap.gap * unit
   const style = {
-    width: (layout.width + KEYBOARD_PADDING * 2) * unit,
-    height: (layout.height + KEYBOARD_PADDING * 2) * unit,
-    fontSize: unit * 0.22,
-    borderRadius: unit * 0.3,
-    '--case-depth': `${unit * 0.45}px`,
+    width: keyboardWidth(layout) * unit,
+    height: (bezel.top + layout.height + bezel.bottom) * unit,
+    fontSize: unit,
+    fontFamily: legend.font,
+    borderRadius: `${caseTheme.radius}em`,
+    '--case': caseTheme.color,
+    '--cap-radius': `${cap.radius}em`,
+    '--disabled-opacity': state.disabledOpacity,
+    '--ring': `${state.selected.width}em solid ${state.selected.color}`,
   } as CSSProperties
+
+  const toX = (x: number) => (bezel.left + x) * unit
+  const toY = (y: number) => (bezel.top + y) * unit
+  const knobInset = cap.topInset.side
 
   return (
     <div role="group" aria-label={ru.devices.keyboard} className="device-body" style={style}>
-      <div className="device-body-front" aria-hidden="true" />
-      {layout.knob && (
+      {keyWells(layout).map((w) => (
         <div
-          role="img"
-          aria-label={`${ru.devices.knob}. ${ru.devices.notAssignable}`}
-          className="absolute rounded-full bg-(--knob) shadow-[inset_0_-0.2em_0.4em_oklch(0_0_0/35%)]"
+          key={`${w.x}-${w.y}`}
+          aria-hidden="true"
+          className="absolute"
           style={{
-            left: pad + (layout.knob.cx - layout.knob.d / 2) * unit,
-            top: pad + (layout.knob.cy - layout.knob.d / 2) * unit,
-            width: layout.knob.d * unit,
-            height: layout.knob.d * unit,
-            transform: `translateZ(${unit * 0.2}px)`,
+            left: toX(w.x) - gap / 2,
+            top: toY(w.y) - gap / 2,
+            width: w.w * unit + gap,
+            height: w.h * unit + gap,
+            background: caseTheme.well,
+            borderRadius: `${cap.radius}em`,
           }}
         />
+      ))}
+      {layout.indicator && (
+        <div
+          aria-hidden="true"
+          className="absolute rounded-full"
+          style={{
+            left: toX(layout.indicator.x),
+            top: toY(layout.indicator.y),
+            width: layout.indicator.w * unit,
+            height: layout.indicator.h * unit,
+            background: deviceTheme.indicator.color,
+          }}
+        />
+      )}
+      {layout.knob && (
+        <>
+          <div
+            aria-hidden="true"
+            className="absolute rounded-full"
+            style={{
+              left: toX(layout.knob.cx - layout.knob.d / 2),
+              top: toY(layout.knob.cy - layout.knob.d / 2),
+              width: layout.knob.d * unit,
+              height: layout.knob.d * unit,
+              background: `linear-gradient(${knobTheme.side}, ${knobTheme.sideDark})`,
+              opacity: state.disabledOpacity,
+            }}
+          />
+          <div
+            role="img"
+            aria-label={`${ru.devices.knob}. ${ru.devices.notAssignable}`}
+            className="absolute rounded-full"
+            style={{
+              left: toX(layout.knob.cx - layout.knob.d / 2 + knobInset),
+              top: toY(layout.knob.cy - layout.knob.d / 2 + knobInset),
+              width: (layout.knob.d - knobInset * 2) * unit,
+              height: (layout.knob.d - knobInset * 2) * unit,
+              background: knobTheme.cap,
+              border: `${knobTheme.ringWidth}em solid ${knobTheme.ring}`,
+              opacity: state.disabledOpacity,
+            }}
+          />
+        </>
       )}
       {layout.keys.map((k) => (
         <InputCap
           key={k.code}
           code={k.code}
           kind="key"
-          left={pad + k.x * unit + gap / 2}
-          top={pad + k.y * unit + gap / 2}
+          left={toX(k.x) + gap / 2}
+          top={toY(k.y) + gap / 2}
           width={k.w * unit - gap}
           height={k.h * unit - gap}
-          depth={unit * 0.28}
           ariaLabel={k.assignable ? k.label.en : `${k.label.en}. ${ru.devices.notAssignable}`}
           selected={selected.has(k.code)}
           pressed={pressed.has(k.code)}
           disabled={!k.assignable}
+          className="key"
+          style={CAP_VARS[capStyleOf(k.code)]}
           onSelect={onSelect}
         >
-          <KeyLabels keyDef={k} labelLang={labelLang} />
+          <div className="key-top" style={TOP_STYLE}>
+            <KeyLabels keyDef={k} labelLang={labelLang} />
+          </div>
         </InputCap>
       ))}
     </div>

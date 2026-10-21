@@ -1,6 +1,16 @@
-import { useCallback, useMemo, useRef, useState, type PointerEvent } from 'react'
-import { Keyboard, KEYBOARD_PADDING } from '@/components/keyboard/keyboard'
-import { Mouse, MOUSE_PADDING } from '@/components/mouse/mouse'
+import {
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type PointerEvent,
+} from 'react'
+import { keyboardWidth } from '@/components/devices/device-geometry'
+import { keyboard3d } from '@/components/keyboard/keyboard-3d-geometry'
+import { Keyboard } from '@/components/keyboard/keyboard'
+import { Mouse } from '@/components/mouse/mouse'
+import { mouseScene } from '@/components/mouse/mouse-geometry'
 import { rectFromPoints, type Point, type Rect } from '@/domain/geometry'
 import {
   marqueeSelect,
@@ -14,6 +24,7 @@ import { keyboardLayout, mouseLayout } from '@/features/devices/devices'
 import { useDevicesStore } from '@/features/devices/store'
 import { ru } from '@/i18n/ru'
 import { useElementWidth } from '@/lib/use-element-width'
+import { deviceTheme } from '@/styles/device-theme'
 
 /** Расстояние между клавиатурой и мышью, в юнитах */
 const DEVICE_GAP = 0.8
@@ -22,10 +33,25 @@ const DRAG_THRESHOLD = 4
 /** Как долго подсвечивать прокрутку, мс (FR-01: 80–120 мс) */
 const WHEEL_PULSE_MS = 120
 const MIN_UNIT = 24
+/** Доля ширины сцены под устройства */
+const FIT = 0.98
 const MAX_UNIT = 72
 
-const TOTAL_UNITS =
-  keyboardLayout.width + KEYBOARD_PADDING * 2 + DEVICE_GAP + mouseLayout.width + MOUSE_PADDING
+/** Ширина клавиатуры и мыши вместе, в юнитах: в 3D ближний край шире */
+const TOTAL_UNITS = {
+  '2d': keyboardWidth(keyboardLayout) + DEVICE_GAP + mouseScene(mouseLayout, '2d').box.w,
+  '3d': keyboard3d(keyboardLayout).box.w + DEVICE_GAP + mouseScene(mouseLayout, '3d').box.w,
+}
+
+const { scene } = deviceTheme
+
+/** Фон сцены и тень по теме приложения */
+const SCENE_STYLE = {
+  '--scene-bg': scene.light.background,
+  '--scene-shadow': scene.light.shadow,
+  '--scene-bg-dark': scene.dark.background,
+  '--scene-shadow-dark': scene.dark.shadow,
+} as CSSProperties
 
 interface Drag {
   start: Point
@@ -70,9 +96,7 @@ export function DeviceStage() {
   const pressed = useMemo(() => new Set(pressedList), [pressedList])
 
   const width = useElementWidth(containerRef)
-  // В 3D ближний край крупнее из-за перспективы — оставляем запас
-  const fit = view === '3d' ? 0.9 : 0.98
-  const unit = Math.min(MAX_UNIT, Math.max(MIN_UNIT, (width * fit) / TOTAL_UNITS))
+  const unit = Math.min(MAX_UNIT, Math.max(MIN_UNIT, (width * FIT) / TOTAL_UNITS[view]))
 
   const onSelect = useCallback(
     (code: InputCode, mods: ClickModifiers) => {
@@ -132,18 +156,20 @@ export function DeviceStage() {
       role="region"
       aria-label={ru.devices.stage}
       data-testid="device-stage"
-      className="device-scene relative flex min-h-0 flex-1 touch-none items-center justify-center overflow-hidden bg-(--stage) select-none"
+      className="device-scene relative flex min-h-0 flex-1 touch-none items-center justify-center overflow-hidden select-none"
+      style={SCENE_STYLE}
       data-view={view}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerUp}
     >
-      <div className="device-plane flex items-start" style={{ gap: DEVICE_GAP * unit }}>
+      <div className="flex items-center" style={{ gap: DEVICE_GAP * unit }}>
         <Keyboard
           layout={keyboardLayout}
           unit={unit}
           labelLang={labelLang}
+          view={view}
           selected={selected}
           pressed={pressed}
           onSelect={onSelect}
@@ -151,6 +177,7 @@ export function DeviceStage() {
         <Mouse
           layout={mouseLayout}
           unit={unit}
+          view={view}
           selected={selected}
           pressed={pressed}
           onSelect={onSelect}
