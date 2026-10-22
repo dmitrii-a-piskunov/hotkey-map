@@ -30,4 +30,15 @@ export const ru = {
       WheelDown: 'Mouse wheel down',
     },
   },
+  /** Ошибки целостности данных: показываются в списке ошибок импорта */
+  dataErrors: {
+    duplicateId: 'Повторяющийся идентификатор',
+    globalContext: 'В игре должен быть ровно один контекст «Везде»',
+    unknownContext: 'Ссылка на несуществующий контекст',
+    unknownCategory: 'Ссылка на несуществующую категорию',
+    unknownAction: 'Бинд ссылается на несуществующее действие',
+    unknownOption: 'Ссылка на несуществующий вариант',
+    inputInTwoGroups: 'Клавиша входит в две группы профиля',
+    duplicateGameName: 'Игра с таким названием уже есть',
+  },
 } as const
