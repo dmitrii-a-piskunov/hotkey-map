@@ -116,6 +116,15 @@
     filter: drop-shadow(0 0.6em 0.8em var(--shadow));
   }
 
+  /* Тень мыши: в 3D — как у SVG клавиатуры, в 2D — близко к тени корпуса 2D (em = юнит) */
+  .mouse-shadow {
+    filter: drop-shadow(0 0.6em 0.8em var(--shadow));
+  }
+
+  .mouse-shadow[data-view='2d'] {
+    filter: drop-shadow(0 0.2em 0.4em var(--shadow));
+  }
+
   .cap {
     position: absolute;
     cursor: pointer;

@@ -40,6 +40,9 @@ export interface Callout {
   side: 'left' | 'right'
 }
 
+/** Точек на дуге линии раздела кнопок */
+const CURVE_SAMPLES = 32
+
 /** Сколько полосок на колесе */
 const WHEEL_TREADS = 6
 /** Полоска колеса короче его ширины — доля ширины */
@@ -58,8 +61,11 @@ export interface MouseScene {
    * боковые кнопки с зазором, которые обводка выделения огибает
    */
   buttons: { code: MouseInputCode; region: Vec[]; notches: Vec[][] }[]
-  /** Зоны клика */
-  zones: { input: MouseInputDef; box: Bounds }[]
+  /**
+   * Зоны клика. У кнопок корпуса — ещё и контур (clip): зона обрезается по
+   * дуге линии раздела, клик ниже дуги кнопку не нажимает
+   */
+  zones: { input: MouseInputDef; box: Bounds; clip?: Vec[] }[]
   /** Подписи боковых кнопок слева, колеса — справа */
   callouts: Callout[]
   /** Блик для радиального градиента в 3D */
@@ -102,9 +108,22 @@ export function mouseScene(layout: MouseLayout, view: ViewMode): MouseScene {
     const y = ws.y + (ws.h * (i + 1)) / (WHEEL_TREADS + 1)
     return [map({ x: width / 2 - treadHalf, y }), map({ x: width / 2 + treadHalf, y })]
   })
+  // Линия раздела кнопок и корпуса: у боков — на splitY, в центре — глубже
+  const { depth2d, depth3d } = theme.buttonCurve
+  const depth = view === '3d' ? depth3d : depth2d
+  const curveY = (x: number) => {
+    const u = (x - width / 2) / (width / 2)
+    return splitY + depth * Math.sqrt(Math.max(0, 1 - u * u))
+  }
+  const curve = (x0: number, x1: number) =>
+    Array.from({ length: CURVE_SAMPLES + 1 }, (_, i) => {
+      const x = x0 + ((x1 - x0) * i) / CURVE_SAMPLES
+      return { x, y: curveY(x) }
+    })
+  const split = mapAll(curve(0, width))
   const seams: [Vec, Vec][] = [
-    [map({ x: 0, y: splitY }), map({ x: width, y: splitY })],
-    [map({ x: width / 2, y: 0 }), map({ x: width / 2, y: splitY })],
+    ...split.slice(1).map((p, i): [Vec, Vec] => [split[i] ?? p, p]),
+    [map({ x: width / 2, y: 0 }), map({ x: width / 2, y: curveY(width / 2) })],
   ]
   const plainOutline = mouseOutline(width, height, theme.shape)
   // Зазор между обводкой кнопки и боковой кнопкой — толщина обводки
@@ -113,12 +132,13 @@ export function mouseScene(layout: MouseLayout, view: ViewMode): MouseScene {
   const buttons = layout.inputs
     .filter((i) => i.kind === 'button')
     .map((b) => {
-      const area = rect(b.x, b.y, b.w, splitY - b.y)
+      // Над дугой: верх кнопки и дуга справа налево — выпуклая фигура для отсечения
+      const area = [{ x: b.x, y: b.y }, { x: b.x + b.w, y: b.y }, ...curve(b.x + b.w, b.x)]
       const notches = sideInputs
         .filter((s) =>
           intersects(
             { x: s.x - gap, y: s.y - gap, w: s.w + gap * 2, h: s.h + gap * 2 },
-            { x: b.x, y: b.y, w: b.w, h: splitY - b.y },
+            { x: b.x, y: b.y, w: b.w, h: curveY(b.x + b.w / 2) - b.y },
           ),
         )
         .map((s) =>
@@ -127,8 +147,9 @@ export function mouseScene(layout: MouseLayout, view: ViewMode): MouseScene {
       return { code: b.code, region: mapAll(clipPolygon(plainOutline, area)), notches }
     })
   const zones = layout.inputs.map((input) => {
-    const h = input.kind === 'button' ? splitY - input.y : input.h
-    return { input, box: boundsOf(mapAll(rect(input.x, input.y, input.w, h))) }
+    const region = buttons.find((b) => b.code === input.code)?.region
+    if (region) return { input, box: boundsOf(region), clip: region }
+    return { input, box: boundsOf(mapAll(rect(input.x, input.y, input.w, input.h))) }
   })
   const texts: Partial<Record<MouseInputCode, string>> = ru.devices.mouseCallouts
   const callouts = layout.inputs.flatMap((input): Callout[] => {

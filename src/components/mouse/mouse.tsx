@@ -34,6 +34,21 @@ export function Mouse({ layout, unit, view, selected, pressed, onSelect }: Mouse
     [unit],
   )
 
+  // Зоны кнопок корпуса обрезаны по дуге линии раздела: клик ниже неё — мимо кнопки
+  const zoneStyles = useMemo(
+    () =>
+      new Map(
+        scene.zones.map(({ input, box: z, clip }) => {
+          if (!clip) return [input.code, zoneStyle]
+          const points = clip
+            .map((p) => `${((p.x - z.x) * unit).toFixed(1)}px ${((p.y - z.y) * unit).toFixed(1)}px`)
+            .join(', ')
+          return [input.code, { ...zoneStyle, clipPath: `polygon(${points})` }]
+        }),
+      ),
+    [scene, unit, zoneStyle],
+  )
+
   const { box } = scene
   const is3d = view === '3d'
   const pts = (p: Vec[]) => svgPoints(p, box, unit)
@@ -108,17 +123,14 @@ export function Mouse({ layout, unit, view, selected, pressed, onSelect }: Mouse
             </feMerge>
           </filter>
         </defs>
-        {scene.sides.map((s, i) => (
-          <polygon key={i} points={pts(s)} fill={theme.side} />
-        ))}
-        <polygon
-          points={outline}
-          fill={is3d ? `url(#${id}-shade)` : theme.body}
-          filter={is3d ? `url(#${id}-rim)` : undefined}
-          // В 3D край задаёт затемнение по контуру, обводка не нужна
-          stroke={is3d ? undefined : theme.edge}
-          strokeWidth={unit * 0.04}
-        />
+        {/* Тень корпуса — как у клавиатуры: в 3D та же, что у её SVG, в 2D — как у корпуса 2D */}
+        <g className="mouse-shadow" data-view={view} style={is3d ? undefined : { fontSize: unit }}>
+          {scene.sides.map((s, i) => (
+            <polygon key={i} points={pts(s)} fill={theme.side} />
+          ))}
+          {/* Объём — градиент и затемнение по краю, одинаково в 2D и 3D */}
+          <polygon points={outline} fill={`url(#${id}-shade)`} filter={`url(#${id}-rim)`} />
+        </g>
         <g stroke={theme.seam} strokeWidth={unit * 0.03} clipPath={`url(#${id}-body)`}>
           {scene.seams.map(line)}
         </g>
@@ -205,7 +217,7 @@ export function Mouse({ layout, unit, view, selected, pressed, onSelect }: Mouse
           selected={selected.has(input.code)}
           pressed={pressed.has(input.code)}
           className={input.kind === 'button' ? 'mouse-zone' : 'mouse-zone mouse-zone-ring'}
-          style={zoneStyle}
+          style={zoneStyles.get(input.code) ?? zoneStyle}
           onSelect={onSelect}
         />
       ))}
