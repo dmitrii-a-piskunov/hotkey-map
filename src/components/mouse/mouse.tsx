@@ -60,6 +60,7 @@ export function Mouse({ layout, unit, view, selected, pressed, onSelect }: Mouse
   }
   const outline = pts(scene.outline)
   const hl = at(scene.highlight.center)
+  const front = scene.frontShade && { from: at(scene.frontShade.from), to: at(scene.frontShade.to) }
   const ringWidth = state.selected.width * unit
   const { shading } = theme
 
@@ -111,6 +112,23 @@ export function Mouse({ layout, unit, view, selected, pressed, onSelect }: Mouse
             <stop offset="0" stopColor={shading.highlight.color} />
             <stop offset="1" stopColor={shading.mid} />
           </radialGradient>
+          {front && (
+            <linearGradient
+              id={`${id}-front`}
+              gradientUnits="userSpaceOnUse"
+              x1={front.from.x}
+              y1={front.from.y}
+              x2={front.to.x}
+              y2={front.to.y}
+            >
+              <stop
+                offset="0"
+                stopColor={shading.frontShade.color}
+                stopOpacity={shading.frontShade.opacity}
+              />
+              <stop offset="1" stopColor={shading.frontShade.color} stopOpacity={0} />
+            </linearGradient>
+          )}
           {/* Затемнение по контуру: размытая внешняя область, оставленная внутри силуэта */}
           <filter id={`${id}-rim`} x="-10%" y="-10%" width="120%" height="120%">
             <feFlood floodColor={shading.edge} />
@@ -130,6 +148,7 @@ export function Mouse({ layout, unit, view, selected, pressed, onSelect }: Mouse
           ))}
           {/* Объём — градиент и затемнение по краю, одинаково в 2D и 3D */}
           <polygon points={outline} fill={`url(#${id}-shade)`} filter={`url(#${id}-rim)`} />
+          {front && <polygon points={outline} fill={`url(#${id}-front)`} />}
         </g>
         <g stroke={theme.seam} strokeWidth={unit * 0.03} clipPath={`url(#${id}-body)`}>
           {scene.seams.map(line)}

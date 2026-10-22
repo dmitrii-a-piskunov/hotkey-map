@@ -70,6 +70,8 @@ export interface MouseScene {
   callouts: Callout[]
   /** Блик для радиального градиента в 3D */
   highlight: { center: Vec; radius: number }
+  /** 3D: затемнение переда — линейный градиент от переднего края назад */
+  frontShade?: { from: Vec; to: Vec }
 }
 
 function rect(x: number, y: number, w: number, h: number): Vec[] {
@@ -120,12 +122,47 @@ export function mouseScene(layout: MouseLayout, view: ViewMode): MouseScene {
       const x = x0 + ((x1 - x0) * i) / CURVE_SAMPLES
       return { x, y: curveY(x) }
     })
-  const split = mapAll(curve(0, width))
+  const plainOutline = mouseOutline(width, height, theme.shape)
+  // Контур кнопок: силуэт, сжатый по ширине, — по бокам остаётся полоска
+  // корпуса, к переду она сходит на нет
+  const inset = theme.buttonInset
+  const squeeze = (width - inset * 2) / width
+  const buttonsOutline = plainOutline.map((p) => ({
+    x: width / 2 + (p.x - width / 2) * squeeze,
+    y: p.y,
+  }))
+  const segments = (pts: Vec[], closed: boolean) =>
+    pts
+      .slice(0, closed ? undefined : -1)
+      .map((p, i): [Vec, Vec] => [p, pts[(i + 1) % pts.length] ?? p])
+  const split = mapAll(curve(inset, width - inset))
+  // Шов вдоль полосок: часть контура кнопок от переда до линии раздела
+  const above = (p: Vec) => p.y <= curveY(p.x)
+  // Точка отрезка на дуге — делением пополам: прямой бок пересекает дугу посередине
+  const onCurve = (inside: Vec, outside: Vec): Vec => {
+    let [lo, hi] = [0, 1]
+    for (let i = 0; i < 24; i++) {
+      const t = (lo + hi) / 2
+      const p = {
+        x: inside.x + (outside.x - inside.x) * t,
+        y: inside.y + (outside.y - inside.y) * t,
+      }
+      if (above(p)) lo = t
+      else hi = t
+    }
+    return { x: inside.x + (outside.x - inside.x) * lo, y: inside.y + (outside.y - inside.y) * lo }
+  }
+  const stripSeams = segments(buttonsOutline, true).flatMap(([a, b]): [Vec, Vec][] => {
+    if (above(a) && above(b)) return [[map(a), map(b)]]
+    if (above(a)) return [[map(a), map(onCurve(a, b))]]
+    if (above(b)) return [[map(onCurve(b, a)), map(b)]]
+    return []
+  })
   const seams: [Vec, Vec][] = [
-    ...split.slice(1).map((p, i): [Vec, Vec] => [split[i] ?? p, p]),
+    ...segments(split, false),
+    ...stripSeams,
     [map({ x: width / 2, y: 0 }), map({ x: width / 2, y: curveY(width / 2) })],
   ]
-  const plainOutline = mouseOutline(width, height, theme.shape)
   // Зазор между обводкой кнопки и боковой кнопкой — толщина обводки
   const gap = state.selected.width
   const sideInputs = layout.inputs.filter((i) => i.kind === 'side')
@@ -144,7 +181,7 @@ export function mouseScene(layout: MouseLayout, view: ViewMode): MouseScene {
         .map((s) =>
           mapAll(roundedRect(s.x - gap, s.y - gap, s.w + gap * 2, s.h + gap * 2, s.w / 2 + gap)),
         )
-      return { code: b.code, region: mapAll(clipPolygon(plainOutline, area)), notches }
+      return { code: b.code, region: mapAll(clipPolygon(buttonsOutline, area)), notches }
     })
   const zones = layout.inputs.map((input) => {
     const region = buttons.find((b) => b.code === input.code)?.region
@@ -170,7 +207,7 @@ export function mouseScene(layout: MouseLayout, view: ViewMode): MouseScene {
       { x, y: c.to.y + CALLOUT_SIZE / 2 },
     ]
   })
-  const hl = theme.shading.highlight
+  const hl = view === '3d' ? theme.shading.highlight.tilted : theme.shading.highlight.top
   const hy = height * hl.y
   const highlight = {
     center: map({ x: width * hl.x, y: hy }),
@@ -188,5 +225,13 @@ export function mouseScene(layout: MouseLayout, view: ViewMode): MouseScene {
     zones,
     callouts,
     highlight,
+    ...(view === '3d'
+      ? {
+          frontShade: {
+            from: map({ x: width / 2, y: 0 }),
+            to: map({ x: width / 2, y: height * theme.shading.frontShade.length }),
+          },
+        }
+      : {}),
   }
 }
