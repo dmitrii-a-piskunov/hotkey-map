@@ -5,6 +5,8 @@ import type { LabelMode } from '@/domain/input'
 import type { InputMode, ViewMode } from '@/domain/types'
 import { useDataStore, useSettings } from '@/features/data/store'
 import { useDevicesStore } from '@/features/devices/store'
+import { GamePicker } from '@/features/games/game-picker'
+import { ProfilePicker } from '@/features/profiles/profile-picker'
 import { SaveStatusIndicator } from '@/features/persistence/storage-banners'
 import { ru } from '@/i18n/ru'
 
@@ -68,6 +70,10 @@ export function AppHeader() {
         <Keyboard className="size-5 text-muted-foreground" aria-hidden="true" />
         <h1 className="text-base font-semibold tracking-tight">{ru.app.title}</h1>
         <span className="text-xs text-muted-foreground">{__APP_VERSION__}</span>
+      </div>
+      <div className="flex min-w-0 items-center gap-1 border-l pl-3">
+        <GamePicker />
+        <ProfilePicker />
       </div>
       <div className="ml-auto flex items-center gap-3">
         <SaveStatusIndicator />

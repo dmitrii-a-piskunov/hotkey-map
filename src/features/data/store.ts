@@ -1,7 +1,11 @@
 /**
  * Данные приложения — содержимое data.json (ТЗ, раздел 9.1). Каждое
  * изменение заменяет объект data целиком: сессия хранения сравнивает ссылки
- * и запускает автосохранение (FR-19). Отмена и повтор (zundo) — на этапе 5.
+ * и запускает автосохранение (FR-19).
+ *
+ * Изменения игр и профилей идут только через apply: это одно место, которое
+ * на этапе 5 обернёт отмена и повтор (zundo, FR-24). Сами изменения — чистые
+ * функции из src/domain, команды интерфейса — в src/features/games/commands.
  */
 
 import { create } from 'zustand'
@@ -12,6 +16,8 @@ interface DataState {
   data: AppData
   /** Данные, загруженные из хранилища или восстановленные из копии */
   replaceData: (data: AppData) => void
+  /** Изменение данных чистой функцией; тот же объект в ответ — изменений нет */
+  apply: (change: (data: AppData) => AppData) => void
   updateSettings: (patch: Partial<AppSettings>) => void
 }
 
@@ -20,6 +26,12 @@ export const useDataStore = create<DataState>()((set) => ({
 
   replaceData: (data) => {
     set({ data })
+  },
+  apply: (change) => {
+    set((s) => {
+      const data = change(s.data)
+      return data === s.data ? s : { data }
+    })
   },
   updateSettings: (patch) => {
     set((s) => {

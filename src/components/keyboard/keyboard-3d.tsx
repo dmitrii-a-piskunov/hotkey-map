@@ -22,6 +22,7 @@ import {
   type Keyboard3d,
 } from '@/components/keyboard/keyboard-3d-geometry'
 import type { LabelMode } from '@/domain/input'
+import { useBlockedKeys } from '@/features/devices/blocked-keys'
 import type { ClickModifiers, InputCode } from '@/domain/selection'
 import type { KeyDef } from '@/layouts/aula-f75'
 import { ru } from '@/i18n/ru'
@@ -57,6 +58,8 @@ const Key3D = memo(function Key3D({
   onSelect,
 }: Key3DProps) {
   const style = capStyleOf(k.code)
+  const blockedKeys = useBlockedKeys()
+  const off = !k.assignable || blockedKeys.includes(k.code)
   const { box, topSize } = shape
   // Форма грани через CSS-свойство d: при нажатии она плавно меняется
   const face = (p: Vec[], fill: string): CSSProperties => ({
@@ -83,10 +86,10 @@ const Key3D = memo(function Key3D({
       top={(box.y - origin.y) * unit}
       width={box.w * unit}
       height={box.h * unit}
-      ariaLabel={k.assignable ? k.label.en : `${k.label.en}. ${ru.devices.notAssignable}`}
+      ariaLabel={off ? `${k.label.en}. ${ru.devices.notAssignable}` : k.label.en}
       selected={selected}
       pressed={pressed}
-      disabled={!k.assignable}
+      disabled={off}
       className="cap3d"
       hintPlacement={hintPlacementOf(k)}
       style={CAP_VARS[style]}

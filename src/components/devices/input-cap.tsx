@@ -1,6 +1,8 @@
 import { memo, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import type { ClickModifiers, InputCode } from '@/domain/selection'
+import { useCurrentGameName } from '@/features/devices/blocked-keys'
 import { ru } from '@/i18n/ru'
+import { fill } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 export interface InputCapProps {
@@ -47,6 +49,8 @@ export const InputCap = memo(function InputCap({
   // красная рамка, штриховка и подсказка. Выделенный такой вход остаётся
   // красным и после отпускания, подсказка — только при удержании
   const [holding, setHolding] = useState(false)
+  // FR-01: «Эта клавиша не передаётся в Dota 2»; без игр — общий текст
+  const gameName = useCurrentGameName()
   const stopReject = useRef<(() => void) | null>(null)
   useEffect(() => () => stopReject.current?.(), [])
 
@@ -94,7 +98,9 @@ export const InputCap = memo(function InputCap({
       {children}
       {holding && (
         <span role="status" className="cap-hint" data-place={hintPlacement}>
-          {ru.devices.notPassedToGames}
+          {gameName === undefined
+            ? ru.devices.notPassedToGames
+            : fill(ru.devices.notPassedToGame, { game: gameName })}
         </span>
       )}
     </div>

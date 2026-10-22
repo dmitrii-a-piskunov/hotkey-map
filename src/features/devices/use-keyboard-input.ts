@@ -25,7 +25,9 @@ const TRACKED_BUTTONS = new Set([1, 3, 4])
 function isEditableTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false
   if (target.isContentEditable) return true
-  return ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)
+  if (['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)) return true
+  // Диалоги и меню (редактор игры, профили) работают с клавиатуры сами (8.5)
+  return target.closest('[role="dialog"], [role="alertdialog"], [role="menu"]') !== null
 }
 
 export function useKeyboardInput(): void {

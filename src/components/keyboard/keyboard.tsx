@@ -7,6 +7,7 @@ import { Keyboard3D } from '@/components/keyboard/keyboard-3d'
 import type { LabelMode } from '@/domain/input'
 import type { ClickModifiers, InputCode } from '@/domain/selection'
 import type { ViewMode } from '@/domain/types'
+import { useBlockedKeys } from '@/features/devices/blocked-keys'
 import type { KeyboardLayout } from '@/layouts/aula-f75'
 import { ru } from '@/i18n/ru'
 import { capStyleOf, deviceTheme } from '@/styles/device-theme'
@@ -49,6 +50,7 @@ export function Keyboard(props: KeyboardProps) {
 }
 
 function Keyboard2D({ layout, unit, labelLang, selected, pressed, onSelect }: KeyboardProps) {
+  const blockedKeys = useBlockedKeys()
   const { bezel } = caseTheme
   const gap = cap.gap * unit
   const style = {
@@ -119,29 +121,32 @@ function Keyboard2D({ layout, unit, labelLang, selected, pressed, onSelect }: Ke
           <div className="knob-top" style={KNOB_TOP_STYLE} />
         </InputCap>
       )}
-      {layout.keys.map((k) => (
-        <InputCap
-          key={k.code}
-          code={k.code}
-          kind="key"
-          left={toX(k.x) + gap / 2}
-          top={toY(k.y) + gap / 2}
-          width={k.w * unit - gap}
-          height={k.h * unit - gap}
-          ariaLabel={k.assignable ? k.label.en : `${k.label.en}. ${ru.devices.notAssignable}`}
-          selected={selected.has(k.code)}
-          pressed={pressed.has(k.code)}
-          disabled={!k.assignable}
-          className="key"
-          hintPlacement={hintPlacementOf(k)}
-          style={CAP_VARS[capStyleOf(k.code)]}
-          onSelect={onSelect}
-        >
-          <div className="key-top" style={TOP_STYLE}>
-            <KeyLabels keyDef={k} labelLang={labelLang} />
-          </div>
-        </InputCap>
-      ))}
+      {layout.keys.map((k) => {
+        const off = !k.assignable || blockedKeys.includes(k.code)
+        return (
+          <InputCap
+            key={k.code}
+            code={k.code}
+            kind="key"
+            left={toX(k.x) + gap / 2}
+            top={toY(k.y) + gap / 2}
+            width={k.w * unit - gap}
+            height={k.h * unit - gap}
+            ariaLabel={off ? `${k.label.en}. ${ru.devices.notAssignable}` : k.label.en}
+            selected={selected.has(k.code)}
+            pressed={pressed.has(k.code)}
+            disabled={off}
+            className="key"
+            hintPlacement={hintPlacementOf(k)}
+            style={CAP_VARS[capStyleOf(k.code)]}
+            onSelect={onSelect}
+          >
+            <div className="key-top" style={TOP_STYLE}>
+              <KeyLabels keyDef={k} labelLang={labelLang} />
+            </div>
+          </InputCap>
+        )
+      })}
     </div>
   )
 }

@@ -15,7 +15,7 @@ import {
   type InputCode,
   type SelectionState,
 } from '@/domain/selection'
-import { selectableInputs } from './devices'
+import { currentSelectableInputs } from './blocked-keys'
 
 interface DevicesData {
   selection: SelectionState
@@ -46,11 +46,16 @@ export const useDevicesStore = create<DevicesState>()((set) => ({
   ...initialDevicesData,
 
   click: (code, mods) => {
-    set((s) => ({ selection: clickSelect(s.selection, code, mods, selectableInputs) }))
+    set((s) => ({ selection: clickSelect(s.selection, code, mods, currentSelectableInputs()) }))
   },
   selectOnly: (code) => {
     set((s) => ({
-      selection: clickSelect(s.selection, code, { ctrl: false, shift: false }, selectableInputs),
+      selection: clickSelect(
+        s.selection,
+        code,
+        { ctrl: false, shift: false },
+        currentSelectableInputs(),
+      ),
     }))
   },
   setSelection: (selection) => {
@@ -60,7 +65,7 @@ export const useDevicesStore = create<DevicesState>()((set) => ({
     set({ selection: emptySelection })
   },
   navigate: (dir, extend) => {
-    set((s) => ({ selection: navigate(s.selection, dir, extend, selectableInputs) }))
+    set((s) => ({ selection: navigate(s.selection, dir, extend, currentSelectableInputs()) }))
   },
   selectAllOccupied: () => {
     // Биндов пока нет (этап 4), поэтому занятых клавиш нет
