@@ -102,7 +102,7 @@ export interface GeneralDraft {
   rules: GameRules
 }
 
-/** Непередаваемые клавиши: Fn, Win и регулятор — всегда (FR-01) */
+/** Непередаваемые клавиши: Fn и регулятор — всегда (FR-01) */
 export function normalizeBlockedKeys(codes: readonly string[]): string[] {
   return [...new Set([...DEFAULT_BLOCKED_KEYS, ...codes])]
 }
@@ -122,6 +122,11 @@ export function setGeneral(game: Game, draft: GeneralDraft): Game {
       blockedKeys: normalizeBlockedKeys(draft.rules.blockedKeys),
     },
   }
+}
+
+/** AppID из ярлыка Steam: только если у игры его ещё нет */
+export function fillSteamAppId(game: Game, appId: number): Game {
+  return game.steamAppId === undefined ? { ...game, steamAppId: appId } : game
 }
 
 export function setGameIcon(game: Game, icon: string | undefined): Game {

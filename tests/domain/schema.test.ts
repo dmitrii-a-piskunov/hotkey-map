@@ -52,7 +52,7 @@ describe('appDataSchema', () => {
     delete at(profiles, 0).keyGroups
     const parsed = appDataSchema.parse({ ...createAppData(), games: [raw] })
     const parsedGame = at(parsed.games, 0)
-    expect(parsedGame.rules.blockedKeys).toEqual(['Fn', 'MetaLeft', 'Knob'])
+    expect(parsedGame.rules.blockedKeys).toEqual(['Fn', 'Knob'])
     expect(at(parsedGame.profiles, 0).keyGroups).toEqual([])
   })
 

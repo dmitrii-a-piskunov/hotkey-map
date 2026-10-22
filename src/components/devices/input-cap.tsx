@@ -45,7 +45,7 @@ export const InputCap = memo(function InputCap({
   onSelect,
   children,
 }: InputCapProps) {
-  // Неназначаемый вход (Fn, Win, регулятор): пока зажата левая кнопка мыши —
+  // Неназначаемый вход (Fn, регулятор, непередаваемые клавиши игры): пока зажата левая кнопка мыши —
   // красная рамка, штриховка и подсказка. Выделенный такой вход остаётся
   // красным и после отпускания, подсказка — только при удержании
   const [holding, setHolding] = useState(false)
@@ -85,7 +85,7 @@ export const InputCap = memo(function InputCap({
       className={cn('cap', className)}
       style={{ left, top, width, height, ...style }}
       onPointerDown={(e) => {
-        // Рамку и анимацию нажатия ведёт сцена; здесь только отказ для Fn, Win, регулятора
+        // Рамку и анимацию нажатия ведёт сцена; здесь только отказ для непередаваемых клавиш
         if (disabled && e.button === 0) startReject()
       }}
       onClick={(e) => {

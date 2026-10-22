@@ -7,33 +7,44 @@ import { usePersistence } from '@/features/persistence/persistence-context'
 import type { PersistenceSession } from '@/features/persistence/session'
 import { ru } from '@/i18n/ru'
 import { cn } from '@/lib/utils'
-import { setGameIconCmd } from '../commands'
+import { fillSteamAppIdCmd, setGameIconCmd } from '../commands'
 import { GameIcon } from '../game-icon'
 import { saveGameIcon } from '../icon-cache'
 import {
-  iconFromFile,
+  droppedFile,
+  iconFromAnyFile,
   IconImageError,
-  imageFile,
   steamPreviews,
   type SteamPreview,
 } from '../icon-image'
 
 const t = ru.editor.general
 
-const ERRORS = { type: t.iconType, size: t.iconSize, decode: t.iconDecode } as const
+const ERRORS = {
+  type: t.iconType,
+  size: t.iconSize,
+  decode: t.iconDecode,
+  shortcut: t.iconShortcut,
+  steam: t.steamFailed,
+} as const
 
 interface PreviewUrl extends SteamPreview {
   url: string
 }
 
-/** Картинка из файла → PNG 128×128 в icons/; ответ — текст ошибки или null */
+/**
+ * Картинка или ярлык Steam → PNG 128×128 в icons/; ответ — текст ошибки или
+ * null. AppID из ярлыка записывается игре, если его ещё нет.
+ */
 async function saveFromFile(
   session: PersistenceSession,
   gameId: string,
   file: File,
 ): Promise<string | null> {
   try {
-    await saveGameIcon(session, gameId, await iconFromFile(file))
+    const { png, appId } = await iconFromAnyFile(file)
+    await saveGameIcon(session, gameId, png)
+    if (appId !== undefined) fillSteamAppIdCmd(gameId, appId)
     return null
   } catch (e) {
     if (e instanceof IconImageError) return ERRORS[e.reason]
@@ -43,9 +54,9 @@ async function saveFromFile(
 }
 
 /**
- * Иконка игры (FR-05): перетащить картинку, вставить из буфера (Ctrl+V,
- * пока открыта вкладка), выбрать файл или загрузить из Steam по AppID с
- * выбором варианта кликом.
+ * Иконка игры (FR-05): перетащить картинку или ярлык игры Steam, вставить
+ * из буфера (Ctrl+V, пока открыта вкладка), выбрать файл или загрузить из
+ * Steam по AppID с выбором варианта кликом.
  */
 export function IconField({ game, steamAppId }: { game: Game; steamAppId: number | undefined }) {
   const session = usePersistence()
@@ -74,7 +85,7 @@ export function IconField({ game, steamAppId }: { game: Game; steamAppId: number
   const gameId = game.id
   useEffect(() => {
     function onPaste(e: ClipboardEvent) {
-      const file = imageFile(e.clipboardData)
+      const file = droppedFile(e.clipboardData)
       if (!file) return
       e.preventDefault()
       setError(null)
@@ -128,7 +139,7 @@ export function IconField({ game, steamAppId }: { game: Game; steamAppId: number
         onDrop={(e) => {
           e.preventDefault()
           setDragOver(false)
-          void applyFile(imageFile(e.dataTransfer))
+          void applyFile(droppedFile(e.dataTransfer))
         }}
       >
         <GameIcon game={game} className="size-16 text-2xl" />
@@ -173,7 +184,7 @@ export function IconField({ game, steamAppId }: { game: Game; steamAppId: number
         <input
           ref={fileInput}
           type="file"
-          accept="image/png,image/jpeg,image/webp,image/x-icon,.ico"
+          accept="image/png,image/jpeg,image/webp,image/x-icon,.ico,.url"
           className="hidden"
           data-testid="icon-file"
           onChange={(e) => {

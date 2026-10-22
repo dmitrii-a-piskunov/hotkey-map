@@ -116,6 +116,15 @@ export function GeneralTab({ game }: { game: Game }) {
   const [justSaved, setJustSaved] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
 
+  // AppID пришёл из ярлыка Steam: показываем его в пустом поле
+  const [seenAppId, setSeenAppId] = useState(game.steamAppId)
+  if (game.steamAppId !== seenAppId) {
+    setSeenAppId(game.steamAppId)
+    if (game.steamAppId !== undefined && draft.steamAppId.trim() === '') {
+      setDraft({ ...draft, steamAppId: String(game.steamAppId) })
+    }
+  }
+
   const nameError = nameErrorText(gameNameError(data, draft.name, game.id), LIMITS.game)
   const appId = parseSteamAppId(draft.steamAppId)
   const appIdError = appId.error ? t.steamAppIdError : null

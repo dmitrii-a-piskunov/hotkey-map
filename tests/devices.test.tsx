@@ -324,40 +324,43 @@ describe('not assignable keys', () => {
     expect(screen.queryByRole('status')).toBeNull()
   })
 
-  it('Win and the knob react too and stay unselected; the knob hint is above', () => {
+  it('the knob reacts too and stays unselected, its hint is above; Win is a usual key', () => {
     render(<Workspace />)
-    fireEvent.pointerDown(input('MetaLeft'), { button: 0 })
-    expect(input('MetaLeft')).toHaveAttribute('data-rejected')
-    fireEvent.pointerUp(window)
     fireEvent.pointerDown(input('Knob'), { button: 0 })
     expect(input('Knob')).toHaveAttribute('data-rejected')
     expect(screen.getByRole('status')).toHaveAttribute('data-place', 'above')
     fireEvent.pointerUp(window)
-    fireEvent.click(input('MetaLeft'))
     fireEvent.click(input('Knob'))
     expect(selectedCodes()).toEqual([])
-  })
 
-  it('Ctrl+click selects Win in red; a click keeps it, holding shows the hint only', () => {
-    render(<Workspace />)
-    fireEvent.click(input('KeyQ'))
-    fireEvent.click(input('MetaLeft'), { ctrlKey: true })
-    expect(selectedCodes()).toEqual(['KeyQ', 'MetaLeft'])
-    expect(input('MetaLeft')).toHaveAttribute('data-rejected')
-    expect(screen.queryByRole('status')).toBeNull()
-
+    // FR-05: Win блокирует только игра, в которой её нет в настройках
     fireEvent.pointerDown(input('MetaLeft'), { button: 0 })
-    expect(screen.getByRole('status')).toHaveTextContent(ru.devices.notPassedToGames)
+    expect(input('MetaLeft')).not.toHaveAttribute('data-rejected')
     fireEvent.pointerUp(window)
     fireEvent.click(input('MetaLeft'))
-    expect(screen.queryByRole('status')).toBeNull()
-    expect(selectedCodes()).toEqual(['KeyQ', 'MetaLeft'])
-    expect(input('MetaLeft')).toHaveAttribute('data-rejected')
-    expect(input('MetaLeft')).not.toHaveAttribute('data-pressed')
+    expect(selectedCodes()).toEqual(['MetaLeft'])
+  })
 
-    fireEvent.click(input('MetaLeft'), { ctrlKey: true })
+  it('Ctrl+click selects Fn in red; a click keeps it, holding shows the hint only', () => {
+    render(<Workspace />)
+    fireEvent.click(input('KeyQ'))
+    fireEvent.click(input('Fn'), { ctrlKey: true })
+    expect(selectedCodes()).toEqual(['Fn', 'KeyQ'])
+    expect(input('Fn')).toHaveAttribute('data-rejected')
+    expect(screen.queryByRole('status')).toBeNull()
+
+    fireEvent.pointerDown(input('Fn'), { button: 0 })
+    expect(screen.getByRole('status')).toHaveTextContent(ru.devices.notPassedToGames)
+    fireEvent.pointerUp(window)
+    fireEvent.click(input('Fn'))
+    expect(screen.queryByRole('status')).toBeNull()
+    expect(selectedCodes()).toEqual(['Fn', 'KeyQ'])
+    expect(input('Fn')).toHaveAttribute('data-rejected')
+    expect(input('Fn')).not.toHaveAttribute('data-pressed')
+
+    fireEvent.click(input('Fn'), { ctrlKey: true })
     expect(selectedCodes()).toEqual(['KeyQ'])
-    expect(input('MetaLeft')).not.toHaveAttribute('data-rejected')
+    expect(input('Fn')).not.toHaveAttribute('data-rejected')
   })
 
   it('Shift+arrows stop on Fn and keep it red without the hint', () => {

@@ -4,6 +4,7 @@ import { currentGame, currentProfile, selectGame, selectProfile } from '@/domain
 import {
   addGame,
   createGame,
+  fillSteamAppId,
   gameFromPreset,
   gameImpact,
   gameNameError,
@@ -49,7 +50,7 @@ describe('createGame (FR-05, 9.5)', () => {
     expect(game.rules).toEqual({
       maxKeysPerAction: 1,
       allowedModifiers: ['ctrl', 'shift', 'alt'],
-      blockedKeys: ['Fn', 'MetaLeft', 'Knob'],
+      blockedKeys: ['Fn', 'Knob'],
     })
     expect(appDataSchema.safeParse(addGame(createAppData(), game)).success).toBe(true)
   })
@@ -78,15 +79,15 @@ describe('updateGame', () => {
     expect(updateGame(data, 'missing', (g) => ({ ...g, name: 'X' }), LATER)).toBe(data)
   })
 
-  it('setGeneral keeps Fn, Win and the knob blocked and orders modifiers', () => {
+  it('setGeneral keeps Fn and the knob blocked and orders modifiers', () => {
     const game = setGeneral(sampleGame(), {
       name: ' PUBG 2 ',
       steamAppId: 1,
-      rules: { maxKeysPerAction: 1, allowedModifiers: ['alt', 'ctrl'], blockedKeys: ['Tab'] },
+      rules: { maxKeysPerAction: 1, allowedModifiers: ['alt', 'ctrl'], blockedKeys: ['MetaLeft'] },
     })
     expect(game.name).toBe('PUBG 2')
     expect(game.rules.allowedModifiers).toEqual(['ctrl', 'alt'])
-    expect(game.rules.blockedKeys).toEqual(['Fn', 'MetaLeft', 'Knob', 'Tab'])
+    expect(game.rules.blockedKeys).toEqual(['Fn', 'Knob', 'MetaLeft'])
     // 13.2: смена правила с 2 на 1 не удаляет бинды
     expect(at(game.profiles, 0).bindings).toHaveLength(1)
   })
@@ -205,5 +206,14 @@ describe('gameFromPreset (FR-22)', () => {
     expect(profile.settingValues[select.id]).toBe(select.type === 'select' && select.defaultValue)
     expect(at(profile.bindings, 0).paramOptionId).toBe(game.bindParam?.options[0]?.id)
     expect(profile.createdAt).toBe(T)
+  })
+})
+
+describe('fillSteamAppId', () => {
+  it('sets the AppID from a shortcut only when the game has none', () => {
+    const game = { ...sampleGame(), steamAppId: undefined }
+    expect(fillSteamAppId(game, 570).steamAppId).toBe(570)
+    const withId = sampleGame()
+    expect(fillSteamAppId(withId, 570)).toBe(withId)
   })
 })

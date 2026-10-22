@@ -27,8 +27,11 @@ export const MOUSE_CODES = [
   'Mouse4',
   'Mouse5',
 ] as const
-/** Fn, Win и регулятор не передаются в игры (FR-01, FR-05) */
-export const DEFAULT_BLOCKED_KEYS = ['Fn', 'MetaLeft', 'Knob']
+/**
+ * Fn и регулятор не передаются ни в одну игру (FR-01, FR-05). Win в части
+ * игр назначается, поэтому её добавляют в непередаваемые клавиши игры сами
+ */
+export const DEFAULT_BLOCKED_KEYS = ['Fn', 'Knob']
 
 const inputCode = z.string().min(1).max(32)
 

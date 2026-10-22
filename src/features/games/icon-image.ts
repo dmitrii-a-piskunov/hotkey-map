@@ -8,12 +8,17 @@ import {
   drawPlan,
   ICON_SIZE,
   iconFileError,
+  isShortcutFile,
+  parseSteamShortcut,
+  SHORTCUT_MAX_BYTES,
+  steamClientIconUrl,
   STEAM_VARIANTS,
   steamImageUrl,
   type SteamVariant,
 } from '@/domain/icons'
 
-export type IconError = 'type' | 'size' | 'decode'
+/** shortcut — ярлык не от игры Steam, steam — Steam не отдал иконку */
+export type IconError = 'type' | 'size' | 'decode' | 'shortcut' | 'steam'
 
 export class IconImageError extends Error {
   readonly reason: IconError
@@ -117,11 +122,35 @@ export async function steamPreviews(appId: number): Promise<SteamPreview[]> {
   return results.flatMap((r) => (r.status === 'fulfilled' ? [r.value] : []))
 }
 
-/** Первая картинка из буфера обмена или перетаскивания */
-export function imageFile(items: DataTransfer | null): File | null {
-  if (!items) return null
-  for (const file of Array.from(items.files)) {
-    if (file.type.startsWith('image/') || file.type === '') return file
-  }
-  return null
+/**
+ * Ярлык игры Steam с рабочего стола (.url): из него берутся AppID и хеш
+ * иконки, сама иконка скачивается с CDN Steam (раздел 10.1). Браузер не
+ * может прочитать .ico с диска по пути из ярлыка, а CDN отдаёт тот же файл.
+ */
+async function iconFromShortcut(file: File): Promise<IconFromFile> {
+  if (file.size > SHORTCUT_MAX_BYTES) throw new IconImageError('shortcut')
+  const shortcut = parseSteamShortcut(await file.text())
+  if (!shortcut?.iconHash) throw new IconImageError('shortcut')
+  const response = await fetch(steamClientIconUrl(shortcut.appId, shortcut.iconHash), {
+    mode: 'cors',
+  }).catch(() => null)
+  if (!response?.ok) throw new IconImageError('steam')
+  return { png: await render(await response.blob(), 'center'), appId: shortcut.appId }
+}
+
+export interface IconFromFile {
+  png: Blob
+  /** AppID из ярлыка Steam */
+  appId?: number
+}
+
+/** Картинка или ярлык Steam — из перетаскивания, буфера обмена или выбора файла */
+export async function iconFromAnyFile(file: File): Promise<IconFromFile> {
+  if (isShortcutFile(file.name)) return iconFromShortcut(file)
+  return { png: await iconFromFile(file) }
+}
+
+/** Первый файл из буфера обмена или перетаскивания */
+export function droppedFile(items: DataTransfer | null): File | null {
+  return items?.files[0] ?? null
 }

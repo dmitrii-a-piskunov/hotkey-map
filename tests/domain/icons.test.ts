@@ -4,7 +4,10 @@ import {
   ICON_MAX_BYTES,
   iconFileError,
   iconFileName,
+  isShortcutFile,
+  parseSteamShortcut,
   referencedIcons,
+  steamClientIconUrl,
   steamImageUrl,
   unusedIcons,
 } from '@/domain/icons'
@@ -84,5 +87,39 @@ describe('unused icons', () => {
 
   it('deletes nothing if some text cannot be read', () => {
     expect(unusedIcons(['a.png'], [data([]), 'not json'])).toEqual([])
+  })
+})
+
+describe('Steam desktop shortcut', () => {
+  const shortcut = [
+    '[{000214A0-0000-0000-C000-000000000046}]',
+    'Prop3=19,0',
+    '[InternetShortcut]',
+    'IDList=',
+    'IconIndex=0',
+    'URL=steam://rungameid/570',
+    String.raw`IconFile=C:\Program Files (x86)\Steam\steam\games\27062DE94099414E44F149F1F9DC8E8BED905341.ico`,
+    '',
+  ].join('\r\n')
+
+  it('reads the AppID and the icon hash', () => {
+    expect(parseSteamShortcut(shortcut)).toEqual({
+      appId: 570,
+      iconHash: '27062de94099414e44f149f1f9dc8e8bed905341',
+    })
+    expect(steamClientIconUrl(570, 'abc')).toBe(
+      'https://shared.fastly.steamstatic.com/community_assets/images/apps/570/abc.ico',
+    )
+  })
+
+  it('works without an icon line and rejects other shortcuts', () => {
+    expect(parseSteamShortcut('URL=steam://rungameid/578080')).toEqual({
+      appId: 578080,
+      iconHash: null,
+    })
+    expect(parseSteamShortcut('URL=https://example.com')).toBeNull()
+    expect(parseSteamShortcut('URL=steam://rungameid/99999999999999999999')).toBeNull()
+    expect(isShortcutFile('Dota 2.URL')).toBe(true)
+    expect(isShortcutFile('dota.png')).toBe(false)
   })
 })

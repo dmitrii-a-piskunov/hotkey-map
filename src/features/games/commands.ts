@@ -27,6 +27,7 @@ import {
   addGame,
   createGame,
   gameFromPreset,
+  fillSteamAppId,
   removeGame,
   setGameIcon,
   setGeneral,
@@ -90,6 +91,10 @@ export function setGeneralCmd(gameId: string, draft: GeneralDraft): void {
 
 export function setGameIconCmd(gameId: string, icon: string | undefined): void {
   onGame(gameId, (g) => setGameIcon(g, icon))
+}
+
+export function fillSteamAppIdCmd(gameId: string, appId: number): void {
+  onGame(gameId, (g) => fillSteamAppId(g, appId))
 }
 
 export function selectGameCmd(gameId: string): void {

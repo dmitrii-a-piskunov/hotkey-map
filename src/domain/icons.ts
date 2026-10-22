@@ -132,3 +132,34 @@ export function unusedIcons(files: readonly string[], texts: readonly string[]):
   }
   return files.filter((f) => !used.has(f))
 }
+
+/** Ярлык Steam на рабочем столе (.url): AppID и хеш иконки клиента */
+export interface SteamShortcut {
+  appId: number
+  /** Имя файла …\Steam\steam\games\<хеш>.ico без расширения */
+  iconHash: string | null
+}
+
+/** Ярлык Steam — небольшой текстовый файл; больше — точно не он */
+export const SHORTCUT_MAX_BYTES = 64 * 1024
+
+export function isShortcutFile(name: string): boolean {
+  return /\.url$/i.test(name)
+}
+
+/**
+ * Разбор ярлыка Steam: URL=steam://rungameid/<AppID> и
+ * IconFile=…\<хеш из 40 hex>.ico. null — это не ярлык игры Steam.
+ */
+export function parseSteamShortcut(text: string): SteamShortcut | null {
+  const url = /^URL=steam:\/\/rungameid\/(\d+)\s*$/im.exec(text)
+  const appId = Number(url?.[1])
+  if (!Number.isSafeInteger(appId) || appId <= 0) return null
+  const icon = /^IconFile=.*?([0-9a-f]{40})\.ico\s*$/im.exec(text)
+  return { appId, iconHash: icon?.[1]?.toLowerCase() ?? null }
+}
+
+/** Иконка клиента Steam — та же, что у ярлыка; CDN отдаёт её с CORS (раздел 10.1) */
+export function steamClientIconUrl(appId: number, hash: string): string {
+  return `https://shared.fastly.steamstatic.com/community_assets/images/apps/${appId}/${hash}.ico`
+}

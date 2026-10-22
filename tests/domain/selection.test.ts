@@ -124,18 +124,19 @@ describe('clickSelect', () => {
     )
   })
 
-  it('plain click on Fn, Win or the knob changes nothing', () => {
+  it('plain click on Fn or the knob changes nothing; Win is a usual key', () => {
     const s = click(emptySelection, 'KeyQ')
     expect(click(s, 'Fn')).toBe(s)
     expect(click(s, KNOB_CODE)).toBe(s)
+    expect(click(s, 'MetaLeft').selected).toEqual(['MetaLeft'])
   })
 
-  it('Ctrl+click adds and removes Win; a plain click does not clear it', () => {
+  it('Ctrl+click adds and removes Fn; a plain click does not clear it', () => {
     let s = click(emptySelection, 'KeyQ')
-    s = click(s, 'MetaLeft', ctrl)
-    expect(s.selected).toEqual(['KeyQ', 'MetaLeft'])
-    expect(click(s, 'MetaLeft')).toBe(s)
-    s = click(s, 'MetaLeft', ctrl)
+    s = click(s, 'Fn', ctrl)
+    expect(s.selected).toEqual(['KeyQ', 'Fn'])
+    expect(click(s, 'Fn')).toBe(s)
+    s = click(s, 'Fn', ctrl)
     expect(s.selected).toEqual(['KeyQ'])
   })
 
@@ -421,15 +422,11 @@ describe('selectAll', () => {
 })
 
 describe('navigation grid', () => {
-  it('has every key and the knob; Fn, Win and the knob are blocked', () => {
+  it('has every key and the knob; Fn and the knob are blocked', () => {
     expect(aulaF75.keys).toHaveLength(80)
     const keyboard = inputs.filter((i) => i.device === 'keyboard')
     expect(keyboard).toHaveLength(81)
-    expect(keyboard.filter((i) => i.blocked).map((i) => i.code)).toEqual([
-      'MetaLeft',
-      'Fn',
-      KNOB_CODE,
-    ])
+    expect(keyboard.filter((i) => i.blocked).map((i) => i.code)).toEqual(['Fn', KNOB_CODE])
   })
 
   it('puts each key in one row of the grid, in adjacent cells', () => {

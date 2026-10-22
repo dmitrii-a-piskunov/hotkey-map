@@ -112,3 +112,39 @@ test('profiles: create, duplicate, rename and delete (FR-11)', async ({ page }) 
   await page.getByRole('alertdialog').getByRole('button', { name: 'Удалить' }).click()
   await expect(page.getByTestId('current-profile')).toHaveText('Основной')
 })
+
+test('a Steam desktop shortcut gives the game icon and AppID (FR-05)', async ({ page }) => {
+  let requested = ''
+  await page.route('https://shared.fastly.steamstatic.com/**', (route) => {
+    requested = route.request().url()
+    return route.fulfill({
+      status: 200,
+      headers: { 'access-control-allow-origin': '*' },
+      contentType: 'image/png',
+      body: Buffer.from(PNG_1PX, 'base64'),
+    })
+  })
+  await page.goto(APP_URL)
+  await page.getByRole('button', { name: 'Создать игру' }).click()
+  await page
+    .getByRole('dialog', { name: 'Новая игра' })
+    .getByLabel('Название')
+    .fill('Тестовая игра')
+  await page.getByRole('button', { name: 'Создать' }).click()
+
+  const shortcut = [
+    '[InternetShortcut]',
+    'URL=steam://rungameid/570',
+    String.raw`IconFile=C:\Program Files (x86)\Steam\steam\games\27062de94099414e44f149f1f9dc8e8bed905341.ico`,
+  ].join('\r\n')
+  await page.getByTestId('icon-file').setInputFiles({
+    name: 'Dota 2.url',
+    mimeType: '',
+    buffer: Buffer.from(shortcut),
+  })
+  await expect(page.getByTestId('icon-drop').locator('img')).toBeVisible()
+  expect(requested).toBe(
+    'https://shared.fastly.steamstatic.com/community_assets/images/apps/570/27062de94099414e44f149f1f9dc8e8bed905341.ico',
+  )
+  await expect(editor(page).getByLabel('Steam AppID')).toHaveValue('570')
+})

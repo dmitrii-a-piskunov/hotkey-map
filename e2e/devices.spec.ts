@@ -114,19 +114,26 @@ test('↑ follows the finger column: C → D → E → 4', async ({ page }) => {
   }
 })
 
-test('Win in a Shift range stays red; a click on it keeps the selection', async ({ page }) => {
+test('Fn in a Shift range stays red; a click on it keeps the selection', async ({ page }) => {
   await page.goto(APP_URL)
   await page.getByRole('radio', { name: 'Навигация' }).click()
-  await key(page, 'ControlLeft').click()
+  await key(page, 'Space').click()
   await page.keyboard.press('Shift+ArrowRight')
-  expect(await selectedCodes(page)).toEqual(['ControlLeft', 'MetaLeft'])
-  await expect(key(page, 'MetaLeft')).toHaveAttribute('data-rejected', 'true')
+  expect(await selectedCodes(page)).toEqual(['Fn', 'Space'])
+  await expect(key(page, 'Fn')).toHaveAttribute('data-rejected', 'true')
   await expect(page.locator('.cap-hint')).toHaveCount(0)
 
   // aria-disabled: Playwright считает клавишу неактивной, но клик по ней — часть поведения
-  await key(page, 'MetaLeft').click({ force: true })
-  expect(await selectedCodes(page)).toEqual(['ControlLeft', 'MetaLeft'])
-  await expect(key(page, 'MetaLeft')).toHaveAttribute('data-rejected', 'true')
+  await key(page, 'Fn').click({ force: true })
+  expect(await selectedCodes(page)).toEqual(['Fn', 'Space'])
+  await expect(key(page, 'Fn')).toHaveAttribute('data-rejected', 'true')
+})
+
+test('Win is a usual key until a game blocks it (FR-05)', async ({ page }) => {
+  await page.goto(APP_URL)
+  await key(page, 'MetaLeft').click()
+  expect(await selectedCodes(page)).toEqual(['MetaLeft'])
+  await expect(key(page, 'MetaLeft')).not.toHaveAttribute('data-rejected')
 })
 
 test('Shift+← adds one column per press and stays on a wide key', async ({ page }) => {
