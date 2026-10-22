@@ -326,6 +326,16 @@ function geometricNeighbor(
   return ahead[0]?.input ?? from
 }
 
+/**
+ * Из входов одной ячейки — средний по высоте. В ячейке колеса это нажатие
+ * колеса, а не прокрутка: ЛКМ → СКМ, ПКМ ← СКМ.
+ */
+function middleOf(cell: readonly SelectableInput[]): SelectableInput | undefined {
+  if (cell.length < 2) return cell[0]
+  const mid = cell.reduce((sum, i) => sum + center(i).y, 0) / cell.length
+  return [...cell].sort((a, b) => Math.abs(center(a).y - mid) - Math.abs(center(b).y - mid))[0]
+}
+
 interface Step {
   input: SelectableInput
   /** Столбец после шага */
@@ -348,8 +358,6 @@ function step(
   col: number,
 ): Step {
   const origin = center(from)
-  const byHeight = (a: SelectableInput, b: SelectableInput) =>
-    Math.abs(center(a).y - origin.y) - Math.abs(center(b).y - origin.y)
   const fallback = (): Step => {
     const input = geometricNeighbor(inputs, from, dir)
     return { input, col: input === from ? col : midCol(input) }
@@ -359,10 +367,9 @@ function step(
     const right = dir === 'right'
     const gap = (i: SelectableInput) =>
       right ? i.cols[0] - from.cols[1] : from.cols[0] - i.cols[1]
-    // При равенстве — вход, чей центр ближе по высоте (ЛКМ → нижняя часть колеса)
-    const next = inputs
-      .filter((i) => i.line === from.line && gap(i) > 0)
-      .sort((a, b) => gap(a) - gap(b) || byHeight(a, b))[0]
+    const ahead = inputs.filter((i) => i.line === from.line && gap(i) > 0)
+    const nearest = Math.min(...ahead.map(gap))
+    const next = middleOf(ahead.filter((i) => gap(i) === nearest))
     if (!next) return fallback()
     return { input: next, col: right ? next.cols[0] : next.cols[1] }
   }
@@ -403,16 +410,12 @@ function columnStep(
   col: number,
   dir: 'left' | 'right',
 ): Step {
-  const origin = center(from)
   const current = rangeSelect(inputs, anchor.code, from.code, anchorCol, col)
   const row = inputs.filter((i) => i.line === from.line)
   const sign = dir === 'right' ? 1 : -1
   const lastCol = Math.max(...row.map((i) => i.cols[1]))
   for (let c = col + sign; c >= 0 && c <= lastCol; c += sign) {
-    // В ячейке колеса три входа: берём ближний по высоте, как и обычный шаг
-    const input = row
-      .filter((i) => i.cols[0] <= c && c <= i.cols[1])
-      .sort((a, b) => Math.abs(center(a).y - origin.y) - Math.abs(center(b).y - origin.y))[0]
+    const input = middleOf(row.filter((i) => i.cols[0] <= c && c <= i.cols[1]))
     if (!input) continue
     const range = rangeSelect(inputs, anchor.code, input.code, anchorCol, c)
     if (!sameSet(range, current)) return { input, col: c }

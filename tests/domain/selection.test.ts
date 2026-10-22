@@ -228,7 +228,8 @@ describe('neighbor', () => {
   it('moves between the keyboard and the mouse', () => {
     expect(neighbor(inputs, 'Delete', 'right')).toBe('Mouse5')
     expect(neighbor(inputs, 'Mouse5', 'left')).toBe('Delete')
-    expect(neighbor(inputs, 'MouseLeft', 'right')).toMatch(/^(WheelUp|MouseMiddle|WheelDown)$/)
+    expect(neighbor(inputs, 'MouseLeft', 'right')).toBe('MouseMiddle')
+    expect(neighbor(inputs, 'MouseRight', 'left')).toBe('MouseMiddle')
     expect(neighbor(inputs, 'MouseLeft', 'down')).toBe('Mouse5')
     expect(neighbor(inputs, 'Mouse5', 'down')).toBe('Mouse4')
   })
@@ -244,13 +245,18 @@ describe('neighbor', () => {
     expect(neighbor(inputs, 'Mouse5', 'right')).toBe('MouseLeft')
   })
 
-  it('keeps moves between ЛКМ, the wheel and ПКМ as they were', () => {
-    // Таблица переходов внутри мыши до перехода на ряды
+  it('moves inside the mouse by button position, ←/→ land on the wheel press', () => {
+    // Переходы внутри мыши: ←/→ между кнопками и колесом ведут на нажатие колеса
     const expected: Record<string, Record<'left' | 'right' | 'up' | 'down', string>> = {
-      MouseLeft: { left: KNOB_CODE, right: 'WheelDown', up: 'MouseLeft', down: 'Mouse5' },
+      MouseLeft: { left: KNOB_CODE, right: 'MouseMiddle', up: 'MouseLeft', down: 'Mouse5' },
       Mouse5: { left: 'Delete', right: 'MouseLeft', up: 'MouseLeft', down: 'Mouse4' },
       Mouse4: { left: 'PageUp', right: 'Mouse4', up: 'Mouse5', down: 'Mouse4' },
-      MouseRight: { left: 'WheelDown', right: 'MouseRight', up: 'MouseRight', down: 'MouseRight' },
+      MouseRight: {
+        left: 'MouseMiddle',
+        right: 'MouseRight',
+        up: 'MouseRight',
+        down: 'MouseRight',
+      },
       MouseMiddle: { left: 'MouseLeft', right: 'MouseRight', up: 'WheelUp', down: 'WheelDown' },
       WheelUp: { left: 'MouseLeft', right: 'MouseRight', up: 'WheelUp', down: 'MouseMiddle' },
       WheelDown: { left: 'MouseLeft', right: 'MouseRight', up: 'MouseMiddle', down: 'WheelDown' },
