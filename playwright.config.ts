@@ -10,7 +10,11 @@ export default defineConfig({
     baseURL: 'http://localhost:5173',
     trace: 'on-first-retry',
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  // Firefox — основной браузер автора: всё, кроме боковых кнопок мыши, должно работать и в нём (NFR-07)
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
+  ],
   webServer: {
     command: 'npm run dev',
     url: 'http://localhost:5173',
