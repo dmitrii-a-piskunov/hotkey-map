@@ -380,6 +380,46 @@ function step(
   return next ? { input: next, col } : { input: from, col }
 }
 
+function sameSet(a: readonly InputCode[], b: readonly InputCode[]): boolean {
+  if (a.length !== b.length) return false
+  const set = new Set(a)
+  return b.every((code) => set.has(code))
+}
+
+/**
+ * Shift+←/→: шаг на один столбец сетки, а не на клавишу. Пальцевая зона из
+ * двух столбцов (Н Р Т и Е П И) добавляется по столбцу за нажатие, а на
+ * широкой клавише курсор остаётся, пока не дойдёт до её края: Shift в
+ * столбцах 0–1, поэтому ← добавляет к 1, Tab, Caps только Ё, а ↓ с него
+ * ведёт в тот же столбец нижнего ряда. Столбцы, которые ничего не меняют
+ * (внутри пробела), проходятся за одно нажатие. За концом ряда — обычный
+ * шаг (Mouse 5 → ЛКМ).
+ */
+function columnStep(
+  inputs: readonly SelectableInput[],
+  anchor: SelectableInput,
+  anchorCol: number,
+  from: SelectableInput,
+  col: number,
+  dir: 'left' | 'right',
+): Step {
+  const origin = center(from)
+  const current = rangeSelect(inputs, anchor.code, from.code, anchorCol, col)
+  const row = inputs.filter((i) => i.line === from.line)
+  const sign = dir === 'right' ? 1 : -1
+  const lastCol = Math.max(...row.map((i) => i.cols[1]))
+  for (let c = col + sign; c >= 0 && c <= lastCol; c += sign) {
+    // В ячейке колеса три входа: берём ближний по высоте, как и обычный шаг
+    const input = row
+      .filter((i) => i.cols[0] <= c && c <= i.cols[1])
+      .sort((a, b) => Math.abs(center(a).y - origin.y) - Math.abs(center(b).y - origin.y))[0]
+    if (!input) continue
+    const range = rangeSelect(inputs, anchor.code, input.code, anchorCol, c)
+    if (!sameSet(range, current)) return { input, col: c }
+  }
+  return step(inputs, from, dir, col)
+}
+
 /** Соседний вход для стрелки от среднего столбца входа. На краю — сам вход */
 export function neighbor(
   inputs: readonly SelectableInput[],
@@ -410,11 +450,17 @@ export function navigate(
   }
 
   const focusCol = state.focusCol ?? midCol(start)
-  const next = step(inputs, start, dir, focusCol)
-  if (!extend) return { ...single(next.input.code), anchorCol: next.col, focusCol: next.col }
+  if (!extend) {
+    const next = step(inputs, start, dir, focusCol)
+    return { ...single(next.input.code), anchorCol: next.col, focusCol: next.col }
+  }
 
   const anchor = find(inputs, state.anchor) ?? start
   const anchorCol = state.anchorCol ?? (anchor === start ? focusCol : midCol(anchor))
+  const next =
+    dir === 'left' || dir === 'right'
+      ? columnStep(inputs, anchor, anchorCol, start, focusCol, dir)
+      : step(inputs, start, dir, focusCol)
   return {
     selected: rangeSelect(inputs, anchor.code, next.input.code, anchorCol, next.col),
     anchor: anchor.code,

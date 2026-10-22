@@ -128,3 +128,28 @@ test('Win in a Shift range stays red; a click on it keeps the selection', async 
   expect(await selectedCodes(page)).toEqual(['ControlLeft', 'MetaLeft'])
   await expect(key(page, 'MetaLeft')).toHaveAttribute('data-rejected', 'true')
 })
+
+test('Shift+← adds one column per press and stays on a wide key', async ({ page }) => {
+  await page.goto(APP_URL)
+  await page.getByRole('radio', { name: 'Навигация' }).click()
+  await key(page, 'Digit2').click()
+  for (let i = 0; i < 3; i++) await page.keyboard.press('Shift+ArrowDown')
+  await page.keyboard.press('Shift+ArrowLeft')
+  await page.keyboard.press('Shift+ArrowLeft')
+  expect(await selectedCodes(page)).toEqual(
+    [
+      'Backquote',
+      'CapsLock',
+      'Digit1',
+      'Digit2',
+      'KeyA',
+      'KeyQ',
+      'KeyZ',
+      'ShiftLeft',
+      'Tab',
+    ].sort(),
+  )
+  await page.keyboard.press('Shift+ArrowDown')
+  expect(await selectedCodes(page)).toContain('ControlLeft')
+  expect(await selectedCodes(page)).toContain('MetaLeft')
+})

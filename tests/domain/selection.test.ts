@@ -328,6 +328,52 @@ describe('navigate', () => {
     )
   })
 
+  it('Shift+← adds one grid column per press: a two-column finger zone takes two', () => {
+    let s = click(emptySelection, 'Slash')
+    for (let i = 0; i < 3; i++) s = navigate(s, 'up', true, inputs)
+    for (let i = 0; i < 3; i++) s = navigate(s, 'left', true, inputs)
+    expect(s.selected).toHaveLength(16)
+    const before = new Set(s.selected)
+    const added = (next: SelectionState) => next.selected.filter((code) => !before.has(code)).sort()
+
+    s = navigate(s, 'left', true, inputs)
+    expect(added(s)).toEqual(['KeyH', 'KeyN', 'KeyY'])
+    s = navigate(s, 'left', true, inputs)
+    expect(added(s)).toEqual(['Digit6', 'KeyB', 'KeyG', 'KeyH', 'KeyN', 'KeyT', 'KeyY'])
+    s = navigate(s, 'right', true, inputs)
+    expect(added(s)).toEqual(['KeyH', 'KeyN', 'KeyY'])
+  })
+
+  it('Shift+← on a wide key keeps the cursor on it until its edge', () => {
+    let s = click(emptySelection, 'Digit2')
+    for (let i = 0; i < 3; i++) s = navigate(s, 'down', true, inputs)
+    s = navigate(s, 'left', true, inputs)
+    expect([...s.selected].sort()).toEqual(
+      ['CapsLock', 'Digit1', 'Digit2', 'KeyA', 'KeyQ', 'KeyZ', 'ShiftLeft', 'Tab'].sort(),
+    )
+    expect(navigate(s, 'down', true, inputs).focus).toBe('MetaLeft')
+
+    s = navigate(s, 'left', true, inputs)
+    expect(s.focus).toBe('ShiftLeft')
+    expect(s.selected).toHaveLength(9)
+    expect(s.selected).toContain('Backquote')
+
+    const down = navigate(s, 'down', true, inputs)
+    expect(down.focus).toBe('ControlLeft')
+    expect(navigate(down, 'up', true, inputs).selected).toEqual(s.selected)
+    expect(navigate(s, 'right', true, inputs).selected).not.toContain('Backquote')
+  })
+
+  it('Shift+→ passes columns inside Space that change nothing', () => {
+    let s = click(emptySelection, 'Space')
+    s = navigate(s, 'right', true, inputs)
+    expect(s.selected).toEqual(['Space', 'Fn'])
+    s = navigate(s, 'left', true, inputs)
+    expect(s.selected).toEqual(['Space'])
+    s = navigate(s, 'left', true, inputs)
+    expect(s.selected).toEqual(['AltLeft', 'Space'])
+  })
+
   it('Space remembers the column it was entered from', () => {
     let s = click(emptySelection, 'KeyV')
     s = navigate(s, 'down', false, inputs)
