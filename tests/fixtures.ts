@@ -1,4 +1,5 @@
 import { createAppData } from '@/domain/app-data'
+import type { Clock } from '@/domain/clock'
 import type { AppData, Game } from '@/domain/types'
 
 export const T = '2026-10-22T10:00:00.000Z'
@@ -78,4 +79,14 @@ export function sampleGame(): Game {
 
 export function sampleData(): AppData {
   return { ...createAppData(), games: [sampleGame()] }
+}
+
+/** Предсказуемые UUID v4 и время: id по порядку выдачи */
+export function testClock(now = T): Clock & { issued: () => number } {
+  let n = 0
+  return {
+    id: () => `00000000-0000-4000-8000-${(++n).toString(16).padStart(12, '0')}`,
+    now: () => now,
+    issued: () => n,
+  }
 }
