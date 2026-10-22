@@ -123,66 +123,47 @@ export function mouseScene(layout: MouseLayout, view: ViewMode): MouseScene {
       return { x, y: curveY(x) }
     })
   const plainOutline = mouseOutline(width, height, theme.shape)
-  // Контур кнопок: силуэт, сжатый по ширине, — по бокам остаётся полоска
-  // корпуса, к переду она сходит на нет
+  // Полоска корпуса по бокам: внешний край ЛКМ и ПКМ — прямая вдоль бока,
+  // она доходит до переда и врезается в его закругление под углом
   const inset = theme.buttonInset
-  const squeeze = (width - inset * 2) / width
-  const buttonsOutline = plainOutline.map((p) => ({
-    x: width / 2 + (p.x - width / 2) * squeeze,
-    y: p.y,
-  }))
-  const segments = (pts: Vec[], closed: boolean) =>
-    pts
-      .slice(0, closed ? undefined : -1)
-      .map((p, i): [Vec, Vec] => [p, pts[(i + 1) % pts.length] ?? p])
-  const split = mapAll(curve(inset, width - inset))
-  // Шов вдоль полосок: часть контура кнопок от переда до линии раздела
-  const above = (p: Vec) => p.y <= curveY(p.x)
-  // Точка отрезка на дуге — делением пополам: прямой бок пересекает дугу посередине
-  const onCurve = (inside: Vec, outside: Vec): Vec => {
-    let [lo, hi] = [0, 1]
-    for (let i = 0; i < 24; i++) {
-      const t = (lo + hi) / 2
-      const p = {
-        x: inside.x + (outside.x - inside.x) * t,
-        y: inside.y + (outside.y - inside.y) * t,
-      }
-      if (above(p)) lo = t
-      else hi = t
-    }
-    return { x: inside.x + (outside.x - inside.x) * lo, y: inside.y + (outside.y - inside.y) * lo }
-  }
-  const stripSeams = segments(buttonsOutline, true).flatMap(([a, b]): [Vec, Vec][] => {
-    if (above(a) && above(b)) return [[map(a), map(b)]]
-    if (above(a)) return [[map(a), map(onCurve(a, b))]]
-    if (above(b)) return [[map(onCurve(b, a)), map(b)]]
-    return []
-  })
-  const seams: [Vec, Vec][] = [
-    ...segments(split, false),
-    ...stripSeams,
-    [map({ x: width / 2, y: 0 }), map({ x: width / 2, y: curveY(width / 2) })],
-  ]
+  const segments = (pts: Vec[]) => pts.slice(0, -1).map((p, i): [Vec, Vec] => [p, pts[i + 1] ?? p])
   // Зазор между обводкой кнопки и боковой кнопкой — толщина обводки
   const gap = state.selected.width
   const sideInputs = layout.inputs.filter((i) => i.kind === 'side')
-  const buttons = layout.inputs
+  const flatButtons = layout.inputs
     .filter((i) => i.kind === 'button')
     .map((b) => {
+      const x0 = Math.max(b.x, inset)
+      const x1 = Math.min(b.x + b.w, width - inset)
       // Над дугой: верх кнопки и дуга справа налево — выпуклая фигура для отсечения
-      const area = [{ x: b.x, y: b.y }, { x: b.x + b.w, y: b.y }, ...curve(b.x + b.w, b.x)]
+      const area = [{ x: x0, y: b.y }, { x: x1, y: b.y }, ...curve(x1, x0)]
       const notches = sideInputs
         .filter((s) =>
+          // Вырез — только если боковая кнопка заходит на кнопку корпуса;
+          // за полоской корпуса она её уже не задевает
           intersects(
-            { x: s.x - gap, y: s.y - gap, w: s.w + gap * 2, h: s.h + gap * 2 },
-            { x: b.x, y: b.y, w: b.w, h: curveY(b.x + b.w / 2) - b.y },
+            { x: s.x, y: s.y, w: s.w, h: s.h },
+            { x: x0, y: b.y, w: x1 - x0, h: curveY((x0 + x1) / 2) - b.y },
           ),
         )
         .map((s) =>
           mapAll(roundedRect(s.x - gap, s.y - gap, s.w + gap * 2, s.h + gap * 2, s.w / 2 + gap)),
         )
-      return { code: b.code, region: mapAll(clipPolygon(buttonsOutline, area)), notches }
+      return { code: b.code, region: clipPolygon(plainOutline, area), notches }
     })
+  // Шов вдоль полосок: от точки, где край кнопки встречает перед, до линии раздела
+  const stripSeams = [inset, width - inset].flatMap((x): [Vec, Vec][] => {
+    const onEdge = flatButtons.flatMap((b) => b.region).filter((p) => Math.abs(p.x - x) < 1e-6)
+    if (onEdge.length === 0) return []
+    const top = Math.min(...onEdge.map((p) => p.y))
+    return [[map({ x, y: top }), map({ x, y: curveY(x) })]]
+  })
+  const seams: [Vec, Vec][] = [
+    ...segments(mapAll(curve(inset, width - inset))),
+    ...stripSeams,
+    [map({ x: width / 2, y: 0 }), map({ x: width / 2, y: curveY(width / 2) })],
+  ]
+  const buttons = flatButtons.map((b) => ({ ...b, region: mapAll(b.region) }))
   const zones = layout.inputs.map((input) => {
     const region = buttons.find((b) => b.code === input.code)?.region
     if (region) return { input, box: boundsOf(region), clip: region }
