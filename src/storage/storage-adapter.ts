@@ -31,6 +31,8 @@ export interface StorageAdapter {
    * считаются копиями: не вытесняют их и не попадают в список восстановления.
    */
   saveDamaged(text: string, at: Date): Promise<string>
+  /** Имена файлов в icons/ */
+  listIcons(): Promise<string[]>
   readIcon(name: string): Promise<Blob | null>
   writeIcon(name: string, data: Blob): Promise<void>
   deleteIcon(name: string): Promise<void>

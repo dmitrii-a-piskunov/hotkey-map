@@ -136,6 +136,10 @@ export class FileSystemStorage implements StorageAdapter {
     })
   }
 
+  listIcons(): Promise<string[]> {
+    return guard(() => listNames(this.#icons))
+  }
+
   async readIcon(name: string): Promise<Blob | null> {
     try {
       const handle = await this.#icons.getFileHandle(name)

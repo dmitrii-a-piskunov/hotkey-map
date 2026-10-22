@@ -83,10 +83,12 @@ describe.each(adapters)('%s', (_, make) => {
 
   it('stores icons', async () => {
     expect(await storage.readIcon('dota.png')).toBeNull()
+    expect(await storage.listIcons()).toEqual([])
     await storage.writeIcon(
       'dota.png',
       new Blob([new Uint8Array([1, 2, 3])], { type: 'image/png' }),
     )
+    expect(await storage.listIcons()).toEqual(['dota.png'])
     const icon = await storage.readIcon('dota.png')
     expect(icon?.type).toBe('image/png')
     expect(new Uint8Array((await icon?.arrayBuffer()) ?? new ArrayBuffer(0))).toEqual(

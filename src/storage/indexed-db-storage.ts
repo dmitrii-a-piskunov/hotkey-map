@@ -107,6 +107,10 @@ export class IndexedDbStorage implements StorageAdapter {
     })
   }
 
+  listIcons(): Promise<string[]> {
+    return guard(() => this.#names(ICON_PREFIX))
+  }
+
   readIcon(name: string): Promise<Blob | null> {
     return guard(async () => {
       const icon = await get<StoredIcon>(ICON_PREFIX + name, this.#store)

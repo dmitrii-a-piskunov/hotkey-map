@@ -9,6 +9,7 @@
 
 import { createAppData, parseAppData, serializeAppData } from '@/domain/app-data'
 import { needsExportReminder } from '@/domain/export-reminder'
+import { unusedIcons } from '@/domain/icons'
 import type { AppData } from '@/domain/types'
 import { useDataStore } from '@/features/data/store'
 import type { FolderAccess } from '@/storage/folder-access'
@@ -62,6 +63,8 @@ export class PersistenceSession {
   #saving: Promise<void> | null = null
   #saveAgain = false
   #unsubscribe: (() => void) | null = null
+  /** Уборка иконок после запуска; промис — для тестов */
+  sweeping: Promise<void> = Promise.resolve()
 
   constructor(env: PersistenceEnv) {
     this.#env = env
@@ -170,6 +173,24 @@ export class PersistenceSession {
     if (usePersistenceStatus.getState().dirty) await this.#save()
   }
 
+  /** Иконка игры из icons/ (FR-05); null — файла нет или хранилище не открыто */
+  async readIcon(name: string): Promise<Blob | null> {
+    const storage = this.#storage
+    if (!storage) return null
+    try {
+      return await storage.readIcon(name)
+    } catch (e) {
+      console.error('Reading icon failed', name, e)
+      return null
+    }
+  }
+
+  async writeIcon(name: string, data: Blob): Promise<void> {
+    const storage = this.#storage
+    if (!storage) throw new Error('Storage is not open')
+    await storage.writeIcon(name, data)
+  }
+
   dismissExportReminder(): void {
     this.#set({ exportReminder: false })
   }
@@ -269,6 +290,28 @@ export class PersistenceSession {
       exportReminder,
     })
     if (needsSave) this.#changed()
+    this.sweeping = this.#sweepIcons().catch((e: unknown) => {
+      console.error('Icon cleanup failed', e)
+    })
+  }
+
+  /**
+   * Иконки, на которые не ссылаются ни data.json, ни резервные копии,
+   * удаляются при запуске. Сразу при замене иконки файл не удаляется:
+   * отмена изменения (FR-24) вернёт ссылку на него.
+   */
+  async #sweepIcons(): Promise<void> {
+    const storage = this.#storage
+    if (!storage) return
+    const files = await storage.listIcons()
+    if (files.length === 0) return
+    const texts: string[] = []
+    for (const backup of await storage.listBackups()) {
+      texts.push(await storage.readBackup(backup.name))
+    }
+    // Текущие данные — последними, чтобы учесть иконку, добавленную только что
+    texts.push(serializeAppData(useDataStore.getState().data))
+    for (const name of unusedIcons(files, texts)) await storage.deleteIcon(name)
   }
 
   #changed(): void {

@@ -369,3 +369,44 @@ describe('Firefox mode (FR-23)', () => {
     expect(status().exportReminder).toBe(false)
   })
 })
+
+describe('icon cleanup (FR-05)', () => {
+  it('removes icons that neither data.json nor a backup references', async () => {
+    const t = makeTestEnv({ savedFolder: true })
+    const withIcon = (icon: string) => {
+      const data = sampleData()
+      data.games = data.games.map((g) => ({ ...g, icon }))
+      return serializeAppData(data)
+    }
+    t.folder.writeText('data.json', withIcon('current.png'))
+    const backups = await t.folder.getDirectoryHandle('backups', { create: true })
+    backups.writeText('data-2026-10-20_10-00-00.json', withIcon('old.png'))
+    const icons = await t.folder.getDirectoryHandle('icons', { create: true })
+    for (const name of ['current.png', 'old.png', 'orphan.png']) icons.writeText(name, 'png')
+
+    const session = await launch(t)
+    await session.sweeping
+    expect(icons.fileNames()).toEqual(['current.png', 'old.png'])
+  })
+
+  it('keeps every icon if a backup cannot be read', async () => {
+    const t = makeTestEnv({ savedFolder: true })
+    t.folder.writeText('data.json', serializeAppData(sampleData()))
+    const backups = await t.folder.getDirectoryHandle('backups', { create: true })
+    backups.writeText('data-2026-10-20_10-00-00.json', '{broken')
+    const icons = await t.folder.getDirectoryHandle('icons', { create: true })
+    icons.writeText('orphan.png', 'png')
+
+    const session = await launch(t)
+    await session.sweeping
+    expect(icons.fileNames()).toEqual(['orphan.png'])
+  })
+
+  it('reads and writes icons through the open storage', async () => {
+    const t = makeTestEnv({ savedFolder: true })
+    const session = await launch(t)
+    expect(await session.readIcon('a.png')).toBeNull()
+    await session.writeIcon('a.png', new Blob(['x'], { type: 'image/png' }))
+    expect(await (await session.readIcon('a.png'))?.text()).toBe('x')
+  })
+})
