@@ -81,6 +81,7 @@ export function ProfilePicker() {
             <Copy />
             {ru.profiles.duplicate}
           </DropdownMenuItem>
+          <DropdownMenuSeparator />
           <DropdownMenuItem
             variant="destructive"
             disabled={!removable}
