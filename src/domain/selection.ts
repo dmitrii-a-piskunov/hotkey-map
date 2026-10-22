@@ -31,6 +31,12 @@ export interface SelectableInput extends Rect {
    * (Mouse 5 → ЛКМ → колесо потеряло бы ЛКМ).
    */
   byOverlap?: boolean
+  /**
+   * Ряд клавиатуры, в котором вход стоит для ←/→: кнопка мыши ведёт себя
+   * как клавиша этого ряда по отношению к клавишам и к другим входам с
+   * рядом. С остальными входами мыши — по настоящему прямоугольнику.
+   */
+  row?: { y: number; h: number }
 }
 
 export interface SelectionState {
@@ -62,23 +68,51 @@ export const PLAN_GAP = 1
 /**
  * Все выделяемые входы на общем плане: клавиши (кроме неназначаемых) и
  * кнопки мыши справа от клавиатуры, верхние края на одной высоте.
+ *
+ * rowKeys ставит кнопку мыши в ряд клавиши для ←/→: например, ЛКМ — в ряд
+ * F12, Mouse 5 — в ряд Delete. Тогда ← с ЛКМ ведёт на F12, а не на Mouse 5,
+ * хотя Mouse 5 на плане левее и задевает ЛКМ по высоте.
  */
-export function planInputs(keyboard: KeyboardLayout, mouse: MouseLayout): SelectableInput[] {
+export function planInputs(
+  keyboard: KeyboardLayout,
+  mouse: MouseLayout,
+  rowKeys: Readonly<Partial<Record<InputCode, InputCode>>> = {},
+): SelectableInput[] {
   const sidePad = Math.max(0, ...mouse.inputs.map((i) => -i.x))
   const dx = keyboard.width + PLAN_GAP + sidePad
+  const keys = selectableKeys(keyboard)
   return [
-    ...selectableKeys(keyboard),
-    ...mouse.inputs.map((i) => ({
-      code: i.code,
-      x: i.x + dx,
-      y: i.y,
-      w: i.w,
-      h: i.h,
-      byOverlap: true,
-      // Прокрутка и нажатие колеса — одна группа
-      ...(i.kind === 'wheel' || i.kind === 'scroll' ? { group: 'wheel' } : {}),
-    })),
+    ...keys,
+    ...mouse.inputs.map((i): SelectableInput => {
+      const rowKey = keys.find((k) => k.code === rowKeys[i.code])
+      return {
+        code: i.code,
+        x: i.x + dx,
+        y: i.y,
+        w: i.w,
+        h: i.h,
+        byOverlap: true,
+        // Прокрутка и нажатие колеса — одна группа
+        ...(i.kind === 'wheel' || i.kind === 'scroll' ? { group: 'wheel' } : {}),
+        ...(rowKey ? { row: { y: rowKey.y, h: rowKey.h } } : {}),
+      }
+    }),
   ]
+}
+
+/**
+ * Вертикальные отрезки для ←/→ от from к to. Клавиша сравнивается с рядом
+ * кнопки мыши. Кнопка с рядом сравнивает свой ряд с настоящим
+ * прямоугольником другой кнопки с рядом: ЛКМ стоит в ряду F12, поэтому ← с
+ * неё не цепляет Mouse 5, но для → с Mouse 5 ЛКМ по-прежнему рядом. Между
+ * остальными кнопками мыши (колесо, ПКМ) ряды не действуют.
+ */
+function rowSpans(from: SelectableInput, to: SelectableInput): [Rect, Rect] {
+  const fromKey = !from.byOverlap
+  const toKey = !to.byOverlap
+  const a = from.row && (toKey || to.row) ? { ...from, ...from.row } : from
+  const b = to.row && fromKey ? { ...to, ...to.row } : to
+  return [a, b]
 }
 
 function find(
@@ -211,9 +245,11 @@ export function neighbor(
 
   if (dir === 'left' || dir === 'right') {
     const sign = dir === 'right' ? 1 : -1
-    const sameRow = candidates.filter(
-      (c) => c.dx * sign > EPSILON && overlaps(from.y, from.h, c.input.y, c.input.h),
-    )
+    const sameRow = candidates.filter((c) => {
+      if (c.dx * sign <= EPSILON) return false
+      const [a, b] = rowSpans(from, c.input)
+      return overlaps(a.y, a.h, b.y, b.h)
+    })
     sameRow.sort((a, b) => Math.abs(a.dx) - Math.abs(b.dx) || Math.abs(a.dy) - Math.abs(b.dy))
     return sameRow[0]?.input.code ?? code
   }

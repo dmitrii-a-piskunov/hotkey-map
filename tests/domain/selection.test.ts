@@ -12,10 +12,11 @@ import {
   selectableKeys,
   type SelectionState,
 } from '@/domain/selection'
+import { MOUSE_ROW_KEYS } from '@/features/devices/devices'
 import { aulaF75 } from '@/layouts/aula-f75'
 import { mouse2Side } from '@/layouts/mouse'
 
-const inputs = planInputs(aulaF75, mouse2Side)
+const inputs = planInputs(aulaF75, mouse2Side, MOUSE_ROW_KEYS)
 
 const plain = { ctrl: false, shift: false }
 const ctrl = { ctrl: true, shift: false }
@@ -185,6 +186,28 @@ describe('neighbor', () => {
     expect(neighbor(inputs, 'MouseLeft', 'down')).toBe('Mouse5')
     expect(neighbor(inputs, 'Mouse5', 'down')).toBe('Mouse4')
   })
+
+  it('treats ЛКМ, Mouse 5 and Mouse 4 as keys in the F12, Delete and PgUp rows', () => {
+    expect(neighbor(inputs, 'F12', 'right')).toBe('MouseLeft')
+    expect(neighbor(inputs, 'MouseLeft', 'left')).toBe('F12')
+    expect(neighbor(inputs, 'PageUp', 'right')).toBe('Mouse4')
+    expect(neighbor(inputs, 'Mouse4', 'left')).toBe('PageUp')
+    expect(neighbor(inputs, 'Mouse5', 'up')).toBe('MouseLeft')
+    expect(neighbor(inputs, 'Mouse4', 'up')).toBe('Mouse5')
+    expect(neighbor(inputs, 'Mouse5', 'right')).toBe('MouseLeft')
+  })
+
+  it('keeps moves between ЛКМ, the wheel and ПКМ as they were', () => {
+    const plain = planInputs(aulaF75, mouse2Side)
+    for (const code of ['MouseLeft', 'MouseMiddle', 'WheelUp', 'WheelDown', 'MouseRight']) {
+      for (const dir of ['right', 'up', 'down'] as const) {
+        expect(neighbor(inputs, code, dir), `${code} ${dir}`).toBe(neighbor(plain, code, dir))
+      }
+    }
+    for (const code of ['MouseMiddle', 'WheelUp', 'WheelDown', 'MouseRight']) {
+      expect(neighbor(inputs, code, 'left'), code).toBe(neighbor(plain, code, 'left'))
+    }
+  })
 })
 
 describe('navigate', () => {
@@ -227,7 +250,8 @@ describe('navigate', () => {
 
   it('Shift+arrows extend from a mouse input', () => {
     const s = click(emptySelection, 'MouseLeft')
-    expect(navigate(s, 'left', true, inputs).selected).toEqual(['MouseLeft', 'Mouse5'])
+    expect(navigate(s, 'down', true, inputs).selected).toEqual(['MouseLeft', 'Mouse5'])
+    expect(navigate(s, 'left', true, inputs).selected).toEqual(['F12', 'MouseLeft'])
   })
 })
 

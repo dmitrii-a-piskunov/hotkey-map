@@ -62,3 +62,25 @@ test('TC-14: navigation with Shift+arrows', async ({ page }) => {
   await page.keyboard.press('Shift+ArrowRight')
   expect(await selectedCodes(page)).toEqual(['KeyE', 'KeyQ', 'KeyW'])
 })
+
+test('arrows treat ЛКМ, Mouse 5 and Mouse 4 as keys in the F12, Delete and PgUp rows', async ({
+  page,
+}) => {
+  await page.goto(APP_URL)
+  await page.getByRole('radio', { name: 'Навигация' }).click()
+  await key(page, 'MouseLeft').click()
+  const steps: [string, string][] = [
+    ['ArrowLeft', 'F12'],
+    ['ArrowRight', 'MouseLeft'],
+    ['ArrowDown', 'Mouse5'],
+    ['ArrowLeft', 'Delete'],
+    ['ArrowRight', 'Mouse5'],
+    ['ArrowDown', 'Mouse4'],
+    ['ArrowLeft', 'PageUp'],
+    ['ArrowRight', 'Mouse4'],
+  ]
+  for (const [arrow, expected] of steps) {
+    await page.keyboard.press(arrow)
+    expect(await selectedCodes(page), `${arrow} → ${expected}`).toEqual([expected])
+  }
+})
