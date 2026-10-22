@@ -167,6 +167,11 @@
     transition: transform var(--press-ms) ease-out;
   }
 
+  /* Resizing (window, Ctrl+wheel zoom): no transitions, the keyboard stays solid */
+  [data-instant] :is(.cap3d-faces path, .cap3d-top) {
+    transition: none;
+  }
+
   .cap3d-top {
     position: absolute;
     top: 0;

@@ -1,4 +1,4 @@
-import { memo, useId, useMemo, type CSSProperties } from 'react'
+import { memo, useEffect, useId, useMemo, useState, type CSSProperties } from 'react'
 import { InputCap } from '@/components/devices/input-cap'
 import {
   boundsOf,
@@ -96,6 +96,7 @@ const Key3D = memo(function Key3D({
         {shape.left && <path style={face(shape.left, 'var(--cap-side-3d)')} />}
         {shape.right && <path style={face(shape.right, 'var(--cap-side-dark-3d)')} />}
         <path style={face(shape.front, `url(#${gradId}-front-${style})`)} />
+        <path style={face(shape.underlay, 'var(--cap-side-3d)')} />
       </svg>
       <div className="cap3d-top" style={top}>
         <KeyLabels keyDef={k} labelLang={labelLang} />
@@ -118,6 +119,19 @@ export function Keyboard3D({
 }: KeyboardProps) {
   const id = useId()
   const scene = useMemo(() => keyboard3d(layout), [layout])
+  // Смена размера (окно, Ctrl+колесо) — без анимации нажатия: иначе все грани
+  // плавно перетекали бы к новому размеру и клавиатура «плыла»
+  const [sizedUnit, setSizedUnit] = useState(unit)
+  const resizing = sizedUnit !== unit
+  useEffect(() => {
+    if (!resizing) return
+    const frame = requestAnimationFrame(() => {
+      setSizedUnit(unit)
+    })
+    return () => {
+      cancelAnimationFrame(frame)
+    }
+  }, [resizing, unit])
   const { box } = scene
   const px = (p: Vec[]) => svgPoints(p, box, unit)
   const style = {
@@ -132,7 +146,13 @@ export function Keyboard3D({
   } as CSSProperties
 
   return (
-    <div role="group" aria-label={ru.devices.keyboard} className="relative" style={style}>
+    <div
+      role="group"
+      aria-label={ru.devices.keyboard}
+      className="relative"
+      style={style}
+      data-instant={resizing || undefined}
+    >
       <svg
         aria-hidden="true"
         className="device-3d-svg absolute inset-0"
