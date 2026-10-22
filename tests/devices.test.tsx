@@ -1,7 +1,9 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { App } from '@/app/app'
+import { Workspace } from '@/app/workspace'
+import { createAppData } from '@/domain/app-data'
+import { useDataStore } from '@/features/data/store'
 import { initialDevicesData, useDevicesStore } from '@/features/devices/store'
 import { ru } from '@/i18n/ru'
 
@@ -26,19 +28,22 @@ function keyUp(code: string, init: KeyboardEventInit = {}): boolean {
   return fireEvent.keyUp(window, { code, key: init.key ?? code, ...init })
 }
 
+const settings = () => useDataStore.getState().data.appSettings
+
 beforeEach(() => {
   useDevicesStore.setState(initialDevicesData)
+  useDataStore.getState().replaceData(createAppData())
 })
 
 describe('devices rendering', () => {
   it('renders 80 keys and 7 mouse inputs', () => {
-    render(<App />)
+    render(<Workspace />)
     expect(document.querySelectorAll('[data-kind="key"]')).toHaveLength(80)
     expect(document.querySelectorAll('[data-kind="mouse"]')).toHaveLength(7)
   })
 
   it('shows both EN and RU labels on letter keys', () => {
-    render(<App />)
+    render(<Workspace />)
     expect(input('KeyQ')).toHaveTextContent('Q')
     expect(input('KeyQ')).toHaveTextContent('Й')
   })
@@ -46,7 +51,7 @@ describe('devices rendering', () => {
 
 describe('mouse selection (FR-13)', () => {
   it('TC-06: click Q, Shift+click D, Ctrl+click F', () => {
-    render(<App />)
+    render(<Workspace />)
     fireEvent.click(input('KeyQ'))
     fireEvent.click(input('KeyD'), { shiftKey: true })
     fireEvent.click(input('KeyF'), { ctrlKey: true })
@@ -54,7 +59,7 @@ describe('mouse selection (FR-13)', () => {
   })
 
   it('Ctrl+click on a selected key removes only that key', () => {
-    render(<App />)
+    render(<Workspace />)
     fireEvent.click(input('KeyQ'))
     fireEvent.click(input('KeyW'), { ctrlKey: true })
     fireEvent.click(input('KeyQ'), { ctrlKey: true })
@@ -62,20 +67,20 @@ describe('mouse selection (FR-13)', () => {
   })
 
   it('selects mouse inputs by click', () => {
-    render(<App />)
+    render(<Workspace />)
     fireEvent.click(input('MouseLeft'))
     fireEvent.click(input('WheelUp'), { ctrlKey: true })
     expect(selectedCodes()).toEqual(['MouseLeft', 'WheelUp'])
   })
 
   it('Fn is not selectable', () => {
-    render(<App />)
+    render(<Workspace />)
     fireEvent.click(input('Fn'))
     expect(selectedCodes()).toEqual([])
   })
 
   it('click on empty space clears selection', () => {
-    render(<App />)
+    render(<Workspace />)
     fireEvent.click(input('KeyQ'))
     const stage = screen.getByTestId('device-stage')
     fireEvent.pointerDown(stage, { button: 0, pointerId: 1, clientX: 5, clientY: 5 })
@@ -84,7 +89,7 @@ describe('mouse selection (FR-13)', () => {
   })
 
   it('marquee selects keys under the frame', () => {
-    render(<App />)
+    render(<Workspace />)
     // jsdom has no layout: give two keys a screen box
     const boxes: Record<string, DOMRect> = {
       KeyQ: new DOMRect(100, 100, 40, 40),
@@ -115,7 +120,7 @@ describe('pointer on keys (FR-01, FR-13)', () => {
   }
 
   it('click shows the key pressed while the button is held', () => {
-    render(<App />)
+    render(<Workspace />)
     fireEvent.pointerDown(input('KeyQ'), { button: 0, pointerId: 1, clientX: 10, clientY: 10 })
     expect(input('KeyQ')).toHaveAttribute('data-pressed')
     fireEvent.pointerUp(input('KeyQ'), { pointerId: 1, clientX: 10, clientY: 10 })
@@ -125,7 +130,7 @@ describe('pointer on keys (FR-01, FR-13)', () => {
   })
 
   it('marquee can start on a key and does not press it', () => {
-    render(<App />)
+    render(<Workspace />)
     fakeBoxes({ KeyQ: new DOMRect(100, 100, 40, 40), KeyW: new DOMRect(150, 100, 40, 40) })
     fireEvent.pointerDown(input('KeyQ'), { button: 0, pointerId: 1, clientX: 110, clientY: 110 })
     fireEvent.pointerMove(input('KeyQ'), { pointerId: 1, clientX: 170, clientY: 120 })
@@ -137,7 +142,7 @@ describe('pointer on keys (FR-01, FR-13)', () => {
 
 describe('check mode (FR-03)', () => {
   it('TC-07: real key press animates and selects the key', () => {
-    render(<App />)
+    render(<Workspace />)
     keyDown('KeyF', { key: 'f' })
     expect(input('KeyF')).toHaveAttribute('data-pressed')
     expect(selectedCodes()).toEqual(['KeyF'])
@@ -146,7 +151,7 @@ describe('check mode (FR-03)', () => {
   })
 
   it('combination with a modifier selects the main key', () => {
-    render(<App />)
+    render(<Workspace />)
     keyDown('ControlLeft', { key: 'Control', ctrlKey: true })
     keyDown('KeyQ', { key: 'q', ctrlKey: true })
     keyUp('KeyQ', { key: 'q', ctrlKey: true })
@@ -155,7 +160,7 @@ describe('check mode (FR-03)', () => {
   })
 
   it('modifier pressed and released alone selects itself', () => {
-    render(<App />)
+    render(<Workspace />)
     keyDown('ShiftLeft', { key: 'Shift', shiftKey: true })
     expect(selectedCodes()).toEqual([])
     keyUp('ShiftLeft', { key: 'Shift' })
@@ -163,7 +168,7 @@ describe('check mode (FR-03)', () => {
   })
 
   it('Shift+click does not select Shift on release', () => {
-    render(<App />)
+    render(<Workspace />)
     fireEvent.click(input('KeyQ'))
     keyDown('ShiftLeft', { key: 'Shift', shiftKey: true })
     fireEvent.mouseDown(input('KeyD'))
@@ -173,20 +178,20 @@ describe('check mode (FR-03)', () => {
   })
 
   it('Esc clears selection', () => {
-    render(<App />)
+    render(<Workspace />)
     fireEvent.click(input('KeyQ'))
     keyDown('Escape', { key: 'Escape' })
     expect(selectedCodes()).toEqual([])
   })
 
   it('prevents default except for browser combinations', () => {
-    render(<App />)
+    render(<Workspace />)
     expect(keyDown('F5', { key: 'F5' })).toBe(false)
     expect(keyDown('KeyW', { key: 'w', ctrlKey: true })).toBe(true)
   })
 
   it('wheel click selects MouseMiddle', () => {
-    render(<App />)
+    render(<Workspace />)
     fireEvent.mouseDown(window, { button: 1 })
     expect(selectedCodes()).toEqual(['MouseMiddle'])
     expect(input('MouseMiddle')).toHaveAttribute('data-pressed')
@@ -195,13 +200,13 @@ describe('check mode (FR-03)', () => {
   })
 
   it('wheel over the keyboard selects the scroll input', () => {
-    render(<App />)
+    render(<Workspace />)
     fireEvent.wheel(input('KeyQ'), { deltaY: 50 })
     expect(selectedCodes()).toEqual(['WheelDown'])
   })
 
   it('side mouse buttons select Mouse4 and Mouse5', () => {
-    render(<App />)
+    render(<Workspace />)
     fireEvent.mouseDown(window, { button: 3 })
     expect(selectedCodes()).toEqual(['Mouse4'])
     fireEvent.mouseUp(window, { button: 3 })
@@ -210,7 +215,7 @@ describe('check mode (FR-03)', () => {
   })
 
   it('wheel over the mouse selects the scroll input', () => {
-    render(<App />)
+    render(<Workspace />)
     fireEvent.wheel(screen.getByRole('group', { name: ru.devices.mouse }), { deltaY: -50 })
     expect(selectedCodes()).toEqual(['WheelUp'])
   })
@@ -218,7 +223,7 @@ describe('check mode (FR-03)', () => {
   it('ignores keys typed into text fields', () => {
     render(
       <>
-        <App />
+        <Workspace />
         <input aria-label="field" />
       </>,
     )
@@ -230,11 +235,11 @@ describe('check mode (FR-03)', () => {
 
 describe('navigation mode (FR-03)', () => {
   beforeEach(() => {
-    useDevicesStore.setState({ inputMode: 'nav' })
+    useDataStore.getState().updateSettings({ inputMode: 'nav' })
   })
 
   it('TC-14: select Q, Shift+→ twice selects Q W E, screen arrows are not selected', () => {
-    render(<App />)
+    render(<Workspace />)
     fireEvent.click(input('KeyQ'))
     keyDown('ArrowRight', { key: 'ArrowRight', shiftKey: true })
     keyDown('ArrowRight', { key: 'ArrowRight', shiftKey: true })
@@ -243,7 +248,7 @@ describe('navigation mode (FR-03)', () => {
   })
 
   it('arrows move selection, keys do not select themselves', () => {
-    render(<App />)
+    render(<Workspace />)
     fireEvent.click(input('KeyQ'))
     keyDown('ArrowDown', { key: 'ArrowDown' })
     keyDown('KeyF', { key: 'f' })
@@ -254,38 +259,38 @@ describe('navigation mode (FR-03)', () => {
 
 describe('label language (FR-04)', () => {
   it('in EN and RU switches by the typed character', () => {
-    useDevicesStore.setState({ labelLang: 'en' })
-    render(<App />)
+    useDataStore.getState().updateSettings({ labelLang: 'en' })
+    render(<Workspace />)
     keyDown('KeyQ', { key: 'й' })
-    expect(useDevicesStore.getState().labelLang).toBe('ru')
+    expect(settings().labelLang).toBe('ru')
     keyDown('KeyQ', { key: 'q' })
-    expect(useDevicesStore.getState().labelLang).toBe('en')
+    expect(settings().labelLang).toBe('en')
   })
 
   it('EN/RU never switches by itself', () => {
-    render(<App />)
+    render(<Workspace />)
     keyDown('KeyQ', { key: 'й' })
-    expect(useDevicesStore.getState().labelLang).toBe('enru')
+    expect(settings().labelLang).toBe('enru')
   })
 
   it('does not switch when auto is off', () => {
-    useDevicesStore.setState({ labelLang: 'en', autoLang: false })
-    render(<App />)
+    useDataStore.getState().updateSettings({ labelLang: 'en', autoLang: false })
+    render(<Workspace />)
     keyDown('KeyQ', { key: 'й' })
-    expect(useDevicesStore.getState().labelLang).toBe('en')
+    expect(settings().labelLang).toBe('en')
   })
 
   it('EN and RU show one centered legend for letters, digits and symbols', () => {
-    useDevicesStore.setState({ labelLang: 'ru' })
-    const { unmount } = render(<App />)
+    useDataStore.getState().updateSettings({ labelLang: 'ru' })
+    const { unmount } = render(<Workspace />)
     expect(input('KeyQ').textContent).toBe('Й')
     expect(input('Digit3').textContent).toBe('3')
     expect(input('Slash').textContent).toBe('.')
     expect(input('Tab')).toHaveTextContent('Tab')
     expect(input('Space').textContent).toBe('Пробел')
     unmount()
-    useDevicesStore.setState({ labelLang: 'en' })
-    render(<App />)
+    useDataStore.getState().updateSettings({ labelLang: 'en' })
+    render(<Workspace />)
     expect(input('KeyQ').textContent).toBe('Q')
     expect(input('Digit3').textContent).toBe('3')
     expect(input('Slash').textContent).toBe('/')
@@ -296,11 +301,11 @@ describe('label language (FR-04)', () => {
 describe('header switches', () => {
   it('switches input mode, label language and view', async () => {
     const user = userEvent.setup()
-    render(<App />)
+    render(<Workspace />)
     await user.click(screen.getByRole('radio', { name: ru.header.modeNav }))
-    expect(useDevicesStore.getState().inputMode).toBe('nav')
+    expect(settings().inputMode).toBe('nav')
     await user.click(screen.getByRole('radio', { name: 'RU' }))
-    expect(useDevicesStore.getState().labelLang).toBe('ru')
+    expect(settings().labelLang).toBe('ru')
     await user.click(screen.getByRole('radio', { name: '2D' }))
     expect(screen.getByTestId('device-stage')).toHaveAttribute('data-view', '2d')
   })
@@ -308,7 +313,7 @@ describe('header switches', () => {
 
 describe('not assignable keys', () => {
   it('Fn shows the red frame and the hint below while the mouse button is held', () => {
-    render(<App />)
+    render(<Workspace />)
     fireEvent.pointerDown(input('Fn'), { button: 0 })
     expect(input('Fn')).toHaveAttribute('data-rejected')
     const hint = screen.getByRole('status')
@@ -320,7 +325,7 @@ describe('not assignable keys', () => {
   })
 
   it('Win and the knob react too and stay unselected; the knob hint is above', () => {
-    render(<App />)
+    render(<Workspace />)
     fireEvent.pointerDown(input('MetaLeft'), { button: 0 })
     expect(input('MetaLeft')).toHaveAttribute('data-rejected')
     fireEvent.pointerUp(window)
@@ -336,7 +341,7 @@ describe('not assignable keys', () => {
 
 describe('mouse in ranges and marquee (FR-13)', () => {
   it('marquee ignores a key whose top face it does not touch', () => {
-    render(<App />)
+    render(<Workspace />)
     for (const el of document.querySelectorAll<HTMLElement>('[data-input-code]')) {
       const far = new DOMRect(-100, -100, 1, 1)
       el.getBoundingClientRect = () =>
@@ -355,14 +360,14 @@ describe('mouse in ranges and marquee (FR-13)', () => {
   })
 
   it('Shift+click from a key to a mouse button selects both and keys between', () => {
-    render(<App />)
+    render(<Workspace />)
     fireEvent.click(input('KeyQ'))
     fireEvent.click(input('MouseLeft'), { shiftKey: true })
     expect(selectedCodes()).toEqual(expect.arrayContaining(['KeyQ', 'PageUp', 'MouseLeft']))
   })
 
   it('marquee selects mouse buttons', () => {
-    render(<App />)
+    render(<Workspace />)
     const boxes: Record<string, DOMRect> = {
       PageUp: new DOMRect(100, 100, 40, 40),
       Mouse5: new DOMRect(160, 100, 10, 30),

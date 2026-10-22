@@ -22,6 +22,7 @@ import {
   type InputCode,
   type SelectionState,
 } from '@/domain/selection'
+import { useSettings } from '@/features/data/store'
 import { keyboardLayout, mouseLayout } from '@/features/devices/devices'
 import { useDevicesStore } from '@/features/devices/store'
 import { ru } from '@/i18n/ru'
@@ -112,9 +113,9 @@ export function DeviceStage() {
 
   const selection = useDevicesStore((s) => s.selection)
   const pressedList = useDevicesStore((s) => s.pressed)
-  const inputMode = useDevicesStore((s) => s.inputMode)
-  const labelLang = useDevicesStore((s) => s.labelLang)
-  const view = useDevicesStore((s) => s.view)
+  const inputMode = useSettings((s) => s.inputMode)
+  const labelLang = useSettings((s) => s.labelLang)
+  const view = useSettings((s) => s.view)
   const click = useDevicesStore((s) => s.click)
 
   const selected = useMemo(() => new Set(selection.selected), [selection])

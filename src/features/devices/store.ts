@@ -1,10 +1,10 @@
 /**
- * Состояние устройств: выделение, нажатые клавиши, режимы ввода и вида.
+ * Состояние устройств: выделение и нажатые клавиши. Живёт только в сессии;
+ * режимы ввода, подписей и вида — в appSettings (src/features/data/store).
  * Логика выделения — в src/domain/selection, здесь только хранение.
  */
 
 import { create } from 'zustand'
-import type { LabelMode } from '@/domain/input'
 import {
   clickSelect,
   emptySelection,
@@ -17,20 +17,10 @@ import {
 } from '@/domain/selection'
 import { selectableInputs } from './devices'
 
-/** «Проверка нажатий» или «Навигация» (ТЗ, FR-03) */
-export type InputMode = 'check' | 'nav'
-export type ViewMode = '3d' | '2d'
-
 interface DevicesData {
   selection: SelectionState
   /** Входы, которые сейчас зажаты на настоящей клавиатуре или мыши */
   pressed: readonly InputCode[]
-  inputMode: InputMode
-  /** Режим подписей: EN/RU, EN или RU (FR-04) */
-  labelLang: LabelMode
-  /** В режимах EN и RU переключать раскладку по последней нажатой клавише */
-  autoLang: boolean
-  view: ViewMode
 }
 
 interface DevicesActions {
@@ -43,10 +33,6 @@ interface DevicesActions {
   press: (code: InputCode) => void
   release: (code: InputCode) => void
   releaseAll: () => void
-  setInputMode: (mode: InputMode) => void
-  setLabelLang: (mode: LabelMode) => void
-  setAutoLang: (auto: boolean) => void
-  setView: (view: ViewMode) => void
 }
 
 export type DevicesState = DevicesData & DevicesActions
@@ -54,10 +40,6 @@ export type DevicesState = DevicesData & DevicesActions
 export const initialDevicesData: DevicesData = {
   selection: emptySelection,
   pressed: [],
-  inputMode: 'check',
-  labelLang: 'enru',
-  autoLang: true,
-  view: '3d',
 }
 
 export const useDevicesStore = create<DevicesState>()((set) => ({
@@ -92,17 +74,5 @@ export const useDevicesStore = create<DevicesState>()((set) => ({
   },
   releaseAll: () => {
     set({ pressed: [] })
-  },
-  setInputMode: (inputMode) => {
-    set({ inputMode, pressed: [] })
-  },
-  setLabelLang: (labelLang) => {
-    set({ labelLang })
-  },
-  setAutoLang: (autoLang) => {
-    set({ autoLang })
-  },
-  setView: (view) => {
-    set({ view })
   },
 }))

@@ -8,7 +8,7 @@ import {
   type Bounds,
   type Vec,
 } from '@/components/devices/projection'
-import type { ViewMode } from '@/features/devices/store'
+import type { ViewMode } from '@/domain/types'
 import {
   mouseOutline,
   type MouseInputCode,

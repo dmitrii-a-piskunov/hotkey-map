@@ -11,6 +11,7 @@ import {
   isReservedCombo,
   mouseCodeForButton,
 } from '@/domain/input'
+import { useDataStore } from '@/features/data/store'
 import { isKeyboardCode, mouseLayout } from './devices'
 import { useDevicesStore } from './store'
 
@@ -35,24 +36,25 @@ export function useKeyboardInput(): void {
     function onKeyDown(e: KeyboardEvent) {
       if (isEditableTarget(e.target)) return
       const store = useDevicesStore.getState()
+      const settings = useDataStore.getState().data.appSettings
 
       // FR-04: в режимах EN и RU раскладка подписей следует за последней клавишей;
       // EN/RU выбирается только вручную и сам не меняется
       const lang = detectLabelLang(e.key)
-      if (lang && store.autoLang && store.labelLang !== 'enru' && lang !== store.labelLang)
-        store.setLabelLang(lang)
+      if (lang && settings.autoLang && settings.labelLang !== 'enru' && lang !== settings.labelLang)
+        useDataStore.getState().updateSettings({ labelLang: lang })
 
       if (isReservedCombo(e)) return
       e.preventDefault()
 
       if (e.code === 'Escape') {
         lonelyModifier = null
-        if (store.inputMode === 'check') store.press(e.code)
+        if (settings.inputMode === 'check') store.press(e.code)
         store.clearSelection()
         return
       }
 
-      if (store.inputMode === 'nav') {
+      if (settings.inputMode === 'nav') {
         const dir = arrowDirection(e.code)
         if (dir) store.navigate(dir, e.shiftKey)
         else if (e.code === 'KeyA' && e.ctrlKey) store.selectAllOccupied()
@@ -75,7 +77,8 @@ export function useKeyboardInput(): void {
       store.release(e.code)
       if (lonelyModifier === e.code) {
         lonelyModifier = null
-        if (store.inputMode === 'check' && !isEditableTarget(e.target)) store.selectOnly(e.code)
+        const { inputMode } = useDataStore.getState().data.appSettings
+        if (inputMode === 'check' && !isEditableTarget(e.target)) store.selectOnly(e.code)
       }
     }
 
@@ -84,8 +87,8 @@ export function useKeyboardInput(): void {
       lonelyModifier = null
       if (!TRACKED_BUTTONS.has(e.button)) return
       e.preventDefault()
+      if (useDataStore.getState().data.appSettings.inputMode !== 'check') return
       const store = useDevicesStore.getState()
-      if (store.inputMode !== 'check') return
       const code = mouseCodeForButton(mouseLayout, e.button)
       if (code) {
         store.press(code)

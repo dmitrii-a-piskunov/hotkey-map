@@ -2,7 +2,10 @@ import { Keyboard } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import type { LabelMode } from '@/domain/input'
-import { useDevicesStore, type InputMode, type ViewMode } from '@/features/devices/store'
+import type { InputMode, ViewMode } from '@/domain/types'
+import { useDataStore, useSettings } from '@/features/data/store'
+import { useDevicesStore } from '@/features/devices/store'
+import { SaveStatusIndicator } from '@/features/persistence/storage-banners'
 import { ru } from '@/i18n/ru'
 
 interface SegmentedProps<T extends string> {
@@ -52,14 +55,12 @@ const VIEWS = [
 ] as const satisfies readonly { value: ViewMode; label: string }[]
 
 export function AppHeader() {
-  const inputMode = useDevicesStore((s) => s.inputMode)
-  const labelLang = useDevicesStore((s) => s.labelLang)
-  const view = useDevicesStore((s) => s.view)
-  const setInputMode = useDevicesStore((s) => s.setInputMode)
-  const setLabelLang = useDevicesStore((s) => s.setLabelLang)
-  const autoLang = useDevicesStore((s) => s.autoLang)
-  const setAutoLang = useDevicesStore((s) => s.setAutoLang)
-  const setView = useDevicesStore((s) => s.setView)
+  const inputMode = useSettings((s) => s.inputMode)
+  const labelLang = useSettings((s) => s.labelLang)
+  const autoLang = useSettings((s) => s.autoLang)
+  const view = useSettings((s) => s.view)
+  const updateSettings = useDataStore((s) => s.updateSettings)
+  const releaseAll = useDevicesStore((s) => s.releaseAll)
 
   return (
     <header className="flex h-12 shrink-0 items-center gap-4 border-b bg-background px-4">
@@ -69,18 +70,24 @@ export function AppHeader() {
         <span className="text-xs text-muted-foreground">{__APP_VERSION__}</span>
       </div>
       <div className="ml-auto flex items-center gap-3">
+        <SaveStatusIndicator />
         <Segmented
           label={ru.header.inputMode}
           value={inputMode}
           options={INPUT_MODES}
-          onChange={setInputMode}
+          onChange={(mode) => {
+            updateSettings({ inputMode: mode })
+            releaseAll()
+          }}
         />
         <div className="flex items-center gap-1">
           <Segmented
             label={ru.header.labelLang}
             value={labelLang}
             options={LABEL_MODES}
-            onChange={setLabelLang}
+            onChange={(mode) => {
+              updateSettings({ labelLang: mode })
+            }}
           />
           {/* Автопереключение EN ↔ RU по последней клавише; в EN/RU не действует */}
           <ToggleGroup
@@ -88,7 +95,7 @@ export function AppHeader() {
             aria-label={ru.header.autoLang}
             value={autoLang ? ['auto'] : []}
             onValueChange={(next) => {
-              setAutoLang(next.includes('auto'))
+              updateSettings({ autoLang: next.includes('auto') })
             }}
           >
             <ToggleGroupItem value="auto" title={ru.header.autoLangHint}>
@@ -96,7 +103,14 @@ export function AppHeader() {
             </ToggleGroupItem>
           </ToggleGroup>
         </div>
-        <Segmented label={ru.header.view} value={view} options={VIEWS} onChange={setView} />
+        <Segmented
+          label={ru.header.view}
+          value={view}
+          options={VIEWS}
+          onChange={(v) => {
+            updateSettings({ view: v })
+          }}
+        />
       </div>
     </header>
   )
