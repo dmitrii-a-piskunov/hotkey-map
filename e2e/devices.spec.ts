@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { APP_URL } from './app-url.ts'
 
 const key = (page: Page, code: string) => page.locator(`[data-input-code="${code}"]`)
 
@@ -12,7 +13,7 @@ async function selectedCodes(page: Page): Promise<string[]> {
 for (const view of ['3D', '2D'] as const) {
   test.describe(`${view} view`, () => {
     test.beforeEach(async ({ page }) => {
-      await page.goto('/')
+      await page.goto(APP_URL)
       await page.getByRole('radio', { name: view }).click()
       // Убираем фокус с кнопки шапки, чтобы стрелки не уходили в неё
       await page.mouse.click(5, 300)
@@ -54,7 +55,7 @@ for (const view of ['3D', '2D'] as const) {
 }
 
 test('TC-14: navigation with Shift+arrows', async ({ page }) => {
-  await page.goto('/')
+  await page.goto(APP_URL)
   await page.getByRole('radio', { name: 'Навигация' }).click()
   await key(page, 'KeyQ').click()
   await page.keyboard.press('Shift+ArrowRight')
