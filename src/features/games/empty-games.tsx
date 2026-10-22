@@ -6,7 +6,7 @@ import { useGamesUi } from './ui-store'
 /** Пустое состояние «Нет игр» (раздел 8.2) */
 export function EmptyGames() {
   return (
-    <aside className="flex w-80 shrink-0 flex-col items-center justify-center gap-4 border-l p-6 text-center">
+    <aside className="flex w-80 shrink-0 flex-col items-center justify-center gap-4 border-r p-6 text-center">
       <Gamepad2 className="size-10 text-muted-foreground" aria-hidden="true" />
       <div className="grid gap-1">
         <h2 className="text-base font-semibold">{ru.games.emptyTitle}</h2>

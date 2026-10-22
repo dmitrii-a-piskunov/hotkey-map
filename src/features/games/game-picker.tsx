@@ -1,4 +1,6 @@
-import { ChevronDown, PackagePlus, Plus, Settings2 } from 'lucide-react'
+import { ChevronDown, PackagePlus, Plus, Settings2, Trash2 } from 'lucide-react'
+import { useState } from 'react'
+import { ConfirmDialog } from '@/components/common/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -9,9 +11,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { gameImpact } from '@/domain/games'
 import { useDataStore } from '@/features/data/store'
 import { ru } from '@/i18n/ru'
-import { selectGameCmd } from './commands'
+import { fill } from '@/lib/format'
+import { removeGameCmd, selectGameCmd } from './commands'
 import { GameIcon } from './game-icon'
 import { openEditor, useGamesUi } from './ui-store'
 import { useCurrentGame } from './use-current'
@@ -20,6 +24,7 @@ import { useCurrentGame } from './use-current'
 export function GamePicker() {
   const games = useDataStore((s) => s.data.games)
   const current = useCurrentGame()
+  const [confirmDelete, setConfirmDelete] = useState(false)
 
   return (
     <div className="flex items-center gap-1">
@@ -74,6 +79,20 @@ export function GamePicker() {
             <PackagePlus />
             {ru.games.fromPresets}
           </DropdownMenuItem>
+          {current && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                variant="destructive"
+                onSelect={() => {
+                  setConfirmDelete(true)
+                }}
+              >
+                <Trash2 />
+                {ru.editor.general.deleteGame}
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
       {current && (
@@ -89,6 +108,18 @@ export function GamePicker() {
         >
           <Settings2 />
         </Button>
+      )}
+      {current && (
+        // Удаление игры со всеми данными после подтверждения (FR-05, раздел 9.2)
+        <ConfirmDialog
+          open={confirmDelete}
+          onOpenChange={setConfirmDelete}
+          title={fill(ru.editor.general.deleteTitle, { name: current.name })}
+          description={fill(ru.editor.general.deleteText, { ...gameImpact(current) })}
+          onConfirm={() => {
+            removeGameCmd(current.id)
+          }}
+        />
       )}
     </div>
   )

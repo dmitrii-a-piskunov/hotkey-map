@@ -16,8 +16,8 @@ export function Workspace({ banners }: { banners?: ReactNode }) {
       <AppHeader />
       {banners}
       <main className="flex min-h-0 flex-1">
-        <DeviceStage />
         {!hasGames && <EmptyGames />}
+        <DeviceStage />
       </main>
       <GamesDialogs />
     </div>

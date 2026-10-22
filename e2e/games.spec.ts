@@ -148,3 +148,26 @@ test('a Steam desktop shortcut gives the game icon and AppID (FR-05)', async ({ 
   )
   await expect(editor(page).getByLabel('Steam AppID')).toHaveValue('570')
 })
+
+test('a game is deleted from the header after confirmation (FR-05)', async ({ page }) => {
+  await page.goto(APP_URL)
+  await page.getByRole('button', { name: 'Создать игру' }).click()
+  await page
+    .getByRole('dialog', { name: 'Новая игра' })
+    .getByLabel('Название')
+    .fill('Тестовая игра')
+  await page.getByRole('button', { name: 'Создать' }).click()
+  await page.keyboard.press('Escape')
+
+  await page.getByRole('button', { name: 'Выбор игры' }).click()
+  await page.getByRole('menuitem', { name: 'Удалить игру' }).click()
+  const confirm = page.getByRole('alertdialog', { name: 'Удалить игру «Тестовая игра»?' })
+  await expect(confirm).toContainText('профили (1), действия (0) и бинды (0)')
+  await confirm.getByRole('button', { name: 'Удалить' }).click()
+
+  await expect(page.getByText('Добавьте первую игру')).toBeVisible()
+  // Пустое состояние — слева от клавиатуры
+  const panel = await page.getByRole('complementary').boundingBox()
+  const stage = await page.getByTestId('device-stage').boundingBox()
+  expect(panel && stage && panel.x < stage.x).toBe(true)
+})
