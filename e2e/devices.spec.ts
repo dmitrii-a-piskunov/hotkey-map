@@ -70,7 +70,9 @@ test('arrows treat ЛКМ, Mouse 5 and Mouse 4 as keys in the F12, Delete and Pg
   await page.getByRole('radio', { name: 'Навигация' }).click()
   await key(page, 'MouseLeft').click()
   const steps: [string, string][] = [
+    ['ArrowLeft', 'Knob'],
     ['ArrowLeft', 'F12'],
+    ['ArrowRight', 'Knob'],
     ['ArrowRight', 'MouseLeft'],
     ['ArrowDown', 'Mouse5'],
     ['ArrowLeft', 'Delete'],
@@ -83,4 +85,46 @@ test('arrows treat ЛКМ, Mouse 5 and Mouse 4 as keys in the F12, Delete and Pg
     await page.keyboard.press(arrow)
     expect(await selectedCodes(page), `${arrow} → ${expected}`).toEqual([expected])
   }
+})
+
+test('Shift+↓ keeps the column under F12 and the mouse continues the rows', async ({ page }) => {
+  await page.goto(APP_URL)
+  await page.getByRole('radio', { name: 'Навигация' }).click()
+
+  await key(page, 'F12').click()
+  for (let i = 0; i < 3; i++) await page.keyboard.press('Shift+ArrowDown')
+  expect(await selectedCodes(page)).toEqual(['Backslash', 'Backspace', 'Enter', 'F12'])
+
+  await key(page, 'MouseLeft').click()
+  for (let i = 0; i < 3; i++) await page.keyboard.press('Shift+ArrowLeft')
+  await page.keyboard.press('Shift+ArrowDown')
+  expect(await selectedCodes(page)).toEqual(
+    ['Backspace', 'Delete', 'F11', 'F12', 'Knob', 'Mouse5', 'MouseLeft'].sort(),
+  )
+  await expect(key(page, 'Knob')).toHaveAttribute('data-rejected', 'true')
+})
+
+test('↑ follows the finger column: C → D → E → 4', async ({ page }) => {
+  await page.goto(APP_URL)
+  await page.getByRole('radio', { name: 'Навигация' }).click()
+  await key(page, 'KeyC').click()
+  for (const expected of ['KeyD', 'KeyE', 'Digit4']) {
+    await page.keyboard.press('ArrowUp')
+    expect(await selectedCodes(page)).toEqual([expected])
+  }
+})
+
+test('Win in a Shift range stays red; a click on it keeps the selection', async ({ page }) => {
+  await page.goto(APP_URL)
+  await page.getByRole('radio', { name: 'Навигация' }).click()
+  await key(page, 'ControlLeft').click()
+  await page.keyboard.press('Shift+ArrowRight')
+  expect(await selectedCodes(page)).toEqual(['ControlLeft', 'MetaLeft'])
+  await expect(key(page, 'MetaLeft')).toHaveAttribute('data-rejected', 'true')
+  await expect(page.locator('.cap-hint')).toHaveCount(0)
+
+  // aria-disabled: Playwright считает клавишу неактивной, но клик по ней — часть поведения
+  await key(page, 'MetaLeft').click({ force: true })
+  expect(await selectedCodes(page)).toEqual(['ControlLeft', 'MetaLeft'])
+  await expect(key(page, 'MetaLeft')).toHaveAttribute('data-rejected', 'true')
 })

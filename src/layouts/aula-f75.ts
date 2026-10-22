@@ -65,6 +65,18 @@ export interface IndicatorDef {
   h: number
 }
 
+/** Код регулятора: на него нельзя назначить бинд, но его можно выделить */
+export const KNOB_CODE = 'Knob'
+
+/**
+ * Сетка для стрелок и диапазонов (FR-13): ряды сверху вниз, в ячейках —
+ * коды клавиш. Широкая клавиша занимает несколько ячеек подряд, null —
+ * пустая ячейка. В буквенно-цифровом блоке столбец — пальцевая зона слепой
+ * печати, поэтому ↑ и ↓ идут по диагонали пальца (С → В → У → 4), а не по
+ * координате.
+ */
+export type NavGrid = readonly (readonly (string | null)[])[]
+
 export interface KeyboardLayout {
   id: string
   name: string
@@ -74,6 +86,7 @@ export interface KeyboardLayout {
   keys: KeyDef[]
   knob?: KnobDef
   indicator?: IndicatorDef
+  navGrid: NavGrid
 }
 
 const ROWS = {
@@ -235,6 +248,28 @@ const keys: KeyDef[] = [
   key('ArrowRight', 15, 5, '→'),
 ]
 
+/**
+ * Столбцы 1–13 — пальцевые зоны по схеме слепой печати: 1–2 левый мизинец
+ * (1 и 2 на цифрах), 3 безымянный, 4 средний, 5–6 левый указательный (5 и 6),
+ * 7–8 правый указательный (7), 9 средний, 10 безымянный, 11–13 правый
+ * мизинец (0, -, =). Остальные клавиши и ряд F — по положению. Справа от
+ * столбца 16 сетку продолжает мышь (src/features/devices/devices.ts).
+ */
+const navGrid: NavGrid = [
+  // prettier-ignore
+  ['Escape', null, 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F6', 'F7', 'F8', null, 'F9', 'F10', 'F11', 'F12', KNOB_CODE],
+  // prettier-ignore
+  ['Backquote', 'Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Digit6', 'Digit7', 'Digit7', 'Digit8', 'Digit9', 'Digit0', 'Minus', 'Equal', 'Backspace', 'Backspace', 'Delete'],
+  // prettier-ignore
+  ['Tab', 'Tab', 'KeyQ', 'KeyW', 'KeyE', 'KeyR', 'KeyT', 'KeyY', 'KeyU', 'KeyI', 'KeyO', 'KeyP', 'BracketLeft', 'BracketRight', 'Backslash', 'Backslash', 'PageUp'],
+  // prettier-ignore
+  ['CapsLock', 'CapsLock', 'KeyA', 'KeyS', 'KeyD', 'KeyF', 'KeyG', 'KeyH', 'KeyJ', 'KeyK', 'KeyL', 'Semicolon', 'Quote', 'Enter', 'Enter', 'Enter', 'PageDown'],
+  // prettier-ignore
+  ['ShiftLeft', 'ShiftLeft', 'KeyZ', 'KeyX', 'KeyC', 'KeyV', 'KeyB', 'KeyN', 'KeyM', 'Comma', 'Period', 'Slash', 'ShiftRight', 'ShiftRight', 'ShiftRight', 'ArrowUp', 'End'],
+  // prettier-ignore
+  ['ControlLeft', 'MetaLeft', 'AltLeft', 'AltLeft', 'Space', 'Space', 'Space', 'Space', 'Space', 'Space', 'Fn', 'ControlRight', 'ControlRight', null, 'ArrowLeft', 'ArrowDown', 'ArrowRight'],
+]
+
 export const aulaF75: KeyboardLayout = {
   id: 'aula-f75',
   name: 'AULA F75',
@@ -243,6 +278,7 @@ export const aulaF75: KeyboardLayout = {
   keys,
   knob: { cx: 15.5, cy: 0.5, d: 0.96 },
   indicator: { x: 1.5, y: 0.1, w: 0.08, h: 0.8 },
+  navGrid,
 }
 
 export default aulaF75

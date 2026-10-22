@@ -7,14 +7,22 @@ export const keyboardLayout = aulaF75
 export const mouseLayout = mouse2Side
 
 /**
- * Для стрелок ЛКМ, Mouse 5 и Mouse 4 стоят как клавиши в рядах F12, Delete
- * и PgUp: ← и → переходят между ними и этими клавишами, ↑ и ↓ — друг между
- * другом (FR-03, FR-13).
+ * Мышь — продолжение клавиатуры справа: ЛКМ, колесо и ПКМ стоят в ряду F12,
+ * Mouse 5 — в ряду Delete, Mouse 4 — в ряду PgUp. По этим рядам ходят
+ * стрелки и строятся диапазоны (FR-03, FR-13).
  */
-export const MOUSE_ROW_KEYS = { MouseLeft: 'F12', Mouse5: 'Delete', Mouse4: 'PageUp' }
+export const MOUSE_ROWS = {
+  MouseLeft: 'F12',
+  WheelUp: 'F12',
+  MouseMiddle: 'F12',
+  WheelDown: 'F12',
+  MouseRight: 'F12',
+  Mouse5: 'Delete',
+  Mouse4: 'PageUp',
+}
 
 /** Выделяемые клавиши и кнопки мыши на общем плане (FR-13) */
-export const selectableInputs = planInputs(keyboardLayout, mouseLayout, MOUSE_ROW_KEYS)
+export const selectableInputs = planInputs(keyboardLayout, mouseLayout, MOUSE_ROWS)
 
 const keyboardCodes = new Set(keyboardLayout.keys.map((k) => k.code))
 

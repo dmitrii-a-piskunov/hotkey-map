@@ -68,7 +68,7 @@ interface Drag {
   active: boolean
   /** Вход, на котором начали: клик по нему выделяет, а не снимает выделение */
   startCode: InputCode | null
-  /** Выделяемый вход под указателем при нажатии — его выделит клик (не Fn, Win, регулятор) */
+  /** Вход под указателем при нажатии — его обработает клик (Fn, Win и регулятор тоже) */
   clickCode: InputCode | null
   /** Вход, который показан нажатым с начала клика (FR-01, анимация нажатия) */
   pressedCode: InputCode | null
@@ -91,12 +91,12 @@ function toLocal(container: HTMLElement, r: Rect): Rect {
 /** Клавиши и кнопки мыши под рамкой — по экранным прямоугольникам, одинаково в 2D и 3D */
 function keyHitBoxes(container: HTMLElement): HitBox[] {
   const nodes = container.querySelectorAll<HTMLElement>(
-    ':is([data-kind="key"], [data-kind="mouse"])[data-input-code]:not([data-disabled])',
+    ':is([data-kind="key"], [data-kind="knob"], [data-kind="mouse"])[data-input-code]',
   )
   return Array.from(nodes, (node) => {
     // В 3D рамка смотрит только на верхнюю грань: блок клавиши захватывает и
     // боковые грани, и рамка цепляла бы клавиши «позади». В 2D — вся клавиша
-    const face = node.querySelector<HTMLElement>('.cap3d-top') ?? node
+    const face = node.querySelector<HTMLElement>('.cap3d-top, .knob-top') ?? node
     const r = face.getBoundingClientRect()
     return {
       code: node.dataset.inputCode ?? '',
@@ -169,7 +169,7 @@ export function DeviceStage() {
       additive: e.ctrlKey || e.metaKey,
       active: false,
       startCode: hit?.code ?? null,
-      clickCode: pressedCode,
+      clickCode: hit?.code ?? null,
       pressedCode,
     }
   }

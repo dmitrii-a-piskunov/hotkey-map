@@ -183,7 +183,15 @@ export function Keyboard3D({
         )}
         {scene.knob && <polygon points={px(scene.knob.side)} fill={`url(#${id}-knob)`} />}
       </svg>
-      {scene.knob && <Knob3D knob={scene.knob} origin={box} unit={unit} onSelect={onSelect} />}
+      {scene.knob && (
+        <Knob3D
+          knob={scene.knob}
+          origin={box}
+          unit={unit}
+          selected={selected.has(KNOB_CODE)}
+          onSelect={onSelect}
+        />
+      )}
       {scene.keys.map(({ key, up, down }) => {
         const isPressed = pressed.has(key.code)
         const shape = isPressed ? down : up
@@ -210,6 +218,7 @@ interface Knob3DProps {
   knob: NonNullable<Keyboard3d['knob']>
   origin: Vec
   unit: number
+  selected: boolean
   onSelect: (code: InputCode, mods: ClickModifiers) => void
 }
 
@@ -217,7 +226,7 @@ interface Knob3DProps {
  * Крышка регулятора: квадрат со скруглением 50 % переведён в проекцию —
  * получается точный эллипс, на который ложатся ободок и штриховка отказа.
  */
-const Knob3D = memo(function Knob3D({ knob, origin, unit, onSelect }: Knob3DProps) {
+const Knob3D = memo(function Knob3D({ knob, origin, unit, selected, onSelect }: Knob3DProps) {
   const box = boundsOf(knob.topQuad)
   const quad = knob.topQuad.map((p) => ({
     x: (p.x - box.x) * unit,
@@ -233,7 +242,7 @@ const Knob3D = memo(function Knob3D({ knob, origin, unit, onSelect }: Knob3DProp
       width={box.w * unit}
       height={box.h * unit}
       ariaLabel={`${ru.devices.knob}. ${ru.devices.notAssignable}`}
-      selected={false}
+      selected={selected}
       pressed={false}
       disabled
       className="knob knob-3d"

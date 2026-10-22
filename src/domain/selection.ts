@@ -4,21 +4,29 @@
  * Все функции чистые: принимают текущее состояние и раскладку, возвращают
  * новое состояние. Код входа — KeyboardEvent.code для клавиш или
  * MouseInputCode для мыши.
+ *
+ * Стрелки и диапазоны работают по логической сетке, как таблица: у каждого
+ * входа есть ряд и столбцы. Сетку клавиатуры задаёт раскладка (navGrid,
+ * столбцы буквенного блока — пальцевые зоны), мышь продолжает её справа.
  */
 
-import type { KeyboardLayout, KeyDef } from '@/layouts/aula-f75'
+import { KNOB_CODE, type KeyboardLayout } from '@/layouts/aula-f75'
 import type { MouseLayout } from '@/layouts/mouse'
-import { center, containsPoint, EPSILON, intersects, rectFromPoints, type Rect } from './geometry'
+import { center, EPSILON, intersects, type Rect } from './geometry'
 
 export type InputCode = string
 
 /**
- * Вход, который можно выделить: клавиша или кнопка мыши с прямоугольником
- * на общем плане в юнитах (мышь — справа от клавиатуры). По этому плану
- * считаются диапазоны Shift+клика и соседи для стрелок.
+ * Вход, который можно выделить: клавиша, регулятор или кнопка мыши.
+ * Прямоугольник — на общем плане в юнитах (мышь справа от клавиатуры).
  */
 export interface SelectableInput extends Rect {
   code: InputCode
+  device: 'keyboard' | 'mouse'
+  /** Ряд сетки сверху вниз (0 — ряд F) */
+  line: number
+  /** Первый и последний столбец сетки: широкая клавиша занимает несколько */
+  cols: readonly [number, number]
   /**
    * Входы одной группы попадают в диапазон вместе: если прямоугольник
    * диапазона задевает любой из них, выделяются все. Так колесо мыши
@@ -26,17 +34,10 @@ export interface SelectableInput extends Rect {
    */
   group?: string
   /**
-   * В диапазон по пересечению, а не по центру: кнопки мыши крупные и разной
-   * формы, и прямоугольник между центрами может их не накрыть
-   * (Mouse 5 → ЛКМ → колесо потеряло бы ЛКМ).
+   * Не передаётся в игры (Fn, Win, регулятор): выделяется красным, бинд на
+   * него не назначается, обычный клик выделение не меняет.
    */
-  byOverlap?: boolean
-  /**
-   * Ряд клавиатуры, в котором вход стоит для ←/→: кнопка мыши ведёт себя
-   * как клавиша этого ряда по отношению к клавишам и к другим входам с
-   * рядом. С остальными входами мыши — по настоящему прямоугольнику.
-   */
-  row?: { y: number; h: number }
+  blocked?: boolean
 }
 
 export interface SelectionState {
@@ -46,6 +47,13 @@ export interface SelectionState {
   anchor: InputCode | null
   /** Текущая позиция для навигации стрелками */
   focus: InputCode | null
+  /**
+   * Столбцы якоря и фокуса. ↑ и ↓ столбец не меняют, как в таблице: под
+   * пробелом стрелка вверх возвращает в тот столбец, откуда пришли.
+   * Нет поля — средний столбец входа.
+   */
+  anchorCol?: number
+  focusCol?: number
 }
 
 export const emptySelection: SelectionState = { selected: [], anchor: null, focus: null }
@@ -57,62 +65,102 @@ export interface ClickModifiers {
 
 export type Direction = 'up' | 'down' | 'left' | 'right'
 
-/** Клавиши, которые можно выделить (Fn, Win и регулятор — нельзя) */
-export function selectableKeys(layout: KeyboardLayout): KeyDef[] {
-  return layout.keys.filter((k) => k.assignable)
-}
-
 /** Зазор между клавиатурой и мышью на общем плане, в юнитах */
 export const PLAN_GAP = 1
 
+interface Cell {
+  line: number
+  first: number
+  last: number
+}
+
+/** Где в сетке стоит каждый код: ряд и столбцы подряд */
+function gridCells(grid: KeyboardLayout['navGrid']): Map<InputCode, Cell> {
+  const cells = new Map<InputCode, Cell>()
+  grid.forEach((row, line) => {
+    row.forEach((code, col) => {
+      if (code === null) return
+      const cell = cells.get(code)
+      if (cell) cell.last = col
+      else cells.set(code, { line, first: col, last: col })
+    })
+  })
+  return cells
+}
+
 /**
- * Все выделяемые входы на общем плане: клавиши (кроме неназначаемых) и
- * кнопки мыши справа от клавиатуры, верхние края на одной высоте.
+ * Все выделяемые входы на общем плане: клавиши из сетки раскладки (Fn и Win
+ * — с пометкой blocked), регулятор и кнопки мыши справа от клавиатуры.
  *
- * rowKeys ставит кнопку мыши в ряд клавиши для ←/→: например, ЛКМ — в ряд
- * F12, Mouse 5 — в ряд Delete. Тогда ← с ЛКМ ведёт на F12, а не на Mouse 5,
- * хотя Mouse 5 на плане левее и задевает ЛКМ по высоте.
+ * mouseRows ставит кнопку мыши в ряд клавиши: ЛКМ — в ряд F12, Mouse 5 — в
+ * ряд Delete. Столбцы мыши идут за столбцами клавиатуры слева направо.
  */
 export function planInputs(
   keyboard: KeyboardLayout,
   mouse: MouseLayout,
-  rowKeys: Readonly<Partial<Record<InputCode, InputCode>>> = {},
+  mouseRows: Readonly<Partial<Record<InputCode, InputCode>>> = {},
 ): SelectableInput[] {
+  const cells = gridCells(keyboard.navGrid)
+  const gridWidth = Math.max(...keyboard.navGrid.map((row) => row.length))
+
+  const keys = keyboard.keys.flatMap((k): SelectableInput[] => {
+    const cell = cells.get(k.code)
+    if (!cell) return []
+    return [
+      {
+        code: k.code,
+        device: 'keyboard',
+        x: k.x,
+        y: k.y,
+        w: k.w,
+        h: k.h,
+        line: cell.line,
+        cols: [cell.first, cell.last],
+        ...(k.assignable ? {} : { blocked: true }),
+      },
+    ]
+  })
+
+  const knobCell = cells.get(KNOB_CODE)
+  const knob = keyboard.knob
+  const knobInput: SelectableInput[] =
+    knob && knobCell
+      ? [
+          {
+            code: KNOB_CODE,
+            device: 'keyboard',
+            x: knob.cx - knob.d / 2,
+            y: knob.cy - knob.d / 2,
+            w: knob.d,
+            h: knob.d,
+            line: knobCell.line,
+            cols: [knobCell.first, knobCell.last],
+            blocked: true,
+          },
+        ]
+      : []
+
   const sidePad = Math.max(0, ...mouse.inputs.map((i) => -i.x))
   const dx = keyboard.width + PLAN_GAP + sidePad
-  const keys = selectableKeys(keyboard)
-  return [
-    ...keys,
-    ...mouse.inputs.map((i): SelectableInput => {
-      const rowKey = keys.find((k) => k.code === rowKeys[i.code])
-      return {
-        code: i.code,
-        x: i.x + dx,
-        y: i.y,
-        w: i.w,
-        h: i.h,
-        byOverlap: true,
-        // Прокрутка и нажатие колеса — одна группа
-        ...(i.kind === 'wheel' || i.kind === 'scroll' ? { group: 'wheel' } : {}),
-        ...(rowKey ? { row: { y: rowKey.y, h: rowKey.h } } : {}),
-      }
-    }),
-  ]
-}
+  const mouseXs = [...new Set(mouse.inputs.map((i) => i.x))].sort((a, b) => a - b)
+  const mouseInputs = mouse.inputs.map((i): SelectableInput => {
+    const col = gridWidth + mouseXs.indexOf(i.x)
+    const rowKey = mouseRows[i.code]
+    return {
+      code: i.code,
+      device: 'mouse',
+      x: i.x + dx,
+      y: i.y,
+      w: i.w,
+      h: i.h,
+      line: (rowKey === undefined ? undefined : cells.get(rowKey)?.line) ?? 0,
+      cols: [col, col],
+      // Прокрутка и нажатие колеса — одна группа
+      ...(i.kind === 'wheel' || i.kind === 'scroll' ? { group: 'wheel' } : {}),
+    }
+  })
 
-/**
- * Вертикальные отрезки для ←/→ от from к to. Клавиша сравнивается с рядом
- * кнопки мыши. Кнопка с рядом сравнивает свой ряд с настоящим
- * прямоугольником другой кнопки с рядом: ЛКМ стоит в ряду F12, поэтому ← с
- * неё не цепляет Mouse 5, но для → с Mouse 5 ЛКМ по-прежнему рядом. Между
- * остальными кнопками мыши (колесо, ПКМ) ряды не действуют.
- */
-function rowSpans(from: SelectableInput, to: SelectableInput): [Rect, Rect] {
-  const fromKey = !from.byOverlap
-  const toKey = !to.byOverlap
-  const a = from.row && (toKey || to.row) ? { ...from, ...from.row } : from
-  const b = to.row && fromKey ? { ...to, ...to.row } : to
-  return [a, b]
+  return [...keys, ...knobInput, ...mouseInputs]
 }
 
 function find(
@@ -137,22 +185,35 @@ function single(code: InputCode): SelectionState {
   return { selected: [code], anchor: code, focus: code }
 }
 
+/** Средний столбец входа: им считается Shift+клик по широкой клавише */
+function midCol(input: SelectableInput): number {
+  return Math.floor((input.cols[0] + input.cols[1]) / 2)
+}
+
 /**
- * Диапазон прямоугольником: от центра входа `from` до центра `to`.
- * Выделяются клавиши и кнопки мыши, центр которых попадает в прямоугольник
- * (Q → D даёт Q W E A S D).
+ * Диапазон прямоугольником в сетке: ряды от `from` до `to` и столбцы между
+ * их столбцами (по умолчанию — средними). Выделяются входы, которые
+ * задевают прямоугольник, в том числе Fn, Win и регулятор: Q → D даёт
+ * Q W E A S D, столбец среднего пальца от C вверх — C, D, E, 4.
  */
 export function rangeSelect(
   inputs: readonly SelectableInput[],
   from: InputCode,
   to: InputCode,
+  fromCol?: number,
+  toCol?: number,
 ): InputCode[] {
   const a = find(inputs, from)
   const b = find(inputs, to)
   if (!a || !b) return []
-  const area = rectFromPoints(center(a), center(b))
+  const ac = fromCol ?? midCol(a)
+  const bc = toCol ?? midCol(b)
+  const lo = Math.min(ac, bc)
+  const hi = Math.max(ac, bc)
+  const top = Math.min(a.line, b.line)
+  const bottom = Math.max(a.line, b.line)
   const inRange = (i: SelectableInput) =>
-    containsPoint(area, center(i)) || (i.byOverlap === true && intersects(i, area))
+    i === a || i === b || (i.line >= top && i.line <= bottom && i.cols[0] <= hi && i.cols[1] >= lo)
   const groups = new Set(
     inputs.filter((i) => i.group !== undefined && inRange(i)).map((i) => i.group),
   )
@@ -167,7 +228,8 @@ export function rangeSelect(
  * - Ctrl — добавить или убрать вход;
  * - Shift — диапазон от якоря до входа, в том числе через клавиатуру и мышь;
  * - Ctrl+Shift — добавить диапазон к выделению.
- * Входов не из списка (Fn, Win, регулятор) клик не выделяет.
+ * Fn, Win и регулятор обычным кликом не выделяются и не снимаются, Ctrl и
+ * Shift работают с ними как с остальными.
  */
 export function clickSelect(
   state: SelectionState,
@@ -175,14 +237,16 @@ export function clickSelect(
   mods: ClickModifiers,
   inputs: readonly SelectableInput[],
 ): SelectionState {
-  if (!find(inputs, code)) return state
+  const input = find(inputs, code)
+  if (!input) return state
 
   if (mods.shift && state.anchor !== null && find(inputs, state.anchor)) {
-    const range = rangeSelect(inputs, state.anchor, code)
+    const range = rangeSelect(inputs, state.anchor, code, state.anchorCol)
     return {
       selected: mods.ctrl ? union(state.selected, range) : range,
       anchor: state.anchor,
       focus: code,
+      ...(state.anchorCol === undefined ? {} : { anchorCol: state.anchorCol }),
     }
   }
 
@@ -193,6 +257,7 @@ export function clickSelect(
     return { selected, anchor: code, focus: code }
   }
 
+  if (input.blocked) return state
   return single(code)
 }
 
@@ -221,23 +286,21 @@ export function marqueeSelect(
 }
 
 /**
- * Соседний вход по общему плану.
- * ←/→ — ближайший по горизонтали среди входов, перекрывающихся по высоте
- * (для клавиш — тот же ряд; с правого края клавиатуры — на мышь);
- * ↑/↓ — в ближайшем ряду среди входов, перекрывающихся по ширине, с самым
- * близким центром по горизонтали. На краю возвращает сам вход.
+ * Сосед по настоящим прямоугольникам на плане — для кнопок мыши и когда в
+ * ряду сетки дальше ничего нет: ЛКМ ↓ Mouse 5 ↓ Mouse 4, переходы внутри
+ * колеса, Mouse 5 → ЛКМ.
+ * ←/→ — ближайший по горизонтали среди входов, перекрывающихся по высоте;
+ * ↑/↓ — ближайший ряд среди перекрывающихся по ширине, в нём — ближайший
+ * центр. На краю возвращает сам вход.
  */
-export function neighbor(
+function geometricNeighbor(
   inputs: readonly SelectableInput[],
-  code: InputCode,
+  from: SelectableInput,
   dir: Direction,
-): InputCode {
-  const from = find(inputs, code)
-  if (!from) return code
+): SelectableInput {
   const origin = center(from)
-
   const candidates = inputs
-    .filter((i) => i.code !== code)
+    .filter((i) => i !== from)
     .map((i) => {
       const c = center(i)
       return { input: i, dx: c.x - origin.x, dy: c.y - origin.y }
@@ -245,13 +308,11 @@ export function neighbor(
 
   if (dir === 'left' || dir === 'right') {
     const sign = dir === 'right' ? 1 : -1
-    const sameRow = candidates.filter((c) => {
-      if (c.dx * sign <= EPSILON) return false
-      const [a, b] = rowSpans(from, c.input)
-      return overlaps(a.y, a.h, b.y, b.h)
-    })
+    const sameRow = candidates.filter(
+      (c) => c.dx * sign > EPSILON && overlaps(from.y, from.h, c.input.y, c.input.h),
+    )
     sameRow.sort((a, b) => Math.abs(a.dx) - Math.abs(b.dx) || Math.abs(a.dy) - Math.abs(b.dy))
-    return sameRow[0]?.input.code ?? code
+    return sameRow[0]?.input ?? from
   }
 
   const sign = dir === 'down' ? 1 : -1
@@ -262,13 +323,78 @@ export function neighbor(
   ahead.sort(
     (a, b) => Math.abs(a.dy) - Math.abs(b.dy) || Math.abs(a.dx) - Math.abs(b.dx) || a.dx - b.dx,
   )
-  return ahead[0]?.input.code ?? code
+  return ahead[0]?.input ?? from
+}
+
+interface Step {
+  input: SelectableInput
+  /** Столбец после шага */
+  col: number
+}
+
+/**
+ * Шаг стрелкой по сетке (FR-03, FR-13).
+ * ←/→ — следующий вход того же ряда по столбцам; столбец — ближний край
+ * нового входа (пробел с Alt → столбец C, с Fn → столбец Б). Справа от
+ * клавиатуры ряд продолжает мышь: F12 → регулятор → ЛКМ, Delete → Mouse 5.
+ * ↑/↓ — клавиша соседнего ряда в том же столбце, столбец не меняется; в
+ * пустой ячейке — ближайшая по столбцам клавиша ряда.
+ * Кнопки мыши по вертикали и концы рядов — по прямоугольникам на плане.
+ */
+function step(
+  inputs: readonly SelectableInput[],
+  from: SelectableInput,
+  dir: Direction,
+  col: number,
+): Step {
+  const origin = center(from)
+  const byHeight = (a: SelectableInput, b: SelectableInput) =>
+    Math.abs(center(a).y - origin.y) - Math.abs(center(b).y - origin.y)
+  const fallback = (): Step => {
+    const input = geometricNeighbor(inputs, from, dir)
+    return { input, col: input === from ? col : midCol(input) }
+  }
+
+  if (dir === 'left' || dir === 'right') {
+    const right = dir === 'right'
+    const gap = (i: SelectableInput) =>
+      right ? i.cols[0] - from.cols[1] : from.cols[0] - i.cols[1]
+    // При равенстве — вход, чей центр ближе по высоте (ЛКМ → нижняя часть колеса)
+    const next = inputs
+      .filter((i) => i.line === from.line && gap(i) > 0)
+      .sort((a, b) => gap(a) - gap(b) || byHeight(a, b))[0]
+    if (!next) return fallback()
+    return { input: next, col: right ? next.cols[0] : next.cols[1] }
+  }
+
+  if (from.device === 'mouse') return fallback()
+
+  const line = from.line + (dir === 'down' ? 1 : -1)
+  const distance = (i: SelectableInput) =>
+    col < i.cols[0] ? i.cols[0] - col : col > i.cols[1] ? col - i.cols[1] : 0
+  const byCenter = (a: SelectableInput, b: SelectableInput) =>
+    Math.abs(center(a).x - origin.x) - Math.abs(center(b).x - origin.x)
+  const next = inputs
+    .filter((i) => i.line === line && i.device === 'keyboard')
+    .sort((a, b) => distance(a) - distance(b) || byCenter(a, b))[0]
+  return next ? { input: next, col } : { input: from, col }
+}
+
+/** Соседний вход для стрелки от среднего столбца входа. На краю — сам вход */
+export function neighbor(
+  inputs: readonly SelectableInput[],
+  code: InputCode,
+  dir: Direction,
+): InputCode {
+  const from = find(inputs, code)
+  return from ? step(inputs, from, dir, midCol(from)).input.code : code
 }
 
 /**
  * Навигация стрелками (режим «Навигация»).
  * Стрелка переносит выделение на соседа, Shift+стрелка расширяет
- * выделение прямоугольником от якоря. Если ничего не выбрано —
+ * выделение прямоугольником от якоря. Стрелки останавливаются и на Fn,
+ * Win, регуляторе — они выделяются красным. Если ничего не выбрано —
  * выделяется первый вход.
  */
 export function navigate(
@@ -283,11 +409,19 @@ export function navigate(
     return first ? single(first.code) : state
   }
 
-  const next = neighbor(inputs, start.code, dir)
-  if (!extend) return single(next)
+  const focusCol = state.focusCol ?? midCol(start)
+  const next = step(inputs, start, dir, focusCol)
+  if (!extend) return { ...single(next.input.code), anchorCol: next.col, focusCol: next.col }
 
-  const anchor = find(inputs, state.anchor)?.code ?? start.code
-  return { selected: rangeSelect(inputs, anchor, next), anchor, focus: next }
+  const anchor = find(inputs, state.anchor) ?? start
+  const anchorCol = state.anchorCol ?? (anchor === start ? focusCol : midCol(anchor))
+  return {
+    selected: rangeSelect(inputs, anchor.code, next.input.code, anchorCol, next.col),
+    anchor: anchor.code,
+    focus: next.input.code,
+    anchorCol,
+    focusCol: next.col,
+  }
 }
 
 /** Ctrl+A в режиме «Навигация»: все занятые клавиши текущего слоя */

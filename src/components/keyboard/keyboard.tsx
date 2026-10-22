@@ -108,7 +108,7 @@ function Keyboard2D({ layout, unit, labelLang, selected, pressed, onSelect }: Ke
           width={Math.round(layout.knob.d * unit)}
           height={Math.round(layout.knob.d * unit)}
           ariaLabel={`${ru.devices.knob}. ${ru.devices.notAssignable}`}
-          selected={false}
+          selected={selected.has(KNOB_CODE)}
           pressed={false}
           disabled
           className="knob"

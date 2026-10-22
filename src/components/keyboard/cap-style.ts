@@ -16,8 +16,7 @@ export interface CapColors3d {
   sideDark: string
 }
 
-/** Код регулятора для экрана: его нельзя выбрать и назначить */
-export const KNOB_CODE = 'Knob'
+export { KNOB_CODE } from '@/layouts/aula-f75'
 
 /** Свет сверху в 3D: множители keyLighting к цвету верха клавиши */
 export const CAP_COLORS_3D = Object.fromEntries(

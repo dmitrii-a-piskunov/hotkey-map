@@ -337,6 +337,38 @@ describe('not assignable keys', () => {
     fireEvent.click(input('Knob'))
     expect(selectedCodes()).toEqual([])
   })
+
+  it('Ctrl+click selects Win in red; a click keeps it, holding shows the hint only', () => {
+    render(<Workspace />)
+    fireEvent.click(input('KeyQ'))
+    fireEvent.click(input('MetaLeft'), { ctrlKey: true })
+    expect(selectedCodes()).toEqual(['KeyQ', 'MetaLeft'])
+    expect(input('MetaLeft')).toHaveAttribute('data-rejected')
+    expect(screen.queryByRole('status')).toBeNull()
+
+    fireEvent.pointerDown(input('MetaLeft'), { button: 0 })
+    expect(screen.getByRole('status')).toHaveTextContent(ru.devices.notPassedToGames)
+    fireEvent.pointerUp(window)
+    fireEvent.click(input('MetaLeft'))
+    expect(screen.queryByRole('status')).toBeNull()
+    expect(selectedCodes()).toEqual(['KeyQ', 'MetaLeft'])
+    expect(input('MetaLeft')).toHaveAttribute('data-rejected')
+    expect(input('MetaLeft')).not.toHaveAttribute('data-pressed')
+
+    fireEvent.click(input('MetaLeft'), { ctrlKey: true })
+    expect(selectedCodes()).toEqual(['KeyQ'])
+    expect(input('MetaLeft')).not.toHaveAttribute('data-rejected')
+  })
+
+  it('Shift+arrows stop on Fn and keep it red without the hint', () => {
+    useDataStore.getState().updateSettings({ inputMode: 'nav' })
+    render(<Workspace />)
+    fireEvent.click(input('Space'))
+    keyDown('ArrowRight', { key: 'ArrowRight', shiftKey: true })
+    expect(selectedCodes()).toEqual(['Fn', 'Space'])
+    expect(input('Fn')).toHaveAttribute('data-rejected')
+    expect(screen.queryByRole('status')).toBeNull()
+  })
 })
 
 describe('mouse in ranges and marquee (FR-13)', () => {

@@ -182,7 +182,7 @@
     transform-origin: 0 0;
   }
 
-  .cap3d[data-selected] .cap3d-top {
+  .cap3d[data-selected]:not([data-rejected]) .cap3d-top {
     outline: var(--ring);
   }
 
@@ -285,7 +285,8 @@
     pointer-events: none;
   }
 
-  .key[data-selected]::after,
+  /* Выделенные Fn, Win и регулятор — красные, без акцентной обводки */
+  .key[data-selected]:not([data-rejected])::after,
   .mouse-zone-ring[data-selected]::after {
     content: '';
     position: absolute;

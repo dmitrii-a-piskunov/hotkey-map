@@ -43,17 +43,18 @@ export const InputCap = memo(function InputCap({
   onSelect,
   children,
 }: InputCapProps) {
-  // Неназначаемый вход (Fn, Win, регулятор): красная рамка, штриховка и
-  // подсказка видны, пока зажата левая кнопка мыши, и пропадают при отпускании
-  const [rejected, setRejected] = useState(false)
+  // Неназначаемый вход (Fn, Win, регулятор): пока зажата левая кнопка мыши —
+  // красная рамка, штриховка и подсказка. Выделенный такой вход остаётся
+  // красным и после отпускания, подсказка — только при удержании
+  const [holding, setHolding] = useState(false)
   const stopReject = useRef<(() => void) | null>(null)
   useEffect(() => () => stopReject.current?.(), [])
 
   function startReject() {
     stopReject.current?.()
-    setRejected(true)
+    setHolding(true)
     const stop = () => {
-      setRejected(false)
+      setHolding(false)
       window.removeEventListener('pointerup', stop)
       window.removeEventListener('pointercancel', stop)
       window.removeEventListener('blur', stop)
@@ -76,7 +77,7 @@ export const InputCap = memo(function InputCap({
       data-selected={selected || undefined}
       data-pressed={pressed || undefined}
       data-disabled={disabled || undefined}
-      data-rejected={rejected || undefined}
+      data-rejected={holding || (disabled && selected) || undefined}
       className={cn('cap', className)}
       style={{ left, top, width, height, ...style }}
       onPointerDown={(e) => {
@@ -86,12 +87,12 @@ export const InputCap = memo(function InputCap({
       onClick={(e) => {
         // Клик мышью (detail ≥ 1) выделяет сцена по нажатию и отпусканию;
         // здесь — программный клик и клик без указателя
-        if (disabled || e.detail > 0) return
+        if (e.detail > 0) return
         onSelect(code, { ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey })
       }}
     >
       {children}
-      {rejected && (
+      {holding && (
         <span role="status" className="cap-hint" data-place={hintPlacement}>
           {ru.devices.notPassedToGames}
         </span>

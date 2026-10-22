@@ -9,14 +9,13 @@ import {
   rangeSelect,
   rectSelect,
   selectAll,
-  selectableKeys,
   type SelectionState,
 } from '@/domain/selection'
-import { MOUSE_ROW_KEYS } from '@/features/devices/devices'
-import { aulaF75 } from '@/layouts/aula-f75'
+import { MOUSE_ROWS } from '@/features/devices/devices'
+import { aulaF75, KNOB_CODE } from '@/layouts/aula-f75'
 import { mouse2Side } from '@/layouts/mouse'
 
-const inputs = planInputs(aulaF75, mouse2Side, MOUSE_ROW_KEYS)
+const inputs = planInputs(aulaF75, mouse2Side, MOUSE_ROWS)
 
 const plain = { ctrl: false, shift: false }
 const ctrl = { ctrl: true, shift: false }
@@ -44,8 +43,16 @@ describe('rangeSelect', () => {
     expect(rangeSelect(inputs, 'KeyF', 'KeyF')).toEqual(['KeyF'])
   })
 
-  it('never includes Fn', () => {
-    expect(rangeSelect(inputs, 'Space', 'ControlRight')).toEqual(['Space', 'ControlRight'])
+  it('includes Fn, Win and the knob when the rectangle crosses them', () => {
+    expect(rangeSelect(inputs, 'Space', 'ControlRight')).toEqual(['Space', 'Fn', 'ControlRight'])
+    expect(rangeSelect(inputs, 'ControlLeft', 'AltLeft')).toContain('MetaLeft')
+    expect(rangeSelect(inputs, 'F12', 'MouseLeft')).toEqual(['F12', KNOB_CODE, 'MouseLeft'])
+  })
+
+  it('follows finger columns, not coordinates: C → 4 is the middle finger column', () => {
+    expect(rangeSelect(inputs, 'KeyC', 'Digit4').sort()).toEqual(
+      ['Digit4', 'KeyC', 'KeyD', 'KeyE'].sort(),
+    )
   })
 
   it('returns nothing for unknown codes', () => {
@@ -117,10 +124,25 @@ describe('clickSelect', () => {
     )
   })
 
-  it('Fn cannot be selected', () => {
+  it('plain click on Fn, Win or the knob changes nothing', () => {
     const s = click(emptySelection, 'KeyQ')
     expect(click(s, 'Fn')).toBe(s)
-    expect(click(s, 'Fn', ctrl)).toBe(s)
+    expect(click(s, KNOB_CODE)).toBe(s)
+  })
+
+  it('Ctrl+click adds and removes Win; a plain click does not clear it', () => {
+    let s = click(emptySelection, 'KeyQ')
+    s = click(s, 'MetaLeft', ctrl)
+    expect(s.selected).toEqual(['KeyQ', 'MetaLeft'])
+    expect(click(s, 'MetaLeft')).toBe(s)
+    s = click(s, 'MetaLeft', ctrl)
+    expect(s.selected).toEqual(['KeyQ'])
+  })
+
+  it('Shift+click to Fn selects the range including it', () => {
+    let s = click(emptySelection, 'Period')
+    s = click(s, 'Fn', shift)
+    expect([...s.selected].sort()).toEqual(['Fn', 'Period'])
   })
 })
 
@@ -170,9 +192,33 @@ describe('neighbor', () => {
     expect(neighbor(inputs, 'ArrowUp', 'down')).toBe('ArrowDown')
   })
 
-  it('skips Fn', () => {
-    expect(neighbor(inputs, 'Space', 'right')).toBe('ControlRight')
-    expect(neighbor(inputs, 'Slash', 'down')).not.toBe('Fn')
+  it('stops on Fn, Win and the knob', () => {
+    expect(neighbor(inputs, 'Space', 'right')).toBe('Fn')
+    expect(neighbor(inputs, 'Period', 'down')).toBe('Fn')
+    expect(neighbor(inputs, 'ControlLeft', 'right')).toBe('MetaLeft')
+    expect(neighbor(inputs, 'Delete', 'up')).toBe(KNOB_CODE)
+  })
+
+  it('up follows the finger column', () => {
+    const column = (start: string, steps: number) => {
+      let s = click(emptySelection, start)
+      const codes = [start]
+      for (let i = 0; i < steps; i++) {
+        s = navigate(s, 'up', false, inputs)
+        codes.push(s.focus ?? '')
+      }
+      return codes
+    }
+    expect(column('KeyC', 3)).toEqual(['KeyC', 'KeyD', 'KeyE', 'Digit4'])
+    expect(column('KeyB', 3)).toEqual(['KeyB', 'KeyG', 'KeyT', 'Digit6'])
+    expect(column('KeyN', 3)).toEqual(['KeyN', 'KeyH', 'KeyY', 'Digit7'])
+    expect(column('KeyZ', 3)).toEqual(['KeyZ', 'KeyA', 'KeyQ', 'Digit2'])
+    expect(column('Slash', 3)).toEqual(['Slash', 'Semicolon', 'KeyP', 'Digit0'])
+  })
+
+  it('an empty cell goes to the nearest key of the row', () => {
+    expect(neighbor(inputs, 'Digit0', 'up')).toBe('F9')
+    expect(neighbor(inputs, 'Digit1', 'up')).toBe('Escape')
   })
 
   it('returns the code unchanged for unknown keys', () => {
@@ -188,8 +234,9 @@ describe('neighbor', () => {
   })
 
   it('treats ЛКМ, Mouse 5 and Mouse 4 as keys in the F12, Delete and PgUp rows', () => {
-    expect(neighbor(inputs, 'F12', 'right')).toBe('MouseLeft')
-    expect(neighbor(inputs, 'MouseLeft', 'left')).toBe('F12')
+    expect(neighbor(inputs, 'F12', 'right')).toBe(KNOB_CODE)
+    expect(neighbor(inputs, KNOB_CODE, 'right')).toBe('MouseLeft')
+    expect(neighbor(inputs, 'MouseLeft', 'left')).toBe(KNOB_CODE)
     expect(neighbor(inputs, 'PageUp', 'right')).toBe('Mouse4')
     expect(neighbor(inputs, 'Mouse4', 'left')).toBe('PageUp')
     expect(neighbor(inputs, 'Mouse5', 'up')).toBe('MouseLeft')
@@ -198,14 +245,20 @@ describe('neighbor', () => {
   })
 
   it('keeps moves between ЛКМ, the wheel and ПКМ as they were', () => {
-    const plain = planInputs(aulaF75, mouse2Side)
-    for (const code of ['MouseLeft', 'MouseMiddle', 'WheelUp', 'WheelDown', 'MouseRight']) {
-      for (const dir of ['right', 'up', 'down'] as const) {
-        expect(neighbor(inputs, code, dir), `${code} ${dir}`).toBe(neighbor(plain, code, dir))
-      }
+    // Таблица переходов внутри мыши до перехода на ряды
+    const expected: Record<string, Record<'left' | 'right' | 'up' | 'down', string>> = {
+      MouseLeft: { left: KNOB_CODE, right: 'WheelDown', up: 'MouseLeft', down: 'Mouse5' },
+      Mouse5: { left: 'Delete', right: 'MouseLeft', up: 'MouseLeft', down: 'Mouse4' },
+      Mouse4: { left: 'PageUp', right: 'Mouse4', up: 'Mouse5', down: 'Mouse4' },
+      MouseRight: { left: 'WheelDown', right: 'MouseRight', up: 'MouseRight', down: 'MouseRight' },
+      MouseMiddle: { left: 'MouseLeft', right: 'MouseRight', up: 'WheelUp', down: 'WheelDown' },
+      WheelUp: { left: 'MouseLeft', right: 'MouseRight', up: 'WheelUp', down: 'MouseMiddle' },
+      WheelDown: { left: 'MouseLeft', right: 'MouseRight', up: 'MouseMiddle', down: 'WheelDown' },
     }
-    for (const code of ['MouseMiddle', 'WheelUp', 'WheelDown', 'MouseRight']) {
-      expect(neighbor(inputs, code, 'left'), code).toBe(neighbor(plain, code, 'left'))
+    for (const [code, dirs] of Object.entries(expected)) {
+      for (const [dir, to] of Object.entries(dirs)) {
+        expect(neighbor(inputs, code, dir as 'left'), `${code} ${dir}`).toBe(to)
+      }
     }
   })
 })
@@ -224,7 +277,7 @@ describe('navigate', () => {
   it('arrow without Shift moves single selection', () => {
     let s = click(emptySelection, 'KeyQ')
     s = navigate(s, 'down', false, inputs)
-    expect(s).toEqual({ selected: ['KeyA'], anchor: 'KeyA', focus: 'KeyA' })
+    expect(s).toMatchObject({ selected: ['KeyA'], anchor: 'KeyA', focus: 'KeyA' })
   })
 
   it('Shift+↓ extends to a rectangle', () => {
@@ -248,10 +301,59 @@ describe('navigate', () => {
     )
   })
 
+  it('Shift+↓ from F12 keeps the column through keys of different width', () => {
+    let s = click(emptySelection, 'F12')
+    const steps: [string, string[]][] = [
+      ['Backspace', ['F12', 'Backspace']],
+      ['Backslash', ['F12', 'Backspace', 'Backslash']],
+      ['Enter', ['F12', 'Backspace', 'Backslash', 'Enter']],
+      ['ArrowUp', ['F12', 'Backspace', 'Backslash', 'Enter', 'ArrowUp']],
+      ['ArrowDown', ['F12', 'Backspace', 'Backslash', 'Enter', 'ArrowUp', 'ArrowDown']],
+    ]
+    for (const [focus, selected] of steps) {
+      s = navigate(s, 'down', true, inputs)
+      expect(s.focus).toBe(focus)
+      expect([...s.selected].sort()).toEqual([...selected].sort())
+    }
+  })
+
+  it('the mouse continues keyboard rows: ЛКМ ← ← ← ↓ gives a two-row rectangle', () => {
+    let s = click(emptySelection, 'MouseLeft')
+    for (let i = 0; i < 3; i++) s = navigate(s, 'left', true, inputs)
+    expect([...s.selected].sort()).toEqual(['F11', 'F12', KNOB_CODE, 'MouseLeft'].sort())
+    s = navigate(s, 'down', true, inputs)
+    expect(s.focus).toBe('Backspace')
+    expect([...s.selected].sort()).toEqual(
+      ['F11', 'F12', KNOB_CODE, 'MouseLeft', 'Backspace', 'Delete', 'Mouse5'].sort(),
+    )
+  })
+
+  it('Space remembers the column it was entered from', () => {
+    let s = click(emptySelection, 'KeyV')
+    s = navigate(s, 'down', false, inputs)
+    expect(s.focus).toBe('Space')
+    s = navigate(s, 'up', false, inputs)
+    expect(s.focus).toBe('KeyV')
+    s = click(emptySelection, 'Period')
+    s = navigate(s, 'down', false, inputs)
+    s = navigate(s, 'left', false, inputs)
+    expect(s.focus).toBe('Space')
+    s = navigate(s, 'up', false, inputs)
+    expect(s.focus).toBe('Comma')
+  })
+
+  it('↓ without Shift keeps the column too', () => {
+    let s = click(emptySelection, 'F12')
+    for (let i = 0; i < 3; i++) s = navigate(s, 'down', false, inputs)
+    expect(s.selected).toEqual(['Enter'])
+    s = navigate(s, 'down', false, inputs)
+    expect(s.selected).toEqual(['ArrowUp'])
+  })
+
   it('Shift+arrows extend from a mouse input', () => {
     const s = click(emptySelection, 'MouseLeft')
     expect(navigate(s, 'down', true, inputs).selected).toEqual(['MouseLeft', 'Mouse5'])
-    expect(navigate(s, 'left', true, inputs).selected).toEqual(['F12', 'MouseLeft'])
+    expect(navigate(s, 'left', true, inputs).selected).toEqual([KNOB_CODE, 'MouseLeft'])
   })
 })
 
@@ -266,9 +368,39 @@ describe('selectAll', () => {
   })
 })
 
-describe('selectableKeys', () => {
-  it('has 78 selectable keys of 80 (all but Fn and Win)', () => {
+describe('navigation grid', () => {
+  it('has every key and the knob; Fn, Win and the knob are blocked', () => {
     expect(aulaF75.keys).toHaveLength(80)
-    expect(selectableKeys(aulaF75)).toHaveLength(78)
+    const keyboard = inputs.filter((i) => i.device === 'keyboard')
+    expect(keyboard).toHaveLength(81)
+    expect(keyboard.filter((i) => i.blocked).map((i) => i.code)).toEqual([
+      'MetaLeft',
+      'Fn',
+      KNOB_CODE,
+    ])
+  })
+
+  it('puts each key in one row of the grid, in adjacent cells', () => {
+    const known = new Set([...aulaF75.keys.map((k) => k.code), KNOB_CODE])
+    const seen = new Map<string, number>()
+    aulaF75.navGrid.forEach((row, line) => {
+      row.forEach((code, col) => {
+        if (code === null) return
+        expect(known.has(code), code).toBe(true)
+        const firstLine = seen.get(code)
+        if (firstLine === undefined) seen.set(code, line)
+        else {
+          expect(firstLine, code).toBe(line)
+          expect(row[col - 1], code).toBe(code)
+        }
+      })
+    })
+    expect(seen.size).toBe(known.size)
+  })
+
+  it('places the mouse to the right: M5 and M4, then ЛКМ, wheel and ПКМ', () => {
+    const col = (code: string) => inputs.find((i) => i.code === code)?.cols[0]
+    const cols = ['Mouse5', 'Mouse4', 'MouseLeft', 'WheelUp', 'MouseRight'].map(col)
+    expect(cols).toEqual([17, 17, 18, 19, 20])
   })
 })
