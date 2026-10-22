@@ -24,6 +24,8 @@ export interface KeyLabel {
   ruSymbol?: string
   /** Значок для модификаторов, рисуется перед подписью: ←, ⇧, ↵, ⇥ */
   icon?: string
+  /** Как клавишу называют настройки игр — для режимов подписей EN и RU (FR-04) */
+  game?: { en: string; ru: string }
 }
 
 export interface KeyDef {
@@ -90,6 +92,7 @@ interface KeyOptions {
   shift?: string
   ruSymbol?: string
   icon?: string
+  game?: { en: string; ru: string }
   assignable?: boolean
   capturable?: boolean
 }
@@ -101,6 +104,7 @@ function key(code: string, x: number, row: Row, en: string, options: KeyOptions 
   if (labels.shift) label.shift = labels.shift
   if (labels.ruSymbol) label.ruSymbol = labels.ruSymbol
   if (labels.icon) label.icon = labels.icon
+  if (labels.game) label.game = labels.game
   return {
     code,
     label,
@@ -222,7 +226,7 @@ const keys: KeyDef[] = [
   // Win забирает Windows: в играх на неё не назначают
   key('MetaLeft', 1.25, 5, 'Win', { w: 1.25, assignable: false, capturable: false }),
   key('AltLeft', 2.5, 5, 'Alt', { w: 1.25 }),
-  key('Space', 3.75, 5, '', { w: 6.25 }),
+  key('Space', 3.75, 5, '', { w: 6.25, game: { en: 'Space', ru: 'Пробел' } }),
   // Fn обрабатывается прошивкой клавиатуры, игры и браузер его не видят
   key('Fn', 10, 5, 'Fn', { w: 1.25, assignable: false, capturable: false }),
   key('ControlRight', 11.25, 5, 'Ctrl', { w: 1.25 }),

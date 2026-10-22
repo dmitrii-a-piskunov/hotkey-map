@@ -148,7 +148,14 @@ export function Mouse({ layout, unit, view, selected, pressed, onSelect }: Mouse
         {/* Обводка — одна фигура, обрезанная по себе: толщина везде одинаковая */}
         {scene.buttons.map((b) => (
           <g key={b.code} clipPath={`url(#${id}-${b.code})`}>
-            {pressed.has(b.code) && <polygon points={pts(b.region)} fill={shading.partHighlight} />}
+            {pressed.has(b.code) && (
+              // Подсветка нажатия тоже с вырезом под боковые кнопки
+              <polygon
+                points={pts(b.region)}
+                fill={shading.partHighlight}
+                mask={`url(#${id}-${b.code}-notch)`}
+              />
+            )}
             {selected.has(b.code) && (
               <g
                 fill="none"
