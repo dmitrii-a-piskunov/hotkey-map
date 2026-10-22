@@ -93,6 +93,8 @@ describe('mouse selection (FR-13)', () => {
     for (const el of document.querySelectorAll<HTMLElement>('[data-input-code]')) {
       const box = boxes[el.dataset.inputCode ?? ''] ?? new DOMRect(-100, -100, 1, 1)
       el.getBoundingClientRect = () => box
+      const face = el.querySelector<HTMLElement>('.cap3d-top, .key-top')
+      if (face) face.getBoundingClientRect = () => box
     }
     const stage = screen.getByTestId('device-stage')
     fireEvent.pointerDown(stage, { button: 0, pointerId: 1, clientX: 90, clientY: 90 })
@@ -107,6 +109,8 @@ describe('pointer on keys (FR-01, FR-13)', () => {
     for (const el of document.querySelectorAll<HTMLElement>('[data-input-code]')) {
       const box = boxes[el.dataset.inputCode ?? ''] ?? new DOMRect(-100, -100, 1, 1)
       el.getBoundingClientRect = () => box
+      const face = el.querySelector<HTMLElement>('.cap3d-top, .key-top')
+      if (face) face.getBoundingClientRect = () => box
     }
   }
 
@@ -331,6 +335,25 @@ describe('not assignable keys', () => {
 })
 
 describe('mouse in ranges and marquee (FR-13)', () => {
+  it('marquee ignores a key whose top face it does not touch', () => {
+    render(<App />)
+    for (const el of document.querySelectorAll<HTMLElement>('[data-input-code]')) {
+      const far = new DOMRect(-100, -100, 1, 1)
+      el.getBoundingClientRect = () =>
+        el.dataset.inputCode === 'KeyQ' ? new DOMRect(100, 100, 40, 60) : far
+      const face = el.querySelector<HTMLElement>('.cap3d-top, .key-top')
+      // Верх Q — в верхней половине блока; рамка задевает только низ блока
+      if (face)
+        face.getBoundingClientRect = () =>
+          el.dataset.inputCode === 'KeyQ' ? new DOMRect(105, 100, 30, 30) : far
+    }
+    const stage = screen.getByTestId('device-stage')
+    fireEvent.pointerDown(stage, { button: 0, pointerId: 1, clientX: 90, clientY: 145 })
+    fireEvent.pointerMove(stage, { pointerId: 1, clientX: 150, clientY: 170 })
+    fireEvent.pointerUp(stage, { pointerId: 1, clientX: 150, clientY: 170 })
+    expect(selectedCodes()).toEqual([])
+  })
+
   it('Shift+click from a key to a mouse button selects both and keys between', () => {
     render(<App />)
     fireEvent.click(input('KeyQ'))
@@ -347,6 +370,8 @@ describe('mouse in ranges and marquee (FR-13)', () => {
     for (const el of document.querySelectorAll<HTMLElement>('[data-input-code]')) {
       const box = boxes[el.dataset.inputCode ?? ''] ?? new DOMRect(-100, -100, 1, 1)
       el.getBoundingClientRect = () => box
+      const face = el.querySelector<HTMLElement>('.cap3d-top, .key-top')
+      if (face) face.getBoundingClientRect = () => box
     }
     const stage = screen.getByTestId('device-stage')
     fireEvent.pointerDown(stage, { button: 0, pointerId: 1, clientX: 90, clientY: 90 })

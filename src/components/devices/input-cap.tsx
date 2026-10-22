@@ -84,7 +84,9 @@ export const InputCap = memo(function InputCap({
         if (disabled && e.button === 0) startReject()
       }}
       onClick={(e) => {
-        if (disabled) return
+        // Клик мышью (detail ≥ 1) выделяет сцена по нажатию и отпусканию;
+        // здесь — программный клик и клик без указателя
+        if (disabled || e.detail > 0) return
         onSelect(code, { ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey })
       }}
     >

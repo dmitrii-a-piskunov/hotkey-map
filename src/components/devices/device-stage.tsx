@@ -67,6 +67,8 @@ interface Drag {
   active: boolean
   /** Вход, на котором начали: клик по нему выделяет, а не снимает выделение */
   startCode: InputCode | null
+  /** Выделяемый вход под указателем при нажатии — его выделит клик (не Fn, Win, регулятор) */
+  clickCode: InputCode | null
   /** Вход, который показан нажатым с начала клика (FR-01, анимация нажатия) */
   pressedCode: InputCode | null
 }
@@ -91,7 +93,10 @@ function keyHitBoxes(container: HTMLElement): HitBox[] {
     ':is([data-kind="key"], [data-kind="mouse"])[data-input-code]:not([data-disabled])',
   )
   return Array.from(nodes, (node) => {
-    const r = node.getBoundingClientRect()
+    // В 3D рамка смотрит только на верхнюю грань: блок клавиши захватывает и
+    // боковые грани, и рамка цепляла бы клавиши «позади». В 2D — вся клавиша
+    const face = node.querySelector<HTMLElement>('.cap3d-top') ?? node
+    const r = face.getBoundingClientRect()
     return {
       code: node.dataset.inputCode ?? '',
       rect: { x: r.left, y: r.top, w: r.width, h: r.height },
@@ -163,6 +168,7 @@ export function DeviceStage() {
       additive: e.ctrlKey || e.metaKey,
       active: false,
       startCode: hit?.code ?? null,
+      clickCode: pressedCode,
       pressedCode,
     }
   }
@@ -201,8 +207,15 @@ export function DeviceStage() {
     }
     if (!drag) return
     releasePressed(drag)
-    // Клик по пустому месту снимает выделение; клик по клавише выделяет её сама клавиша
-    if (!drag.active && drag.startCode === null) useDevicesStore.getState().clearSelection()
+    if (drag.active) return
+    const store = useDevicesStore.getState()
+    // Клик по пустому месту снимает выделение
+    if (drag.startCode === null) store.clearSelection()
+    // Клик по клавише выделяет ту, на которой нажали: при нажатии клавиша
+    // проседает, и отпускание у самого края может прийтись уже не на неё —
+    // браузер тогда не отправит ей click
+    else if (drag.clickCode !== null)
+      store.click(drag.clickCode, { ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey })
   }
 
   return (

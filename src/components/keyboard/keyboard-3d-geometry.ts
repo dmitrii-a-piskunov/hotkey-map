@@ -26,6 +26,29 @@ const MIN_FACE = 0.005
 /** Насколько подложка верхней грани заходит под соседние грани, в юнитах */
 const UNDERLAY_OVERLAP = 0.01
 
+/** Точки дуги окружности от угла a0 до a1 (по часовой на экране) */
+function arc(cx: number, cy: number, r: number, a0: number, a1: number, samples = 4): Vec[] {
+  return Array.from({ length: samples + 1 }, (_, i) => {
+    const a = a0 + ((a1 - a0) * i) / samples
+    return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) }
+  })
+}
+
+/**
+ * Точка касания прямой из from к дуге points: для левого бока — самая левая
+ * по направлению (дуга остаётся справа от прямой), для правого — самая правая.
+ */
+function tangentPoint(from: Vec, points: Vec[], side: 'left' | 'right'): Vec {
+  const sign = side === 'left' ? -1 : 1
+  let best = points[0] ?? from
+  for (const p of points) {
+    // p лежит левее (для правого бока — правее) прямой from→best — касательная дальше
+    const cross = (best.x - from.x) * (p.y - from.y) - (best.y - from.y) * (p.x - from.x)
+    if (cross * sign > 0) best = p
+  }
+  return best
+}
+
 /** x на прямой через точки a и b при данном y (прямая продолжается за точки) */
 function xAt(a: Vec, b: Vec, y: number): number {
   return a.x + ((b.x - a.x) * (y - a.y)) / (b.y - a.y)
@@ -42,14 +65,6 @@ function insideSides(base: [Vec, Vec, Vec, Vec], top: Vec[]): number {
   return outLeft - outRight
 }
 
-/** Точки дуги окружности от угла a0 до a1 (по часовой на экране) */
-function arc(cx: number, cy: number, r: number, a0: number, a1: number, samples = 4): Vec[] {
-  return Array.from({ length: samples + 1 }, (_, i) => {
-    const a = a0 + ((a1 - a0) * i) / samples
-    return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) }
-  })
-}
-
 export interface CapShape3d {
   /** Боковые грани; null — грань не видна */
   left: Vec[] | null
@@ -58,10 +73,9 @@ export interface CapShape3d {
   /** Углы верхней грани на экране: ЛВ, ПВ, ПН, ЛН */
   topQuad: [Vec, Vec, Vec, Vec]
   /**
-   * Подложка под верхней гранью в цвет боковой грани: передние углы острые
-   * (под скруглением видна грань клавиши), задние скруглены как сама грань
-   * (там грань нависает над основанием). Чуть заходит под соседние грани,
-   * чтобы на стыках не просвечивала тёмная подложка корпуса.
+   * Подложка под верхней гранью в цвет боковой грани: в передних скруглённых
+   * уголках видна грань клавиши, задние скруглены как сама грань.
+   * Чуть заходит под соседние грани, чтобы стыки не просвечивали.
    */
   underlay: Vec[]
   /** Размер верхней грани в плоскости клавиатуры, в юнитах */
@@ -114,15 +128,15 @@ function capShape(cam: Camera, k: KeyDef, width: number, height: number): CapSha
     { x: tx + tw, y: ty + th },
     { x: tx, y: ty + th },
   ]
+  // Задние углы скруглены как верхняя грань, передние острые (их закрывает
+  // передняя грань); по бокам и снизу подложка чуть заходит под грани
   const r = Math.min(capShape3d.topRadius, tw / 2, th / 2)
   const o = UNDERLAY_OVERLAP
   const underlayPlan = [
     ...arc(tx + r, ty + r, r, Math.PI, 1.5 * Math.PI),
     ...arc(tx + tw - r, ty + r, r, 1.5 * Math.PI, 2 * Math.PI),
-    { x: tx + tw + o, y: ty + r },
     { x: tx + tw + o, y: ty + th + o },
     { x: tx - o, y: ty + th + o },
-    { x: tx - o, y: ty + r },
   ]
   // Верхняя грань не должна выходить за линии боков основания: поднятые точки
   // рисуются выше, и у крайних клавиш их угол выступал бы за бок
@@ -136,8 +150,17 @@ function capShape(cam: Camera, k: KeyDef, width: number, height: number): CapSha
   }
   const [tTL, tTR, tBR, tBL] = topPlan.map(lift) as [Vec, Vec, Vec, Vec]
   const underlay = underlayPlan.map(lift)
-  const left = tTL.x - bTL.x > MIN_FACE ? [bTL, tTL, tBL, bBL] : null
-  const right = bTR.x - tTR.x > MIN_FACE ? [tTR, bTR, bBR, tBR] : null
+  // Задний край бока идёт от угла основания по касательной к скруглению
+  // заднего угла верхней грани — как у настоящего кейкапа в перспективе.
+  // Так нет ни просвета, ни грани, выпирающей назад у крайних клавиш
+  const sTL = tangentPoint(bTL, arc(tx + r, ty + r, r, Math.PI, 1.5 * Math.PI, 8).map(lift), 'left')
+  const sTR = tangentPoint(
+    bTR,
+    arc(tx + tw - r, ty + r, r, 1.5 * Math.PI, 2 * Math.PI, 8).map(lift),
+    'right',
+  )
+  const left = tTL.x - bTL.x > MIN_FACE ? [bTL, sTL, tBL, bBL] : null
+  const right = bTR.x - tTR.x > MIN_FACE ? [sTR, bTR, bBR, tBR] : null
   const front = [tBL, tBR, bBR, bBL]
   return {
     left,
