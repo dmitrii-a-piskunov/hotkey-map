@@ -30,7 +30,7 @@ export function GamePicker() {
     <div className="flex items-center gap-1">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" aria-label={ru.games.chooseGame} className="max-w-56">
+          <Button variant="ghost" size="sm" aria-label={ru.games.chooseGame}>
             {current ? (
               <>
                 <GameIcon game={current} className="size-5" />
