@@ -4,7 +4,7 @@
  */
 
 import { create } from 'zustand'
-import type { LabelLang } from '@/domain/input'
+import type { LabelMode } from '@/domain/input'
 import {
   clickSelect,
   emptySelection,
@@ -26,7 +26,10 @@ interface DevicesData {
   /** Входы, которые сейчас зажаты на настоящей клавиатуре или мыши */
   pressed: readonly InputCode[]
   inputMode: InputMode
-  labelLang: LabelLang
+  /** Режим подписей: EN/RU, EN или RU (FR-04) */
+  labelLang: LabelMode
+  /** В режимах EN и RU переключать раскладку по последней нажатой клавише */
+  autoLang: boolean
   view: ViewMode
 }
 
@@ -41,7 +44,8 @@ interface DevicesActions {
   release: (code: InputCode) => void
   releaseAll: () => void
   setInputMode: (mode: InputMode) => void
-  setLabelLang: (lang: LabelLang) => void
+  setLabelLang: (mode: LabelMode) => void
+  setAutoLang: (auto: boolean) => void
   setView: (view: ViewMode) => void
 }
 
@@ -51,7 +55,8 @@ export const initialDevicesData: DevicesData = {
   selection: emptySelection,
   pressed: [],
   inputMode: 'check',
-  labelLang: 'en',
+  labelLang: 'enru',
+  autoLang: true,
   view: '3d',
 }
 
@@ -93,6 +98,9 @@ export const useDevicesStore = create<DevicesState>()((set) => ({
   },
   setLabelLang: (labelLang) => {
     set({ labelLang })
+  },
+  setAutoLang: (autoLang) => {
+    set({ autoLang })
   },
   setView: (view) => {
     set({ view })

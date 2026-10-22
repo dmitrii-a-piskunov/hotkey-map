@@ -1,6 +1,6 @@
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { App } from '@/app/app'
 import { initialDevicesData, useDevicesStore } from '@/features/devices/store'
 import { ru } from '@/i18n/ru'
@@ -102,6 +102,35 @@ describe('mouse selection (FR-13)', () => {
   })
 })
 
+describe('pointer on keys (FR-01, FR-13)', () => {
+  function fakeBoxes(boxes: Record<string, DOMRect>) {
+    for (const el of document.querySelectorAll<HTMLElement>('[data-input-code]')) {
+      const box = boxes[el.dataset.inputCode ?? ''] ?? new DOMRect(-100, -100, 1, 1)
+      el.getBoundingClientRect = () => box
+    }
+  }
+
+  it('click shows the key pressed while the button is held', () => {
+    render(<App />)
+    fireEvent.pointerDown(input('KeyQ'), { button: 0, pointerId: 1, clientX: 10, clientY: 10 })
+    expect(input('KeyQ')).toHaveAttribute('data-pressed')
+    fireEvent.pointerUp(input('KeyQ'), { pointerId: 1, clientX: 10, clientY: 10 })
+    fireEvent.click(input('KeyQ'))
+    expect(input('KeyQ')).not.toHaveAttribute('data-pressed')
+    expect(selectedCodes()).toEqual(['KeyQ'])
+  })
+
+  it('marquee can start on a key and does not press it', () => {
+    render(<App />)
+    fakeBoxes({ KeyQ: new DOMRect(100, 100, 40, 40), KeyW: new DOMRect(150, 100, 40, 40) })
+    fireEvent.pointerDown(input('KeyQ'), { button: 0, pointerId: 1, clientX: 110, clientY: 110 })
+    fireEvent.pointerMove(input('KeyQ'), { pointerId: 1, clientX: 170, clientY: 120 })
+    expect(input('KeyQ')).not.toHaveAttribute('data-pressed')
+    fireEvent.pointerUp(input('KeyQ'), { pointerId: 1, clientX: 170, clientY: 120 })
+    expect(selectedCodes()).toEqual(['KeyQ', 'KeyW'])
+  })
+})
+
 describe('check mode (FR-03)', () => {
   it('TC-07: real key press animates and selects the key', () => {
     render(<App />)
@@ -150,6 +179,21 @@ describe('check mode (FR-03)', () => {
     render(<App />)
     expect(keyDown('F5', { key: 'F5' })).toBe(false)
     expect(keyDown('KeyW', { key: 'w', ctrlKey: true })).toBe(true)
+  })
+
+  it('wheel click selects MouseMiddle', () => {
+    render(<App />)
+    fireEvent.mouseDown(window, { button: 1 })
+    expect(selectedCodes()).toEqual(['MouseMiddle'])
+    expect(input('MouseMiddle')).toHaveAttribute('data-pressed')
+    fireEvent.mouseUp(window, { button: 1 })
+    expect(input('MouseMiddle')).not.toHaveAttribute('data-pressed')
+  })
+
+  it('wheel over the keyboard selects the scroll input', () => {
+    render(<App />)
+    fireEvent.wheel(input('KeyQ'), { deltaY: 50 })
+    expect(selectedCodes()).toEqual(['WheelDown'])
   })
 
   it('side mouse buttons select Mouse4 and Mouse5', () => {
@@ -205,12 +249,41 @@ describe('navigation mode (FR-03)', () => {
 })
 
 describe('label language (FR-04)', () => {
-  it('switches automatically by the typed character', () => {
+  it('in EN and RU switches by the typed character', () => {
+    useDevicesStore.setState({ labelLang: 'en' })
     render(<App />)
     keyDown('KeyQ', { key: 'й' })
     expect(useDevicesStore.getState().labelLang).toBe('ru')
     keyDown('KeyQ', { key: 'q' })
     expect(useDevicesStore.getState().labelLang).toBe('en')
+  })
+
+  it('EN/RU never switches by itself', () => {
+    render(<App />)
+    keyDown('KeyQ', { key: 'й' })
+    expect(useDevicesStore.getState().labelLang).toBe('enru')
+  })
+
+  it('does not switch when auto is off', () => {
+    useDevicesStore.setState({ labelLang: 'en', autoLang: false })
+    render(<App />)
+    keyDown('KeyQ', { key: 'й' })
+    expect(useDevicesStore.getState().labelLang).toBe('en')
+  })
+
+  it('EN and RU show one centered legend for letters, digits and symbols', () => {
+    useDevicesStore.setState({ labelLang: 'ru' })
+    const { unmount } = render(<App />)
+    expect(input('KeyQ').textContent).toBe('Й')
+    expect(input('Digit3').textContent).toBe('3')
+    expect(input('Slash').textContent).toBe('.')
+    expect(input('Tab')).toHaveTextContent('Tab')
+    unmount()
+    useDevicesStore.setState({ labelLang: 'en' })
+    render(<App />)
+    expect(input('KeyQ').textContent).toBe('Q')
+    expect(input('Digit3').textContent).toBe('3')
+    expect(input('Slash').textContent).toBe('/')
   })
 })
 
@@ -228,24 +301,29 @@ describe('header switches', () => {
 })
 
 describe('not assignable keys', () => {
-  it('Fn flashes a red frame on click', () => {
-    vi.useFakeTimers()
+  it('Fn shows the red frame and the hint below while the mouse button is held', () => {
     render(<App />)
-    fireEvent.click(input('Fn'))
+    fireEvent.pointerDown(input('Fn'), { button: 0 })
     expect(input('Fn')).toHaveAttribute('data-rejected')
-    act(() => {
-      vi.advanceTimersByTime(1000)
-    })
+    const hint = screen.getByRole('status')
+    expect(hint).toHaveTextContent(ru.devices.notPassedToGames)
+    expect(hint).toHaveAttribute('data-place', 'below')
+    fireEvent.pointerUp(window)
     expect(input('Fn')).not.toHaveAttribute('data-rejected')
-    vi.useRealTimers()
+    expect(screen.queryByRole('status')).toBeNull()
   })
 
-  it('Win and the knob flash too and stay unselected', () => {
+  it('Win and the knob react too and stay unselected; the knob hint is above', () => {
     render(<App />)
-    fireEvent.click(input('MetaLeft'))
+    fireEvent.pointerDown(input('MetaLeft'), { button: 0 })
     expect(input('MetaLeft')).toHaveAttribute('data-rejected')
-    fireEvent.click(input('Knob'))
+    fireEvent.pointerUp(window)
+    fireEvent.pointerDown(input('Knob'), { button: 0 })
     expect(input('Knob')).toHaveAttribute('data-rejected')
+    expect(screen.getByRole('status')).toHaveAttribute('data-place', 'above')
+    fireEvent.pointerUp(window)
+    fireEvent.click(input('MetaLeft'))
+    fireEvent.click(input('Knob'))
     expect(selectedCodes()).toEqual([])
   })
 })

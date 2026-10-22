@@ -93,6 +93,8 @@ export const deviceTheme = {
     sizeIcon: 0.3,
     /** Стрелки на клавишах-стрелках */
     sizeArrow: 0.34,
+    /** Режимы EN и RU: буква, цифра или символ одним знаком по центру */
+    sizeSingle: 0.36,
     weightMain: 700,
     weightRu: 500,
     weightMod: 700,

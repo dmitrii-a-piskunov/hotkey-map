@@ -56,6 +56,12 @@ export function arrowDirection(code: string): Direction | null {
 export type LabelLang = 'en' | 'ru'
 
 /**
+ * Режим подписей (FR-04): EN/RU — как на настоящей клавиатуре, обе раскладки;
+ * EN и RU — только то, что нужно для биндов, одним знаком по центру.
+ */
+export type LabelMode = 'enru' | LabelLang
+
+/**
  * Язык по символу нажатой клавиши (KeyboardEvent.key):
  * кириллица — RU, латиница — EN, остальное язык не меняет.
  */

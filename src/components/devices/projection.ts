@@ -169,3 +169,37 @@ export function rectToQuad(w: number, h: number, quad: readonly [Vec, Vec, Vec, 
   const m = [a, d, 0, g / w, b, e, 0, k / h, 0, 0, 1, 0, p0.x, p0.y, 0, 1]
   return `matrix3d(${m.map((v) => +v.toPrecision(10)).join(',')})`
 }
+
+/**
+ * Пересечение многоугольника subject с выпуклым многоугольником clip
+ * (Sutherland–Hodgman). subject может быть невыпуклым. Порядок обхода
+ * любой — внутренняя сторона определяется по знаку площади clip.
+ */
+export function clipPolygon(subject: readonly Vec[], clip: readonly Vec[]): Vec[] {
+  const area = clip.reduce((sum, a, i) => {
+    const b = clip[(i + 1) % clip.length] ?? a
+    return sum + (a.x * b.y - b.x * a.y)
+  }, 0)
+  const sign = Math.sign(area)
+  const side = (a: Vec, b: Vec, p: Vec) =>
+    ((b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x)) * sign
+  const cross = (p: Vec, q: Vec, a: Vec, b: Vec): Vec => {
+    const d = (p.x - q.x) * (a.y - b.y) - (p.y - q.y) * (a.x - b.x)
+    const t = ((p.x - a.x) * (a.y - b.y) - (p.y - a.y) * (a.x - b.x)) / d
+    return { x: p.x + t * (q.x - p.x), y: p.y + t * (q.y - p.y) }
+  }
+  let out: Vec[] = [...subject]
+  clip.forEach((a, i) => {
+    const b = clip[(i + 1) % clip.length] ?? a
+    const input = out
+    out = []
+    input.forEach((p, j) => {
+      const q = input[(j + 1) % input.length] ?? p
+      const pIn = side(a, b, p) >= 0
+      const qIn = side(a, b, q) >= 0
+      if (pIn) out.push(p)
+      if (pIn !== qIn) out.push(cross(p, q, a, b))
+    })
+  })
+  return out
+}

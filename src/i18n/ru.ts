@@ -9,6 +9,9 @@ export const ru = {
     modeCheck: 'Проверка нажатий',
     modeNav: 'Навигация',
     labelLang: 'Язык подписей',
+    autoLang: 'Автопереключение раскладки',
+    autoLangShort: 'Авто',
+    autoLangHint: 'В режимах EN и RU раскладка подписей переключается по последней нажатой клавише',
     view: 'Вид клавиатуры',
   },
   devices: {
@@ -16,6 +19,7 @@ export const ru = {
     keyboard: 'Клавиатура',
     mouse: 'Мышь',
     notAssignable: 'Не назначается',
+    notPassedToGames: 'Эта клавиша не передаётся в игры',
     knob: 'Регулятор',
     /** Подписи-выноски у мыши */
     mouseCallouts: {

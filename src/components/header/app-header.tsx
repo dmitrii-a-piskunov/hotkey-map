@@ -1,7 +1,7 @@
 import { Keyboard } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import type { LabelLang } from '@/domain/input'
+import type { LabelMode } from '@/domain/input'
 import { useDevicesStore, type InputMode, type ViewMode } from '@/features/devices/store'
 import { ru } from '@/i18n/ru'
 
@@ -38,10 +38,12 @@ const INPUT_MODES = [
   { value: 'nav', label: ru.header.modeNav },
 ] as const satisfies readonly { value: InputMode; label: string }[]
 
-const LABEL_LANGS = [
+// FR-04: EN/RU — как на настоящей клавиатуре; EN и RU — только нужное для биндов
+const LABEL_MODES = [
+  { value: 'enru', label: 'EN/RU' },
   { value: 'en', label: 'EN' },
   { value: 'ru', label: 'RU' },
-] as const satisfies readonly { value: LabelLang; label: string }[]
+] as const satisfies readonly { value: LabelMode; label: string }[]
 
 // FR-01: переключатель 2D / 3D переедет в настройки приложения, когда они появятся
 const VIEWS = [
@@ -55,6 +57,8 @@ export function AppHeader() {
   const view = useDevicesStore((s) => s.view)
   const setInputMode = useDevicesStore((s) => s.setInputMode)
   const setLabelLang = useDevicesStore((s) => s.setLabelLang)
+  const autoLang = useDevicesStore((s) => s.autoLang)
+  const setAutoLang = useDevicesStore((s) => s.setAutoLang)
   const setView = useDevicesStore((s) => s.setView)
 
   return (
@@ -71,12 +75,27 @@ export function AppHeader() {
           options={INPUT_MODES}
           onChange={setInputMode}
         />
-        <Segmented
-          label={ru.header.labelLang}
-          value={labelLang}
-          options={LABEL_LANGS}
-          onChange={setLabelLang}
-        />
+        <div className="flex items-center gap-1">
+          <Segmented
+            label={ru.header.labelLang}
+            value={labelLang}
+            options={LABEL_MODES}
+            onChange={setLabelLang}
+          />
+          {/* Автопереключение EN ↔ RU по последней клавише; в EN/RU не действует */}
+          <ToggleGroup
+            type="multiple"
+            aria-label={ru.header.autoLang}
+            value={autoLang ? ['auto'] : []}
+            onValueChange={(next) => {
+              setAutoLang(next.includes('auto'))
+            }}
+          >
+            <ToggleGroupItem value="auto" title={ru.header.autoLangHint}>
+              {ru.header.autoLangShort}
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </div>
         <Segmented label={ru.header.view} value={view} options={VIEWS} onChange={setView} />
       </div>
     </header>

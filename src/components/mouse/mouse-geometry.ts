@@ -1,5 +1,6 @@
 import {
   boundsOf,
+  clipPolygon,
   makeCamera,
   project,
   roundedRect,
@@ -14,10 +15,11 @@ import {
   type MouseInputDef,
   type MouseLayout,
 } from '@/layouts/mouse'
+import { intersects } from '@/domain/geometry'
 import { ru } from '@/i18n/ru'
 import { deviceTheme } from '@/styles/device-theme'
 
-const { mouse: theme, view3d, legend } = deviceTheme
+const { mouse: theme, view3d, legend, state } = deviceTheme
 
 /** Выноска уходит за корпус на столько, в юнитах */
 const CALLOUT_REACH = 0.4
@@ -51,8 +53,11 @@ export interface MouseScene {
   wheel: Vec[]
   treads: [Vec, Vec][]
   seams: [Vec, Vec][]
-  /** Части кнопок до линии раздела — для нажатия и выделения */
-  buttons: { code: MouseInputCode; area: Vec[] }[]
+  /**
+   * Кнопки корпуса: область — часть силуэта до линии раздела; вырезы —
+   * боковые кнопки с зазором, которые обводка выделения огибает
+   */
+  buttons: { code: MouseInputCode; region: Vec[]; notches: Vec[][] }[]
   /** Зоны клика */
   zones: { input: MouseInputDef; box: Bounds }[]
   /** Подписи боковых кнопок слева, колеса — справа */
@@ -87,6 +92,7 @@ export function mouseScene(layout: MouseLayout, view: ViewMode): MouseScene {
   const ws = theme.wheelSize
   const wx = (width - ws.w) / 2
   const outline = mapAll(mouseOutline(width, height, theme.shape))
+
   const sides = layout.inputs
     .filter((i) => i.kind === 'side')
     .map((s) => mapAll(roundedRect(s.x, s.y, s.w, s.h, s.w / 2)))
@@ -100,9 +106,26 @@ export function mouseScene(layout: MouseLayout, view: ViewMode): MouseScene {
     [map({ x: 0, y: splitY }), map({ x: width, y: splitY })],
     [map({ x: width / 2, y: 0 }), map({ x: width / 2, y: splitY })],
   ]
+  const plainOutline = mouseOutline(width, height, theme.shape)
+  // Зазор между обводкой кнопки и боковой кнопкой — толщина обводки
+  const gap = state.selected.width
+  const sideInputs = layout.inputs.filter((i) => i.kind === 'side')
   const buttons = layout.inputs
     .filter((i) => i.kind === 'button')
-    .map((b) => ({ code: b.code, area: mapAll(rect(b.x, b.y, b.w, splitY - b.y)) }))
+    .map((b) => {
+      const area = rect(b.x, b.y, b.w, splitY - b.y)
+      const notches = sideInputs
+        .filter((s) =>
+          intersects(
+            { x: s.x - gap, y: s.y - gap, w: s.w + gap * 2, h: s.h + gap * 2 },
+            { x: b.x, y: b.y, w: b.w, h: splitY - b.y },
+          ),
+        )
+        .map((s) =>
+          mapAll(roundedRect(s.x - gap, s.y - gap, s.w + gap * 2, s.h + gap * 2, s.w / 2 + gap)),
+        )
+      return { code: b.code, region: mapAll(clipPolygon(plainOutline, area)), notches }
+    })
   const zones = layout.inputs.map((input) => {
     const h = input.kind === 'button' ? splitY - input.y : input.h
     return { input, box: boundsOf(mapAll(rect(input.x, input.y, input.w, h))) }

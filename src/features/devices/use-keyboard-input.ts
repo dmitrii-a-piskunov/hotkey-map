@@ -14,8 +14,12 @@ import {
 import { isKeyboardCode, mouseLayout } from './devices'
 import { useDevicesStore } from './store'
 
-/** Боковые кнопки: браузер по ним уходит «Назад» и «Вперёд» */
-const SIDE_BUTTONS = new Set([3, 4])
+/**
+ * Кнопки мыши, которые выделяются в режиме проверки: нажатие колеса и
+ * боковые. preventDefault убирает автопрокрутку по колесу и уход «Назад»
+ * и «Вперёд» по боковым. ЛКМ и ПКМ заняты выделением и меню.
+ */
+const TRACKED_BUTTONS = new Set([1, 3, 4])
 
 function isEditableTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false
@@ -32,8 +36,11 @@ export function useKeyboardInput(): void {
       if (isEditableTarget(e.target)) return
       const store = useDevicesStore.getState()
 
+      // FR-04: в режимах EN и RU раскладка подписей следует за последней клавишей;
+      // EN/RU выбирается только вручную и сам не меняется
       const lang = detectLabelLang(e.key)
-      if (lang && lang !== store.labelLang) store.setLabelLang(lang)
+      if (lang && store.autoLang && store.labelLang !== 'enru' && lang !== store.labelLang)
+        store.setLabelLang(lang)
 
       if (isReservedCombo(e)) return
       e.preventDefault()
@@ -75,7 +82,7 @@ export function useKeyboardInput(): void {
     function onMouseDown(e: MouseEvent) {
       // Ctrl+клик и Shift+клик: модификатор после клика не выделяет сам себя
       lonelyModifier = null
-      if (!SIDE_BUTTONS.has(e.button)) return
+      if (!TRACKED_BUTTONS.has(e.button)) return
       e.preventDefault()
       const store = useDevicesStore.getState()
       if (store.inputMode !== 'check') return
@@ -87,7 +94,7 @@ export function useKeyboardInput(): void {
     }
 
     function onMouseUp(e: MouseEvent) {
-      if (!SIDE_BUTTONS.has(e.button)) return
+      if (!TRACKED_BUTTONS.has(e.button)) return
       e.preventDefault()
       const code = mouseCodeForButton(mouseLayout, e.button)
       if (code) useDevicesStore.getState().release(code)

@@ -1,5 +1,6 @@
 import {
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -12,6 +13,7 @@ import { Keyboard } from '@/components/keyboard/keyboard'
 import { Mouse } from '@/components/mouse/mouse'
 import { mouseScene } from '@/components/mouse/mouse-geometry'
 import { rectFromPoints, type Point, type Rect } from '@/domain/geometry'
+import { mouseCodeForWheel } from '@/domain/input'
 import {
   marqueeSelect,
   rectSelect,
@@ -37,11 +39,16 @@ const MIN_UNIT = 24
 const FIT = 0.98
 const MAX_UNIT = 72
 
-/** Ширина клавиатуры и мыши вместе, в юнитах: в 3D ближний край шире */
-const TOTAL_UNITS = {
-  '2d': keyboardWidth(keyboardLayout) + DEVICE_GAP + mouseScene(mouseLayout, '2d').box.w,
-  '3d': keyboard3d(keyboardLayout).box.w + DEVICE_GAP + mouseScene(mouseLayout, '3d').box.w,
-}
+/**
+ * Место под клавиатуру и мышь, в юнитах — одно на оба вида: в 3D ближний
+ * край шире, и без общего места мышь прыгала бы при переключении 2D/3D.
+ */
+const KEYBOARD_SLOT = Math.max(keyboardWidth(keyboardLayout), keyboard3d(keyboardLayout).box.w)
+const MOUSE_SLOT = Math.max(
+  mouseScene(mouseLayout, '2d').box.w,
+  mouseScene(mouseLayout, '3d').box.w,
+)
+const TOTAL_UNITS = KEYBOARD_SLOT + DEVICE_GAP + MOUSE_SLOT
 
 const { scene } = deviceTheme
 
@@ -58,6 +65,19 @@ interface Drag {
   base: SelectionState
   additive: boolean
   active: boolean
+  /** Вход, на котором начали: клик по нему выделяет, а не снимает выделение */
+  startCode: InputCode | null
+  /** Вход, который показан нажатым с начала клика (FR-01, анимация нажатия) */
+  pressedCode: InputCode | null
+}
+
+/** Вход под указателем и можно ли его выделить */
+function inputAt(target: EventTarget): { code: InputCode; disabled: boolean } | null {
+  if (!(target instanceof Element)) return null
+  const el = target.closest<HTMLElement>('[data-input-code]')
+  const code = el?.dataset.inputCode
+  if (!el || !code) return null
+  return { code, disabled: el.dataset.disabled !== undefined }
 }
 
 function toLocal(container: HTMLElement, r: Rect): Rect {
@@ -96,7 +116,7 @@ export function DeviceStage() {
   const pressed = useMemo(() => new Set(pressedList), [pressedList])
 
   const width = useElementWidth(containerRef)
-  const unit = Math.min(MAX_UNIT, Math.max(MIN_UNIT, (width * FIT) / TOTAL_UNITS[view]))
+  const unit = Math.min(MAX_UNIT, Math.max(MIN_UNIT, (width * FIT) / TOTAL_UNITS))
 
   const onSelect = useCallback(
     (code: InputCode, mods: ClickModifiers) => {
@@ -114,15 +134,42 @@ export function DeviceStage() {
     }, WHEEL_PULSE_MS)
   }, [])
 
+  // Прокрутка над областью клавиатуры и мыши выделяет «колесо вверх/вниз» (FR-03).
+  // Нужен непассивный обработчик, чтобы страница не прокручивалась
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el || inputMode !== 'check') return
+    function onWheel(e: WheelEvent) {
+      const code = mouseCodeForWheel(mouseLayout, e.deltaY)
+      if (!code) return
+      e.preventDefault()
+      onWheelInput(code)
+    }
+    el.addEventListener('wheel', onWheel, { passive: false })
+    return () => {
+      el.removeEventListener('wheel', onWheel)
+    }
+  }, [inputMode, onWheelInput])
+
   function onPointerDown(e: PointerEvent<HTMLDivElement>) {
     if (e.button !== 0) return
+    const hit = inputAt(e.target)
+    // Клик по клавише показывает её нажатие, пока зажата кнопка
+    const pressedCode = hit && !hit.disabled ? hit.code : null
+    if (pressedCode) useDevicesStore.getState().press(pressedCode)
     dragRef.current = {
       start: { x: e.clientX, y: e.clientY },
       base: useDevicesStore.getState().selection,
       additive: e.ctrlKey || e.metaKey,
       active: false,
+      startCode: hit?.code ?? null,
+      pressedCode,
     }
-    e.currentTarget.setPointerCapture(e.pointerId)
+  }
+
+  function releasePressed(drag: Drag) {
+    if (drag.pressedCode) useDevicesStore.getState().release(drag.pressedCode)
+    drag.pressedCode = null
   }
 
   function onPointerMove(e: PointerEvent<HTMLDivElement>) {
@@ -132,7 +179,13 @@ export function DeviceStage() {
     const point = { x: e.clientX, y: e.clientY }
     if (!drag.active && Math.hypot(point.x - drag.start.x, point.y - drag.start.y) < DRAG_THRESHOLD)
       return
-    drag.active = true
+    if (!drag.active) {
+      // Началась рамка — в том числе от клавиши. Нажатие не показываем, указатель
+      // захватываем только сейчас, чтобы обычный клик доходил до клавиши
+      drag.active = true
+      releasePressed(drag)
+      e.currentTarget.setPointerCapture(e.pointerId)
+    }
     const area = rectFromPoints(drag.start, point)
     setMarquee(toLocal(container, area))
     const hits = rectSelect(keyHitBoxes(container), area)
@@ -146,8 +199,10 @@ export function DeviceStage() {
     if (e.currentTarget.hasPointerCapture(e.pointerId)) {
       e.currentTarget.releasePointerCapture(e.pointerId)
     }
-    // Клик по пустому месту снимает выделение
-    if (drag && !drag.active) useDevicesStore.getState().clearSelection()
+    if (!drag) return
+    releasePressed(drag)
+    // Клик по пустому месту снимает выделение; клик по клавише выделяет её сама клавиша
+    if (!drag.active && drag.startCode === null) useDevicesStore.getState().clearSelection()
   }
 
   return (
@@ -165,24 +220,27 @@ export function DeviceStage() {
       onPointerCancel={onPointerUp}
     >
       <div className="flex items-center" style={{ gap: DEVICE_GAP * unit }}>
-        <Keyboard
-          layout={keyboardLayout}
-          unit={unit}
-          labelLang={labelLang}
-          view={view}
-          selected={selected}
-          pressed={pressed}
-          onSelect={onSelect}
-        />
-        <Mouse
-          layout={mouseLayout}
-          unit={unit}
-          view={view}
-          selected={selected}
-          pressed={pressed}
-          onSelect={onSelect}
-          onWheelInput={inputMode === 'check' ? onWheelInput : null}
-        />
+        <div className="flex justify-center" style={{ width: KEYBOARD_SLOT * unit }}>
+          <Keyboard
+            layout={keyboardLayout}
+            unit={unit}
+            labelLang={labelLang}
+            view={view}
+            selected={selected}
+            pressed={pressed}
+            onSelect={onSelect}
+          />
+        </div>
+        <div className="flex justify-center" style={{ width: MOUSE_SLOT * unit }}>
+          <Mouse
+            layout={mouseLayout}
+            unit={unit}
+            view={view}
+            selected={selected}
+            pressed={pressed}
+            onSelect={onSelect}
+          />
+        </div>
       </div>
       {marquee && (
         <div

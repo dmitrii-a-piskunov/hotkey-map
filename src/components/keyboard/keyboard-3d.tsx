@@ -7,7 +7,13 @@ import {
   type Bounds,
   type Vec,
 } from '@/components/devices/projection'
-import { CAP_COLORS_3D, CAP_VARS, KNOB_CODE, rejectHatch } from '@/components/keyboard/cap-style'
+import {
+  CAP_COLORS_3D,
+  CAP_VARS,
+  KNOB_CODE,
+  hintPlacementOf,
+  rejectHatch,
+} from '@/components/keyboard/cap-style'
 import { KeyLabels } from '@/components/keyboard/key-labels'
 import type { KeyboardProps } from '@/components/keyboard/keyboard'
 import {
@@ -15,7 +21,7 @@ import {
   type CapShape3d,
   type Keyboard3d,
 } from '@/components/keyboard/keyboard-3d-geometry'
-import type { LabelLang } from '@/domain/input'
+import type { LabelMode } from '@/domain/input'
 import type { ClickModifiers, InputCode } from '@/domain/selection'
 import type { KeyDef } from '@/layouts/aula-f75'
 import { ru } from '@/i18n/ru'
@@ -32,7 +38,7 @@ interface Key3DProps {
   unit: number
   /** Префикс id градиентов из общего <defs> */
   gradId: string
-  labelLang: LabelLang
+  labelLang: LabelMode
   selected: boolean
   pressed: boolean
   onSelect: (code: InputCode, mods: ClickModifiers) => void
@@ -52,7 +58,11 @@ const Key3D = memo(function Key3D({
 }: Key3DProps) {
   const style = capStyleOf(k.code)
   const { box, topSize } = shape
-  const pts = (p: Vec[]) => svgPoints(p, box, unit)
+  // Форма грани через CSS-свойство d: при нажатии она плавно меняется
+  const face = (p: Vec[], fill: string): CSSProperties => ({
+    d: `path('M${svgPoints(p, box, unit).replaceAll(' ', 'L')}Z')`,
+    fill,
+  })
   // Верхняя грань — блок размером с грань в плоскости, переведённый в её
   // трапецию одной плоской трансформацией: фон, подписи и обводка наклонены
   const quad = shape.topQuad.map((p) => ({
@@ -78,13 +88,14 @@ const Key3D = memo(function Key3D({
       pressed={pressed}
       disabled={!k.assignable}
       className="cap3d"
+      hintPlacement={hintPlacementOf(k)}
       style={CAP_VARS[style]}
       onSelect={onSelect}
     >
       <svg aria-hidden="true" className="cap3d-faces" width={box.w * unit} height={box.h * unit}>
-        {shape.left && <polygon points={pts(shape.left)} fill="var(--cap-side-3d)" />}
-        {shape.right && <polygon points={pts(shape.right)} fill="var(--cap-side-dark-3d)" />}
-        <polygon points={pts(shape.front)} fill={`url(#${gradId}-front-${style})`} />
+        {shape.left && <path style={face(shape.left, 'var(--cap-side-3d)')} />}
+        {shape.right && <path style={face(shape.right, 'var(--cap-side-dark-3d)')} />}
+        <path style={face(shape.front, `url(#${gradId}-front-${style})`)} />
       </svg>
       <div className="cap3d-top" style={top}>
         <KeyLabels keyDef={k} labelLang={labelLang} />
@@ -114,6 +125,7 @@ export function Keyboard3D({
     height: box.h * unit,
     fontFamily: legend.font,
     '--ring': `${state.selected.width * unit}px solid ${state.selected.color}`,
+    '--press-ms': `${deviceTheme.view3d.pressMs}ms`,
     '--reject-ring': `${state.conflict.width * unit}px solid ${state.conflict.color}`,
     '--reject-hatch': rejectHatch(state.conflict.width * unit, 'px'),
     '--cap-top-radius': `${deviceTheme.view3d.capShape3d.topRadius}em`,
@@ -205,6 +217,7 @@ const Knob3D = memo(function Knob3D({ knob, origin, unit, onSelect }: Knob3DProp
       pressed={false}
       disabled
       className="knob knob-3d"
+      hintPlacement="above"
       onSelect={onSelect}
     >
       <div

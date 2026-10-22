@@ -1,5 +1,6 @@
 import { memo, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import type { ClickModifiers, InputCode } from '@/domain/selection'
+import { ru } from '@/i18n/ru'
 import { cn } from '@/lib/utils'
 
 export interface InputCapProps {
@@ -16,14 +17,13 @@ export interface InputCapProps {
   pressed: boolean
   disabled?: boolean
   className?: string
+  /** Где показывать подсказку у неназначаемого входа: над ним или под ним (нижний ряд) */
+  hintPlacement?: 'below' | 'above'
   /** Дополнительные стили, например CSS-переменные цвета клавиши */
   style?: CSSProperties
   onSelect: (code: InputCode, mods: ClickModifiers) => void
   children?: ReactNode
 }
-
-/** Короткая вспышка после клика по неназначаемой клавише, мс */
-const REJECT_MS = 100
 
 /** Клавиша или зона мыши: клик, состояния и обводка выделения (FR-01, FR-02) */
 export const InputCap = memo(function InputCap({
@@ -38,19 +38,32 @@ export const InputCap = memo(function InputCap({
   pressed,
   disabled = false,
   className,
+  hintPlacement = 'above',
   style,
   onSelect,
   children,
 }: InputCapProps) {
-  // Клик по Fn: ненадолго красная рамка — клавишу нельзя выбрать и назначить
+  // Неназначаемый вход (Fn, Win, регулятор): красная рамка, штриховка и
+  // подсказка видны, пока зажата левая кнопка мыши, и пропадают при отпускании
   const [rejected, setRejected] = useState(false)
-  const timer = useRef<number | undefined>(undefined)
-  useEffect(
-    () => () => {
-      window.clearTimeout(timer.current)
-    },
-    [],
-  )
+  const stopReject = useRef<(() => void) | null>(null)
+  useEffect(() => () => stopReject.current?.(), [])
+
+  function startReject() {
+    stopReject.current?.()
+    setRejected(true)
+    const stop = () => {
+      setRejected(false)
+      window.removeEventListener('pointerup', stop)
+      window.removeEventListener('pointercancel', stop)
+      window.removeEventListener('blur', stop)
+      stopReject.current = null
+    }
+    window.addEventListener('pointerup', stop)
+    window.addEventListener('pointercancel', stop)
+    window.addEventListener('blur', stop)
+    stopReject.current = stop
+  }
 
   return (
     <div
@@ -67,22 +80,20 @@ export const InputCap = memo(function InputCap({
       className={cn('cap', className)}
       style={{ left, top, width, height, ...style }}
       onPointerDown={(e) => {
-        // Нажатие на клавишу не начинает рамку
-        e.stopPropagation()
+        // Рамку и анимацию нажатия ведёт сцена; здесь только отказ для Fn, Win, регулятора
+        if (disabled && e.button === 0) startReject()
       }}
       onClick={(e) => {
-        if (disabled) {
-          setRejected(true)
-          window.clearTimeout(timer.current)
-          timer.current = window.setTimeout(() => {
-            setRejected(false)
-          }, REJECT_MS)
-          return
-        }
+        if (disabled) return
         onSelect(code, { ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey })
       }}
     >
       {children}
+      {rejected && (
+        <span role="status" className="cap-hint" data-place={hintPlacement}>
+          {ru.devices.notPassedToGames}
+        </span>
+      )}
     </div>
   )
 })

@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { convexHull, rectToQuad, type Vec } from '@/components/devices/projection'
+import {
+  boundsOf,
+  clipPolygon,
+  convexHull,
+  rectToQuad,
+  type Vec,
+} from '@/components/devices/projection'
 
 /** Применяет matrix3d к точке, как браузер */
 function apply(matrix: string, x: number, y: number): Vec {
@@ -49,5 +55,25 @@ describe('convexHull', () => {
       { x: 0, y: 2 },
     ])
     expect(hull).toHaveLength(4)
+  })
+})
+
+describe('clipPolygon', () => {
+  it('cuts a shape by a rectangle', () => {
+    const square = [
+      { x: 0, y: 0 },
+      { x: 4, y: 0 },
+      { x: 4, y: 4 },
+      { x: 0, y: 4 },
+    ]
+    const half = [
+      { x: 2, y: -1 },
+      { x: 9, y: -1 },
+      { x: 9, y: 9 },
+      { x: 2, y: 9 },
+    ]
+    expect(boundsOf(clipPolygon(square, half))).toEqual({ x: 2, y: 0, w: 2, h: 4 })
+    // Обход в другую сторону даёт тот же результат
+    expect(boundsOf(clipPolygon(square, [...half].reverse()))).toEqual({ x: 2, y: 0, w: 2, h: 4 })
   })
 })

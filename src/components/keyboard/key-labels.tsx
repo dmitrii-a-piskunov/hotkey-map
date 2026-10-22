@@ -1,16 +1,20 @@
 import type { CSSProperties } from 'react'
-import type { LabelLang } from '@/domain/input'
+import type { LabelMode } from '@/domain/input'
 import type { KeyDef } from '@/layouts/aula-f75'
 import { deviceTheme } from '@/styles/device-theme'
 
-const { legend, state } = deviceTheme
+const { legend } = deviceTheme
 
 // Размеры в em: у контейнера подписей font-size равен юниту.
 // Отступ задаёт рамка, а не сами подписи: у них свой font-size.
 const BOX: CSSProperties = { inset: `${legend.padding}em` }
 
 const MAIN: CSSProperties = { fontSize: `${legend.sizeMain}em`, fontWeight: legend.weightMain }
-const RU: CSSProperties = { fontSize: `${legend.sizeRu}em`, fontWeight: legend.weightRu }
+const RU: CSSProperties = {
+  fontSize: `${legend.sizeRu}em`,
+  fontWeight: legend.weightRu,
+  color: 'var(--legend-ru)',
+}
 const SHIFT: CSSProperties = { fontSize: `${legend.sizeShift}em`, fontWeight: legend.weightMain }
 /** Символ русской раскладки на цифрах — размером с верхний символ */
 const RU_SYMBOL: CSSProperties = { ...RU, fontSize: SHIFT.fontSize }
@@ -18,61 +22,43 @@ const MOD: CSSProperties = { fontSize: `${legend.sizeMod}em`, fontWeight: legend
 /** Значок модификатора: размер относительно слова, чтобы стоять с ним в одной строке */
 const ICON: CSSProperties = { fontSize: `${legend.sizeIcon / legend.sizeMod}em` }
 const ARROW: CSSProperties = { fontSize: `${legend.sizeArrow}em`, fontWeight: legend.weightMain }
+const SINGLE: CSSProperties = { fontSize: `${legend.sizeSingle}em`, fontWeight: legend.weightMain }
 
 const TOP_LEFT: CSSProperties = { top: 0, left: 0 }
 const BOTTOM_LEFT: CSSProperties = { bottom: 0, left: 0 }
 const BOTTOM_RIGHT: CSSProperties = { bottom: 0, right: 0 }
 
-function Legend({
-  style,
-  dim,
-  children,
-}: {
-  style: CSSProperties
-  dim?: boolean
-  children: string
-}) {
+function Legend({ style, children }: { style: CSSProperties; children: string }) {
   return (
-    <span className="legend" style={dim ? { ...style, opacity: state.dimOpacity } : style}>
+    <span className="legend" style={style}>
       {children}
     </span>
   )
 }
 
 /**
- * Подписи как на превью: буквы, цифры с символами, модификаторы.
- * FR-04: в режиме EN русские подписи серые (legendRu), в режиме RU они
- * получают цвет основной подписи, а английские бледнеют.
+ * Знак клавиши в режимах EN и RU — то, что игра покажет в настройках.
+ * Есть у букв, цифр и клавиш-символов; у модификаторов, F-клавиш и стрелок
+ * нет — они всегда в привычном виде. Без верхних символов Shift.
  */
-export function KeyLabels({ keyDef, labelLang }: { keyDef: KeyDef; labelLang: LabelLang }) {
-  return (
-    <span className="legend-box" style={BOX}>
-      <Labels keyDef={keyDef} labelLang={labelLang} />
-    </span>
-  )
+function singleLegend(keyDef: KeyDef, lang: 'en' | 'ru'): string | null {
+  const { en, ru, shift } = keyDef.label
+  if (ru === undefined && shift === undefined) return null
+  return lang === 'ru' ? (ru ?? en) : en
 }
 
-function Labels({ keyDef, labelLang }: { keyDef: KeyDef; labelLang: LabelLang }) {
+/** Подписи как на настоящей клавиатуре: обе раскладки, верхние символы, значки */
+function RealisticLabels({ keyDef }: { keyDef: KeyDef }) {
   const { en, ru: ruLabel, shift, ruSymbol, icon } = keyDef.label
   const right = ruLabel ?? ruSymbol
-  const dimEn = right !== undefined && labelLang === 'ru'
-  const ruColor: CSSProperties = {
-    color: labelLang === 'ru' ? 'var(--legend)' : 'var(--legend-ru)',
-  }
 
   if (shift) {
     return (
       <>
-        <Legend style={{ ...SHIFT, ...TOP_LEFT }} dim={dimEn}>
-          {shift}
-        </Legend>
-        <Legend style={{ ...SHIFT, ...BOTTOM_LEFT }} dim={dimEn}>
-          {en}
-        </Legend>
+        <Legend style={{ ...SHIFT, ...TOP_LEFT }}>{shift}</Legend>
+        <Legend style={{ ...SHIFT, ...BOTTOM_LEFT }}>{en}</Legend>
         {right && (
-          <Legend style={{ ...(ruLabel ? RU : RU_SYMBOL), ...ruColor, ...BOTTOM_RIGHT }}>
-            {right}
-          </Legend>
+          <Legend style={{ ...(ruLabel ? RU : RU_SYMBOL), ...BOTTOM_RIGHT }}>{right}</Legend>
         )}
       </>
     )
@@ -80,10 +66,8 @@ function Labels({ keyDef, labelLang }: { keyDef: KeyDef; labelLang: LabelLang })
   if (ruLabel) {
     return (
       <>
-        <Legend style={{ ...MAIN, ...TOP_LEFT }} dim={dimEn}>
-          {en}
-        </Legend>
-        <Legend style={{ ...RU, ...ruColor, ...BOTTOM_RIGHT }}>{ruLabel}</Legend>
+        <Legend style={{ ...MAIN, ...TOP_LEFT }}>{en}</Legend>
+        <Legend style={{ ...RU, ...BOTTOM_RIGHT }}>{ruLabel}</Legend>
       </>
     )
   }
@@ -100,6 +84,25 @@ function Labels({ keyDef, labelLang }: { keyDef: KeyDef; labelLang: LabelLang })
     <span className="legend legend-mod" style={{ ...MOD, left: 0 }}>
       {icon && <span style={ICON}>{icon}</span>}
       {icon ? ` ${en}` : en}
+    </span>
+  )
+}
+
+/**
+ * Подписи клавиши по режиму (FR-04): EN/RU — как на настоящей клавиатуре;
+ * EN и RU — буквы, цифры и символы одним знаком по центру, остальное как обычно.
+ */
+export function KeyLabels({ keyDef, labelLang }: { keyDef: KeyDef; labelLang: LabelMode }) {
+  const single = labelLang === 'enru' ? null : singleLegend(keyDef, labelLang)
+  return (
+    <span className="legend-box" style={BOX}>
+      {single !== null ? (
+        <span className="legend legend-center" style={SINGLE}>
+          {single}
+        </span>
+      ) : (
+        <RealisticLabels keyDef={keyDef} />
+      )}
     </span>
   )
 }

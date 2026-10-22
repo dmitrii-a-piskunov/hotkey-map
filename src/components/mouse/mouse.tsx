@@ -1,8 +1,7 @@
-import { useEffect, useId, useMemo, useRef, type CSSProperties } from 'react'
+import { useId, useMemo, type CSSProperties } from 'react'
 import { InputCap } from '@/components/devices/input-cap'
 import { svgPoints, type Vec } from '@/components/devices/projection'
 import { CALLOUT_GAP, CALLOUT_SIZE, mouseScene } from '@/components/mouse/mouse-geometry'
-import { mouseCodeForWheel } from '@/domain/input'
 import type { ClickModifiers, InputCode } from '@/domain/selection'
 import type { ViewMode } from '@/features/devices/store'
 import type { MouseLayout } from '@/layouts/mouse'
@@ -18,38 +17,11 @@ interface MouseProps {
   selected: ReadonlySet<InputCode>
   pressed: ReadonlySet<InputCode>
   onSelect: (code: InputCode, mods: ClickModifiers) => void
-  /** Прокрутка над мышью; null — прокрутку не перехватывать */
-  onWheelInput: ((code: InputCode) => void) | null
 }
 
 /** Мышь (FR-02): силуэт в SVG, в 3D — с перспективой и объёмом; поверх — зоны кнопок */
-export function Mouse({
-  layout,
-  unit,
-  view,
-  selected,
-  pressed,
-  onSelect,
-  onWheelInput,
-}: MouseProps) {
-  const rootRef = useRef<HTMLDivElement>(null)
+export function Mouse({ layout, unit, view, selected, pressed, onSelect }: MouseProps) {
   const id = useId()
-
-  useEffect(() => {
-    const el = rootRef.current
-    if (!el || !onWheelInput) return
-    // Нужен непассивный обработчик, чтобы страница не прокручивалась
-    function onWheel(e: WheelEvent) {
-      const code = mouseCodeForWheel(layout, e.deltaY)
-      if (!code || !onWheelInput) return
-      e.preventDefault()
-      onWheelInput(code)
-    }
-    el.addEventListener('wheel', onWheel, { passive: false })
-    return () => {
-      el.removeEventListener('wheel', onWheel)
-    }
-  }, [layout, onWheelInput])
 
   const scene = useMemo(() => mouseScene(layout, view), [layout, view])
   // Постоянный объект, чтобы не ломать memo зон
@@ -78,7 +50,6 @@ export function Mouse({
 
   return (
     <div
-      ref={rootRef}
       role="group"
       aria-label={ru.devices.mouse}
       className="relative"
@@ -95,9 +66,25 @@ export function Mouse({
             <polygon points={outline} />
           </clipPath>
           {scene.buttons.map((b) => (
-            <clipPath key={b.code} id={`${id}-${b.code}`}>
-              <polygon points={pts(b.area)} />
-            </clipPath>
+            <g key={b.code}>
+              <clipPath id={`${id}-${b.code}`}>
+                <polygon points={pts(b.region)} />
+              </clipPath>
+              {/* Боковые кнопки вырезаны: обводка кнопки огибает их */}
+              <mask
+                id={`${id}-${b.code}-notch`}
+                maskUnits="userSpaceOnUse"
+                x={0}
+                y={0}
+                width={box.w * unit}
+                height={box.h * unit}
+              >
+                <rect width={box.w * unit} height={box.h * unit} fill="white" />
+                {b.notches.map((n, i) => (
+                  <polygon key={i} points={pts(n)} fill="black" />
+                ))}
+              </mask>
+            </g>
           ))}
           <radialGradient
             id={`${id}-shade`}
@@ -158,13 +145,21 @@ export function Mouse({
           })}
         </g>
         {/* Кнопки корпуса: нажатие и выделение по их части контура */}
+        {/* Обводка — одна фигура, обрезанная по себе: толщина везде одинаковая */}
         {scene.buttons.map((b) => (
           <g key={b.code} clipPath={`url(#${id}-${b.code})`}>
-            {pressed.has(b.code) && <polygon points={outline} fill={shading.partHighlight} />}
+            {pressed.has(b.code) && <polygon points={pts(b.region)} fill={shading.partHighlight} />}
             {selected.has(b.code) && (
-              <g fill="none" stroke={state.selected.color} strokeWidth={ringWidth * 2}>
-                <polygon points={outline} />
-                <polygon points={pts(b.area)} clipPath={`url(#${id}-body)`} />
+              <g
+                fill="none"
+                stroke={state.selected.color}
+                strokeWidth={ringWidth * 2}
+                mask={`url(#${id}-${b.code}-notch)`}
+              >
+                <polygon points={pts(b.region)} />
+                {b.notches.map((n, i) => (
+                  <polygon key={i} points={pts(n)} />
+                ))}
               </g>
             )}
           </g>

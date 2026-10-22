@@ -91,6 +91,13 @@ function capShape(cam: Camera, k: KeyDef, width: number, height: number): CapSha
   }
 }
 
+function corners(b: Bounds): Vec[] {
+  return [
+    { x: b.x, y: b.y },
+    { x: b.x + b.w, y: b.y + b.h },
+  ]
+}
+
 /**
  * Клавиатура в 3D как на превью docs/images/device-3d-*.png: корпус —
  * трапеция с толщиной, клавиши — усечённые пирамиды с гранями-трапециями.
@@ -149,11 +156,13 @@ export function keyboard3d(layout: KeyboardLayout): Keyboard3d {
     }
   }
 
-  const keys = layout.keys.map((key) => ({
-    key,
-    up: capShape(cam, key, layout.width, capTop),
-    down: capShape(cam, key, layout.width, capPressed),
-  }))
+  const keys = layout.keys.map((key) => {
+    const up = capShape(cam, key, layout.width, capTop)
+    const down = capShape(cam, key, layout.width, capPressed)
+    // Общие границы: при нажатии блок клавиши не сдвигается, двигаются только грани
+    const box = boundsOf([...corners(up.box), ...corners(down.box)])
+    return { key, up: { ...up, box }, down: { ...down, box } }
+  })
 
   return {
     box: boundsOf([...caseTop, ...caseFront]),

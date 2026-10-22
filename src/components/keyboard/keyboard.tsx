@@ -1,10 +1,10 @@
 import type { CSSProperties } from 'react'
 import { InputCap } from '@/components/devices/input-cap'
 import { keyboardWidth, keyWells } from '@/components/devices/device-geometry'
-import { CAP_VARS, KNOB_CODE, rejectHatch } from '@/components/keyboard/cap-style'
+import { CAP_VARS, KNOB_CODE, hintPlacementOf, rejectHatch } from '@/components/keyboard/cap-style'
 import { KeyLabels } from '@/components/keyboard/key-labels'
 import { Keyboard3D } from '@/components/keyboard/keyboard-3d'
-import type { LabelLang } from '@/domain/input'
+import type { LabelMode } from '@/domain/input'
 import type { ClickModifiers, InputCode } from '@/domain/selection'
 import type { ViewMode } from '@/features/devices/store'
 import type { KeyboardLayout } from '@/layouts/aula-f75'
@@ -22,17 +22,21 @@ const TOP_STYLE: CSSProperties = {
   borderRadius: `${cap.topRadius}em`,
 }
 
-const KNOB_STYLE: CSSProperties = { background: knobTheme.ring, borderRadius: '50%' }
+/** Регулятор в 2D: тёмная крышка со светлым ободком одной рамкой — так ободок равномерный */
+// Рамка — на внутреннем круге, а не на блоке клавиши: иначе подсказка
+// отсчитывалась бы от внутреннего края рамки
+const KNOB_STYLE: CSSProperties = { borderRadius: '50%' }
 const KNOB_TOP_STYLE: CSSProperties = {
-  inset: `${cap.topInset.side}em`,
+  inset: 0,
   background: knobTheme.cap,
+  border: `${cap.topInset.side}em solid ${knobTheme.ring}`,
 }
 
 export interface KeyboardProps {
   layout: KeyboardLayout
   /** Размер юнита, px */
   unit: number
-  labelLang: LabelLang
+  labelLang: LabelMode
   view: ViewMode
   selected: ReadonlySet<InputCode>
   pressed: ReadonlySet<InputCode>
@@ -98,15 +102,17 @@ function Keyboard2D({ layout, unit, labelLang, selected, pressed, onSelect }: Ke
         <InputCap
           code={KNOB_CODE}
           kind="knob"
-          left={toX(layout.knob.cx - layout.knob.d / 2)}
-          top={toY(layout.knob.cy - layout.knob.d / 2)}
-          width={layout.knob.d * unit}
-          height={layout.knob.d * unit}
+          // Целые пиксели: на дробных сглаживание делает ободок неровным
+          left={Math.round(toX(layout.knob.cx - layout.knob.d / 2))}
+          top={Math.round(toY(layout.knob.cy - layout.knob.d / 2))}
+          width={Math.round(layout.knob.d * unit)}
+          height={Math.round(layout.knob.d * unit)}
           ariaLabel={`${ru.devices.knob}. ${ru.devices.notAssignable}`}
           selected={false}
           pressed={false}
           disabled
           className="knob"
+          hintPlacement="above"
           style={KNOB_STYLE}
           onSelect={onSelect}
         >
@@ -127,6 +133,7 @@ function Keyboard2D({ layout, unit, labelLang, selected, pressed, onSelect }: Ke
           pressed={pressed.has(k.code)}
           disabled={!k.assignable}
           className="key"
+          hintPlacement={hintPlacementOf(k)}
           style={CAP_VARS[capStyleOf(k.code)]}
           onSelect={onSelect}
         >

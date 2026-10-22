@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react'
+import type { KeyDef } from '@/layouts/aula-f75'
 import { shade } from '@/lib/color'
 import { deviceTheme, type CapStyle } from '@/styles/device-theme'
 
@@ -64,4 +65,13 @@ export const CAP_VARS = Object.fromEntries(
 export function rejectHatch(width: number, cssUnit: 'px' | 'em'): string {
   const { color } = deviceTheme.state.conflict
   return `repeating-linear-gradient(45deg, ${color} 0 ${width}${cssUnit}, transparent ${width}${cssUnit} ${width * 3}${cssUnit})`
+}
+
+/**
+ * Подсказка у неназначаемой клавиши: у нижнего ряда — под клавишей, у
+ * остальных — над ней, чтобы не уходить за край клавиатуры. Регулятор — как
+ * верхний ряд.
+ */
+export function hintPlacementOf(key: KeyDef): 'above' | 'below' {
+  return key.profileRow === 'R5' ? 'below' : 'above'
 }

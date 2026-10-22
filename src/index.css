@@ -153,9 +153,18 @@
     overflow: visible;
   }
 
-  .cap3d-faces polygon,
+  .cap3d-faces path,
   .cap3d-top {
     pointer-events: auto;
+  }
+
+  /* Press animation: only the pressed key changes, faces morph via d */
+  .cap3d-faces path {
+    transition: d var(--press-ms) ease-out;
+  }
+
+  .cap3d-top {
+    transition: transform var(--press-ms) ease-out;
   }
 
   .cap3d-top {
@@ -281,8 +290,38 @@
     pointer-events: none;
   }
 
+  .cap-hint {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    background: var(--popover);
+    color: var(--popover-foreground);
+    box-shadow: 0 2px 8px oklch(0 0 0 / 25%);
+    font-size: 12px;
+    line-height: 1.2;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .cap-hint[data-place='below'] {
+    top: calc(100% + 6px);
+  }
+
+  .cap-hint[data-place='above'] {
+    bottom: calc(100% + 6px);
+  }
+
+  .cap[data-rejected] {
+    z-index: 10;
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .key {
+    .key,
+    .cap3d-top,
+    .cap3d-faces path {
       transition: none;
     }
   }
