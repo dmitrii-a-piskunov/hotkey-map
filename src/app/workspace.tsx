@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { AppHeader } from '@/components/header/app-header'
 import { DeviceStage } from '@/components/devices/device-stage'
 import { StageToolbar } from '@/components/devices/stage-toolbar'
+import { SidePanel } from '@/features/bindings/panel/side-panel'
 import { useDataStore } from '@/features/data/store'
 import { useKeyboardInput } from '@/features/devices/use-keyboard-input'
 import { EmptyGames } from '@/features/games/empty-games'
@@ -22,6 +23,7 @@ export function Workspace({ banners }: { banners?: ReactNode }) {
           {hasGames && <StageToolbar />}
           <DeviceStage />
         </div>
+        {hasGames && <SidePanel />}
       </main>
       <GamesDialogs />
     </div>

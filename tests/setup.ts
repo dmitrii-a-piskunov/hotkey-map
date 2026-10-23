@@ -17,6 +17,20 @@ Element.prototype.hasPointerCapture = function (id: number) {
   return captured.get(this)?.has(id) ?? false
 }
 
+// jsdom has no ResizeObserver; Radix Slider measures its thumb with it
+class NoResizeObserver {
+  observe(): void {
+    // Размеры в jsdom не меняются — сообщать не о чем
+  }
+  unobserve(): void {
+    // Нечего снимать
+  }
+  disconnect(): void {
+    // Нечего отключать
+  }
+}
+if (!('ResizeObserver' in globalThis)) globalThis.ResizeObserver = NoResizeObserver
+
 afterEach(() => {
   cleanup()
 })

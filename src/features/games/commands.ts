@@ -40,7 +40,6 @@ import {
   newProfile,
   removeProfile,
   renameProfile,
-  setProfileNotes,
 } from '@/domain/profiles'
 import {
   addSetting,
@@ -201,12 +200,11 @@ export function createProfileCmd(gameId: string, name: string): void {
   selectProfileCmd(gameId, profile.id)
 }
 
-export function updateProfileCmd(gameId: string, id: string, name: string, notes: string): void {
-  const now = clock.now()
+export function renameProfileCmd(gameId: string, id: string, name: string): void {
   onGame(gameId, (g) => {
     const profile = g.profiles.find((p) => p.id === id)
-    if (!profile || (profile.name === name.trim() && profile.notes === notes)) return g
-    return setProfileNotes(renameProfile(g, id, name, now), id, notes, now)
+    if (!profile || profile.name === name.trim()) return g
+    return renameProfile(g, id, name, clock.now())
   })
 }
 

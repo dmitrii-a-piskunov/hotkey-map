@@ -1,14 +1,10 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { App } from '@/app/app'
-import { serializeAppData } from '@/domain/app-data'
 import { setLayer, startCapture, useBindingsUi, type SlotRef } from '@/features/bindings/ui-store'
 import { useDataStore } from '@/features/data/store'
-import { initialDevicesData, useDevicesStore } from '@/features/devices/store'
-import { PersistenceSession } from '@/features/persistence/session'
 import { ru } from '@/i18n/ru'
 import { at, sampleData } from './fixtures'
-import { makeTestEnv, resetStores } from './mocks/persistence-env'
+import { disposeApp, renderApp as renderWithData, resetAppStores } from './mocks/render-app'
 
 const JUMP = '44444444-4444-4444-8444-444444444441'
 const SLOT: SlotRef = { actionId: JUMP, slot: 1 }
@@ -42,27 +38,10 @@ function jumpInputs() {
 
 const ui = () => useBindingsUi.getState()
 
-let session: PersistenceSession | null = null
+beforeEach(resetAppStores)
+afterEach(disposeApp)
 
-beforeEach(() => {
-  resetStores()
-  useDevicesStore.setState(initialDevicesData)
-  useBindingsUi.setState({ layer: '', capture: null, feedback: null, highlight: null })
-})
-
-afterEach(() => {
-  session?.dispose()
-  session = null
-})
-
-/** Главный экран с игрой PUBG из фикстуры */
-async function renderApp() {
-  const env = makeTestEnv({ savedFolder: true })
-  env.folder.writeText('data.json', serializeAppData(sampleData()))
-  session = new PersistenceSession(env.env)
-  await session.start()
-  render(<App session={session} />)
-}
+const renderApp = () => renderWithData(sampleData())
 
 describe('layers from the real keyboard (FR-14)', () => {
   it('a combination switches the layer, a plain key returns to the base one', async () => {

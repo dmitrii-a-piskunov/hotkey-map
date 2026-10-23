@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { runFlushHooks } from '@/features/data/flush-hooks'
 import { PersistenceContext } from '@/features/persistence/persistence-context'
 import type { PersistenceSession } from '@/features/persistence/session'
 import { StartScreen } from '@/features/persistence/start-screens'
@@ -13,11 +14,14 @@ import { Workspace } from './workspace'
 function useUnsavedChangesGuard(session: PersistenceSession): void {
   useEffect(() => {
     function onBeforeUnload(e: BeforeUnloadEvent) {
+      // Текст из полей, которые сохраняются при уходе из них, — сначала в данные
+      runFlushHooks()
       if (!usePersistenceStatus.getState().dirty) return
       void session.flush()
       e.preventDefault()
     }
     function onPageHide() {
+      runFlushHooks()
       void session.flush()
     }
     window.addEventListener('beforeunload', onBeforeUnload)

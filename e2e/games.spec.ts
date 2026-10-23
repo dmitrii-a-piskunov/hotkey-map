@@ -100,12 +100,19 @@ test('profiles: create, duplicate, rename and delete (FR-11)', async ({ page }) 
   await expect(page.getByTestId('current-profile')).toHaveText('Копия Основной')
 
   await profileMenu().click()
-  await page.getByRole('menuitem', { name: 'Профиль и заметки' }).click()
-  const dialog = page.getByRole('dialog', { name: 'Профиль и заметки' })
+  await page.getByRole('menuitem', { name: 'Переименовать профиль' }).click()
+  const dialog = page.getByRole('dialog', { name: 'Переименовать профиль' })
   await dialog.getByLabel('Название').fill('Гость')
-  await dialog.getByLabel('Заметки').fill('Сенса 42')
   await dialog.getByRole('button', { name: 'Сохранить' }).click()
   await expect(page.getByTestId('current-profile')).toHaveText('Гость')
+
+  // Заметки — во вкладке панели (FR-11), сохраняются при уходе из поля
+  const panel = page.getByRole('complementary', { name: 'Панель профиля' })
+  await panel.getByRole('tab', { name: 'Заметки' }).click()
+  await panel.getByLabel('Заметки').fill('Сенса 42')
+  await panel.getByRole('tab', { name: 'Действия' }).click()
+  await panel.getByRole('tab', { name: 'Заметки' }).click()
+  await expect(panel.getByLabel('Заметки')).toHaveValue('Сенса 42')
 
   await profileMenu().click()
   await page.getByRole('menuitem', { name: 'Удалить профиль' }).click()

@@ -71,7 +71,7 @@ export function ProfilePicker() {
             }}
           >
             <NotebookPen />
-            {ru.profiles.editProfile}
+            {ru.profiles.renameProfile}
           </DropdownMenuItem>
           <DropdownMenuItem
             onSelect={() => {

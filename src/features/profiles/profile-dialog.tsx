@@ -9,15 +9,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Input, Textarea } from '@/components/ui/input'
+import { Input } from '@/components/ui/input'
 import { LIMITS } from '@/domain/names'
 import { profileNameError } from '@/domain/profiles'
 import type { Game, Profile } from '@/domain/types'
-import { createProfileCmd, updateProfileCmd } from '@/features/games/commands'
+import { createProfileCmd, renameProfileCmd } from '@/features/games/commands'
 import { useGamesUi } from '@/features/games/ui-store'
 import { useCurrentGame } from '@/features/games/use-current'
 import { ru } from '@/i18n/ru'
-import { fill } from '@/lib/format'
 
 function close() {
   useGamesUi.setState({ profile: null })
@@ -25,14 +24,11 @@ function close() {
 
 function ProfileForm({ game, profile }: { game: Game; profile: Profile | undefined }) {
   const [name, setName] = useState(profile?.name ?? '')
-  const [notes, setNotes] = useState(profile?.notes ?? '')
   const [touched, setTouched] = useState(false)
   const nameError = touched
     ? nameErrorText(profileNameError(game, name, profile?.id), LIMITS.profile)
     : null
-  const notesError =
-    notes.length > LIMITS.notes ? fill(ru.common.tooLong, { max: LIMITS.notes }) : null
-  const invalid = profileNameError(game, name, profile?.id) !== null || notesError !== null
+  const invalid = profileNameError(game, name, profile?.id) !== null
 
   return (
     <form
@@ -41,7 +37,7 @@ function ProfileForm({ game, profile }: { game: Game; profile: Profile | undefin
         e.preventDefault()
         setTouched(true)
         if (invalid) return
-        if (profile) updateProfileCmd(game.id, profile.id, name, notes)
+        if (profile) renameProfileCmd(game.id, profile.id, name)
         else createProfileCmd(game.id, name)
         close()
       }}
@@ -58,24 +54,6 @@ function ProfileForm({ game, profile }: { game: Game; profile: Profile | undefin
           {...invalidProps('profile-name', nameError)}
         />
       </Field>
-      {profile && (
-        <Field
-          label={ru.profiles.notes}
-          htmlFor="profile-notes"
-          error={notesError}
-          hint={fill(ru.profiles.notesHint, { max: LIMITS.notes })}
-        >
-          <Textarea
-            id="profile-notes"
-            rows={8}
-            value={notes}
-            onChange={(e) => {
-              setNotes(e.target.value)
-            }}
-            {...invalidProps('profile-notes', notesError)}
-          />
-        </Field>
-      )}
       <DialogFooter>
         <Button type="button" variant="outline" onClick={close}>
           {ru.common.cancel}
@@ -88,7 +66,7 @@ function ProfileForm({ game, profile }: { game: Game; profile: Profile | undefin
   )
 }
 
-/** Новый профиль или название и заметки профиля (FR-11) */
+/** Новый профиль или переименование; заметки — во вкладке «Заметки» панели (FR-11) */
 export function ProfileDialog() {
   const dialog = useGamesUi((s) => s.profile)
   const game = useCurrentGame()
@@ -105,7 +83,7 @@ export function ProfileDialog() {
     >
       <DialogContent closeLabel={ru.common.close}>
         <DialogHeader>
-          <DialogTitle>{profile ? ru.profiles.editProfile : ru.profiles.newProfile}</DialogTitle>
+          <DialogTitle>{profile ? ru.profiles.renameProfile : ru.profiles.newProfile}</DialogTitle>
         </DialogHeader>
         {open && <ProfileForm key={profile?.id ?? 'new'} game={game} profile={profile} />}
       </DialogContent>

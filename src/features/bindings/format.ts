@@ -4,7 +4,7 @@
  */
 
 import { layerModifiers } from '@/domain/bindings'
-import type { BindingInput, Modifier, PressType } from '@/domain/types'
+import type { BindingInput, KeyGroup, Modifier, PressType } from '@/domain/types'
 import { keyboardLayout } from '@/features/devices/devices'
 import { ru } from '@/i18n/ru'
 
@@ -38,4 +38,9 @@ export function layerName(key: string): string {
 
 export function pressTypeName(t: PressType): string {
   return ru.bindings.pressTypes[t]
+}
+
+/** Список «W (Движение), A (Движение)» для вопроса о переносе клавиш (FR-29) */
+export function movedList(items: readonly { code: string; group: KeyGroup }[]): string {
+  return items.map((i) => `${inputName(i.code)} (${i.group.name})`).join(', ')
 }
