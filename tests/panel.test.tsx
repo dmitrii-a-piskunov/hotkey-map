@@ -255,11 +255,11 @@ describe('conflict counter in the header (FR-15)', () => {
   it('TC-04: counts one conflict, lists it and jumps to the key', async () => {
     const user = userEvent.setup()
     await renderApp(data())
-    expect(screen.getByTestId('issues-button')).toHaveTextContent(ru.bindings.noIssues)
+    expect(screen.getByTestId('issues-button')).toHaveAccessibleName(ru.bindings.noIssues)
     const fire = within(panel()).getByRole('group', { name: 'Огонь' })
     await user.click(within(fire).getByRole('button', { name: /Клавиша 1 действия «Огонь»/ }))
     fireEvent.keyDown(window, { code: 'Space', key: ' ' })
-    expect(screen.getByTestId('issues-button')).toHaveTextContent('Конфликты: 1')
+    expect(screen.getByTestId('issues-button')).toHaveAccessibleName('Конфликты: 1')
 
     await user.click(screen.getByTestId('issues-button'))
     const list = await screen.findByRole('dialog', { name: ru.bindings.issuesTitle })

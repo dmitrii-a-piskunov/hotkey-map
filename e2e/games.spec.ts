@@ -109,10 +109,10 @@ test('profiles: create, duplicate, rename and delete (FR-11)', async ({ page }) 
   // Заметки — во вкладке панели (FR-11), сохраняются при уходе из поля
   const panel = page.getByRole('complementary', { name: 'Панель профиля' })
   await panel.getByRole('tab', { name: 'Заметки' }).click()
-  await panel.getByLabel('Заметки').fill('Сенса 42')
+  await panel.getByRole('textbox', { name: 'Заметки' }).fill('Сенса 42')
   await panel.getByRole('tab', { name: 'Действия' }).click()
   await panel.getByRole('tab', { name: 'Заметки' }).click()
-  await expect(panel.getByLabel('Заметки')).toHaveValue('Сенса 42')
+  await expect(panel.getByRole('textbox', { name: 'Заметки' })).toHaveValue('Сенса 42')
 
   await profileMenu().click()
   await page.getByRole('menuitem', { name: 'Удалить профиль' }).click()

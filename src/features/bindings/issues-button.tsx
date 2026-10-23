@@ -42,10 +42,16 @@ export function IssuesButton() {
           variant="ghost"
           size="sm"
           data-testid="issues-button"
-          className={cn('gap-1.5', count > 0 ? 'text-destructive' : 'text-muted-foreground')}
+          // Шапка тесная: значок и число, полный текст — в подписи
+          aria-label={count > 0 ? fill(t.issuesButton, { count }) : t.noIssues}
+          title={count > 0 ? fill(t.issuesButton, { count }) : t.noIssues}
+          className={cn(
+            'gap-1 tabular-nums',
+            count > 0 ? 'text-destructive' : 'text-muted-foreground',
+          )}
         >
           {count > 0 ? <TriangleAlert /> : <CircleCheck />}
-          {count > 0 ? fill(t.issuesButton, { count }) : t.noIssues}
+          {count}
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-96 p-2" aria-label={t.issuesTitle}>

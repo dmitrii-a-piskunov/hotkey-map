@@ -41,7 +41,7 @@ export function AppHeader() {
     <header className="flex h-12 shrink-0 items-center gap-4 border-b bg-background px-4">
       <div className="flex items-center gap-2">
         <Keyboard className="size-5 text-muted-foreground" aria-hidden="true" />
-        <h1 className="text-base font-semibold tracking-tight">{ru.app.title}</h1>
+        <h1 className="text-base font-semibold tracking-tight whitespace-nowrap">{ru.app.title}</h1>
         <span className="text-xs text-muted-foreground">{__APP_VERSION__}</span>
       </div>
       <div className="flex min-w-0 items-center gap-1 border-l pl-3">
@@ -49,7 +49,7 @@ export function AppHeader() {
         <ProfilePicker />
         <IssuesButton />
       </div>
-      <div className="ml-auto flex items-center gap-3">
+      <div className="ml-auto flex shrink-0 items-center gap-3">
         <SaveStatusIndicator />
         <Segmented
           label={ru.header.inputMode}

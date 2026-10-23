@@ -118,7 +118,10 @@ export function SaveStatusIndicator() {
       {status === 'saved' && <Check className="size-3.5" aria-hidden="true" />}
       {status === 'saving' && <Loader2 className="size-3.5 animate-spin" aria-hidden="true" />}
       {status === 'error' && <AlertTriangle className="size-3.5" aria-hidden="true" />}
-      {status === 'saved' ? t.statusSaved : status === 'saving' ? t.statusSaving : t.statusError}
+      {/* На узком окне шапке не хватает места: «Сохранено» — значком, ошибка — всегда словами */}
+      <span className={status === 'error' ? undefined : 'max-2xl:sr-only'}>
+        {status === 'saved' ? t.statusSaved : status === 'saving' ? t.statusSaving : t.statusError}
+      </span>
     </span>
   )
 }
