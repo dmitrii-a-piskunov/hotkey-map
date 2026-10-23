@@ -12,6 +12,7 @@ export const LIMITS = {
   actionEn: 80,
   description: 300,
   profile: 40,
+  keyGroup: 40,
   notes: 1000,
   bindParam: 60,
   option: 80,

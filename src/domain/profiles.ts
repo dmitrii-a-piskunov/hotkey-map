@@ -31,11 +31,21 @@ export function addProfile(game: Game, profile: Profile): Game {
   return { ...game, profiles: [...game.profiles, profile] }
 }
 
-function updateProfile(game: Game, id: string, now: string, fn: (p: Profile) => Profile): Game {
-  return {
-    ...game,
-    profiles: game.profiles.map((p) => (p.id === id ? { ...fn(p), updatedAt: now } : p)),
-  }
+/** Изменение одного профиля; fn вернула тот же профиль — игра не меняется */
+export function updateProfile(
+  game: Game,
+  id: string,
+  now: string,
+  fn: (p: Profile) => Profile,
+): Game {
+  const index = game.profiles.findIndex((p) => p.id === id)
+  const current = game.profiles[index]
+  if (!current) return game
+  const next = fn(current)
+  if (next === current) return game
+  const profiles = [...game.profiles]
+  profiles[index] = { ...next, updatedAt: now }
+  return { ...game, profiles }
 }
 
 export function renameProfile(game: Game, id: string, name: string, now: string): Game {
