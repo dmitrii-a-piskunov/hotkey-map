@@ -13,7 +13,7 @@ import { Keyboard } from '@/components/keyboard/keyboard'
 import { Mouse } from '@/components/mouse/mouse'
 import { mouseScene } from '@/components/mouse/mouse-geometry'
 import { rectFromPoints, type Point, type Rect } from '@/domain/geometry'
-import { mouseCodeForWheel } from '@/domain/input'
+import { heldModifiers, mouseCodeForButton, mouseCodeForWheel } from '@/domain/input'
 import {
   marqueeSelect,
   rectSelect,
@@ -22,6 +22,8 @@ import {
   type InputCode,
   type SelectionState,
 } from '@/domain/selection'
+import { captureInputCmd, clickModifiers } from '@/features/bindings/commands'
+import { cancelCapture, isCapturing } from '@/features/bindings/ui-store'
 import { useSettings } from '@/features/data/store'
 import { keyboardLayout, mouseLayout } from '@/features/devices/devices'
 import { useDevicesStore } from '@/features/devices/store'
@@ -83,6 +85,27 @@ function inputAt(target: EventTarget): { code: InputCode; disabled: boolean } | 
   return { code, disabled: el.dataset.disabled !== undefined }
 }
 
+function isOverMouse(target: EventTarget | null): boolean {
+  return target instanceof Element && target.closest('[data-device="mouse"]') !== null
+}
+
+/**
+ * Захват клавиши (FR-12): клик по экранной клавише или зоне мыши назначает
+ * её; другие кнопки мыши над изображением мыши назначают сами себя. Клик
+ * мимо клавиш отменяет захват.
+ */
+function captureFromPointer(e: PointerEvent<HTMLDivElement>): void {
+  const mods = clickModifiers(heldModifiers(e))
+  const hit = inputAt(e.target)
+  if (e.button === 0) {
+    if (hit) captureInputCmd(hit.code, mods)
+    else cancelCapture()
+    return
+  }
+  const code = isOverMouse(e.target) ? mouseCodeForButton(mouseLayout, e.button) : null
+  if (code) captureInputCmd(code, mods)
+}
+
 function toLocal(container: HTMLElement, r: Rect): Rect {
   const box = container.getBoundingClientRect()
   return { x: r.x - box.left, y: r.y - box.top, w: r.w, h: r.h }
@@ -142,12 +165,19 @@ export function DeviceStage() {
 
   // Прокрутка над областью клавиатуры и мыши выделяет «колесо вверх/вниз» (FR-03).
   // Нужен непассивный обработчик, чтобы страница не прокручивалась
+  // В захвате прокрутка над изображением мыши назначает «колесо вверх/вниз» (FR-12)
   useEffect(() => {
     const el = containerRef.current
-    if (!el || inputMode !== 'check') return
+    if (!el) return
     function onWheel(e: WheelEvent) {
       const code = mouseCodeForWheel(mouseLayout, e.deltaY)
       if (!code) return
+      if (isCapturing()) {
+        e.preventDefault()
+        if (isOverMouse(e.target)) captureInputCmd(code, clickModifiers(heldModifiers(e)))
+        return
+      }
+      if (inputMode !== 'check') return
       e.preventDefault()
       onWheelInput(code)
     }
@@ -158,6 +188,11 @@ export function DeviceStage() {
   }, [inputMode, onWheelInput])
 
   function onPointerDown(e: PointerEvent<HTMLDivElement>) {
+    if (isCapturing()) {
+      e.preventDefault()
+      captureFromPointer(e)
+      return
+    }
     if (e.button !== 0) return
     const hit = inputAt(e.target)
     // Клик по клавише показывает её нажатие, пока зажата кнопка
@@ -232,6 +267,10 @@ export function DeviceStage() {
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerUp}
+      onContextMenu={(e) => {
+        // Правая кнопка над мышью — это вход ПКМ, а не меню браузера
+        if (isOverMouse(e.target)) e.preventDefault()
+      }}
     >
       <div className="flex items-center" style={{ gap: DEVICE_GAP * unit }}>
         <div className="flex justify-center" style={{ width: KEYBOARD_SLOT * unit }}>

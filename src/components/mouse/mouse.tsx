@@ -68,6 +68,7 @@ export function Mouse({ layout, unit, view, selected, pressed, onSelect }: Mouse
     <div
       role="group"
       aria-label={ru.devices.mouse}
+      data-device="mouse"
       className="relative"
       style={{ width: box.w * unit, height: box.h * unit }}
     >

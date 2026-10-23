@@ -5,6 +5,7 @@
 
 import type { MouseInputCode, MouseLayout } from '@/layouts/mouse'
 import type { Direction } from './selection'
+import type { Modifier } from './types'
 
 export interface KeyCombo {
   code: string
@@ -40,6 +41,19 @@ export function isReservedCombo(e: KeyCombo): boolean {
   if (e.ctrlKey && BROWSER_CTRL_CODES.has(e.code)) return true
   if (e.altKey && e.code === 'F4') return true
   return false
+}
+
+/** Зажатые модификаторы события в порядке Ctrl, Shift, Alt (FR-12, FR-14) */
+export function heldModifiers(e: {
+  ctrlKey: boolean
+  shiftKey: boolean
+  altKey: boolean
+}): Modifier[] {
+  const mods: Modifier[] = []
+  if (e.ctrlKey) mods.push('ctrl')
+  if (e.shiftKey) mods.push('shift')
+  if (e.altKey) mods.push('alt')
+  return mods
 }
 
 const ARROWS: Record<string, Direction> = {

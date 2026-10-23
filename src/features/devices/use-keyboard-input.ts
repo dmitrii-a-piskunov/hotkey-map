@@ -1,16 +1,21 @@
 /**
- * Реакция на настоящую клавиатуру и боковые кнопки мыши (ТЗ, FR-03, FR-04).
- * Работает, пока окно активно и фокус не в поле ввода.
+ * Реакция на настоящую клавиатуру и боковые кнопки мыши (ТЗ, FR-03, FR-04,
+ * FR-12, FR-14). Работает, пока окно активно и фокус не в поле ввода.
  */
 
 import { useEffect } from 'react'
+import { layerKey } from '@/domain/bindings'
 import {
   arrowDirection,
   detectLabelLang,
+  heldModifiers,
   isModifierCode,
   isReservedCombo,
   mouseCodeForButton,
 } from '@/domain/input'
+import { BASE_LAYER } from '@/domain/layers'
+import { captureInputCmd } from '@/features/bindings/commands'
+import { cancelCapture, isCapturing, setHighlight, setLayer } from '@/features/bindings/ui-store'
 import { useDataStore } from '@/features/data/store'
 import { isKeyboardCode, mouseLayout } from './devices'
 import { useDevicesStore } from './store'
@@ -30,10 +35,41 @@ function isEditableTarget(target: EventTarget | null): boolean {
   return target.closest('[role="dialog"], [role="alertdialog"], [role="menu"]') !== null
 }
 
+/** Захват отменяет клик вне сцены и вне кнопки захвата (FR-12) */
+function isCaptureZone(target: EventTarget | null): boolean {
+  return (
+    target instanceof Element &&
+    target.closest('[data-testid="device-stage"], [data-capture-slot]') !== null
+  )
+}
+
 export function useKeyboardInput(): void {
   useEffect(() => {
     // Модификатор, нажатый без других клавиш: при отпускании выделяет сам себя
     let lonelyModifier: string | null = null
+    // Клавиша, пойманная захватом: её отпускание не должно нажать кнопку в фокусе
+    let swallowed: string | null = null
+
+    /** Режим захвата «Нажмите клавишу…» (FR-12) */
+    function onCaptureKeyDown(e: KeyboardEvent) {
+      if (isReservedCombo(e)) return
+      e.preventDefault()
+      if (e.repeat) return
+      if (e.code === 'Escape') {
+        lonelyModifier = null
+        swallowed = e.code
+        cancelCapture()
+        return
+      }
+      if (isModifierCode(e.code)) {
+        lonelyModifier = e.code
+        return
+      }
+      lonelyModifier = null
+      if (!isKeyboardCode(e.code)) return
+      swallowed = e.code
+      captureInputCmd(e.code, heldModifiers(e))
+    }
 
     function onKeyDown(e: KeyboardEvent) {
       if (isEditableTarget(e.target)) return
@@ -46,6 +82,11 @@ export function useKeyboardInput(): void {
       if (lang && settings.autoLang && settings.labelLang !== 'enru' && lang !== settings.labelLang)
         useDataStore.getState().updateSettings({ labelLang: lang })
 
+      if (isCapturing()) {
+        onCaptureKeyDown(e)
+        return
+      }
+
       if (isReservedCombo(e)) return
       e.preventDefault()
 
@@ -53,6 +94,7 @@ export function useKeyboardInput(): void {
         lonelyModifier = null
         if (settings.inputMode === 'check') store.press(e.code)
         store.clearSelection()
+        setHighlight(null)
         return
       }
 
@@ -70,18 +112,36 @@ export function useKeyboardInput(): void {
         return
       }
       lonelyModifier = null
-      // Слои по модификаторам (FR-14) появятся на этапе 4, пока выделяем саму клавишу
-      if (!e.repeat) store.selectOnly(e.code)
+      if (e.repeat) return
+      // FR-14: комбинация переключает слой, клавиша без модификаторов — основной слой
+      setLayer(layerKey(heldModifiers(e)))
+      store.selectOnly(e.code)
     }
 
     function onKeyUp(e: KeyboardEvent) {
       const store = useDevicesStore.getState()
       store.release(e.code)
-      if (lonelyModifier === e.code) {
-        lonelyModifier = null
-        const { inputMode } = useDataStore.getState().data.appSettings
-        if (inputMode === 'check' && !isEditableTarget(e.target)) store.selectOnly(e.code)
+      if (swallowed === e.code) {
+        swallowed = null
+        e.preventDefault()
       }
+      if (lonelyModifier !== e.code) return
+      lonelyModifier = null
+      if (isEditableTarget(e.target)) return
+      // Alt в Firefox при отпускании открывает меню окна
+      e.preventDefault()
+      if (isCapturing()) {
+        captureInputCmd(e.code, heldModifiers(e))
+        return
+      }
+      if (useDataStore.getState().data.appSettings.inputMode !== 'check') return
+      // Сама клавиша-модификатор живёт в основном слое: Shift — «Бег»
+      setLayer(BASE_LAYER)
+      store.selectOnly(e.code)
+    }
+
+    function onPointerDownCapture(e: PointerEvent) {
+      if (isCapturing() && !isCaptureZone(e.target)) cancelCapture()
     }
 
     function onMouseDown(e: MouseEvent) {
@@ -89,6 +149,8 @@ export function useKeyboardInput(): void {
       lonelyModifier = null
       if (!TRACKED_BUTTONS.has(e.button)) return
       e.preventDefault()
+      // В захвате кнопки мыши ловит сцена — над изображением мыши
+      if (isCapturing()) return
       if (useDataStore.getState().data.appSettings.inputMode !== 'check') return
       const store = useDevicesStore.getState()
       const code = mouseCodeForButton(mouseLayout, e.button)
@@ -112,12 +174,14 @@ export function useKeyboardInput(): void {
 
     window.addEventListener('keydown', onKeyDown)
     window.addEventListener('keyup', onKeyUp)
+    window.addEventListener('pointerdown', onPointerDownCapture, true)
     window.addEventListener('mousedown', onMouseDown)
     window.addEventListener('mouseup', onMouseUp)
     window.addEventListener('blur', onBlur)
     return () => {
       window.removeEventListener('keydown', onKeyDown)
       window.removeEventListener('keyup', onKeyUp)
+      window.removeEventListener('pointerdown', onPointerDownCapture, true)
       window.removeEventListener('mousedown', onMouseDown)
       window.removeEventListener('mouseup', onMouseUp)
       window.removeEventListener('blur', onBlur)

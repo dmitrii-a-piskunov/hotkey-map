@@ -15,6 +15,10 @@ import {
   type InputCode,
   type SelectionState,
 } from '@/domain/selection'
+import { currentGame, currentProfile } from '@/domain/current'
+import { layerInputs } from '@/domain/layers'
+import { useDataStore } from '@/features/data/store'
+import { useBindingsUi } from '@/features/bindings/ui-store'
 import { currentSelectableInputs } from './blocked-keys'
 
 interface DevicesData {
@@ -68,8 +72,17 @@ export const useDevicesStore = create<DevicesState>()((set) => ({
     set((s) => ({ selection: navigate(s.selection, dir, extend, currentSelectableInputs()) }))
   },
   selectAllOccupied: () => {
-    // Биндов пока нет (этап 4), поэтому занятых клавиш нет
-    set({ selection: selectAll([]) })
+    const { data } = useDataStore.getState()
+    const game = currentGame(data)
+    const profile = game && currentProfile(game, data.appSettings)
+    // Непередаваемые клавиши Ctrl+A не выделяет (FR-01), даже если на них остался бинд
+    const blocked = new Set(
+      currentSelectableInputs()
+        .filter((i) => i.blocked)
+        .map((i) => i.code),
+    )
+    const occupied = layerInputs(profile, useBindingsUi.getState().layer)
+    set({ selection: selectAll(occupied.filter((c) => !blocked.has(c))) })
   },
   press: (code) => {
     set((s) => (s.pressed.includes(code) ? s : { pressed: [...s.pressed, code] }))
