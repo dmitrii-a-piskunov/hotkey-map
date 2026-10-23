@@ -1,5 +1,6 @@
 import { memo, useEffect, useId, useMemo, useState, type CSSProperties } from 'react'
-import { InputCap } from '@/components/devices/input-cap'
+import { ConflictBadge, InputCap } from '@/components/devices/input-cap'
+import { keyAriaLabel, viewOf, type InputView } from '@/components/devices/input-views'
 import {
   boundsOf,
   rectToQuad,
@@ -42,6 +43,7 @@ interface Key3DProps {
   labelLang: LabelMode
   selected: boolean
   pressed: boolean
+  view: InputView
   onSelect: (code: InputCode, mods: ClickModifiers) => void
 }
 
@@ -55,6 +57,7 @@ const Key3D = memo(function Key3D({
   labelLang,
   selected,
   pressed,
+  view,
   onSelect,
 }: Key3DProps) {
   const style = capStyleOf(k.code)
@@ -86,23 +89,34 @@ const Key3D = memo(function Key3D({
       top={(box.y - origin.y) * unit}
       width={box.w * unit}
       height={box.h * unit}
-      ariaLabel={off ? `${k.label.en}. ${ru.devices.notAssignable}` : k.label.en}
+      ariaLabel={keyAriaLabel(k.label.en, off, view)}
       selected={selected}
       pressed={pressed}
       disabled={off}
+      conflict={view.conflict}
+      dimmed={view.dimmed}
+      title={view.title}
       className="cap3d"
       hintPlacement={hintPlacementOf(k)}
-      style={CAP_VARS[style]}
+      style={view.style ?? CAP_VARS[style]}
       onSelect={onSelect}
     >
       <svg aria-hidden="true" className="cap3d-faces" width={box.w * unit} height={box.h * unit}>
         {shape.left && <path style={face(shape.left, 'var(--cap-side-3d)')} />}
         {shape.right && <path style={face(shape.right, 'var(--cap-side-dark-3d)')} />}
-        <path style={face(shape.front, `url(#${gradId}-front-${style})`)} />
+        {/* Окрашенная клавиша задаёт --cap-front-3d, родная — градиент своего стиля */}
+        <path style={face(shape.front, `var(--cap-front-3d, url(#${gradId}-front-${style}))`)} />
         <path style={face(shape.underlay, 'var(--cap-side-3d)')} />
       </svg>
       <div className="cap3d-top" style={top}>
-        <KeyLabels keyDef={k} labelLang={labelLang} />
+        <KeyLabels
+          keyDef={k}
+          labelLang={labelLang}
+          action={
+            view.label ? { label: view.label, extra: view.extra, faceWidth: topSize.w } : undefined
+          }
+        />
+        {view.conflict && <ConflictBadge />}
       </div>
     </InputCap>
   )
@@ -118,6 +132,7 @@ export function Keyboard3D({
   labelLang,
   selected,
   pressed,
+  views,
   onSelect,
 }: KeyboardProps) {
   const id = useId()
@@ -209,6 +224,7 @@ export function Keyboard3D({
             labelLang={labelLang}
             selected={selected.has(key.code)}
             pressed={isPressed}
+            view={viewOf(views, key.code)}
             onSelect={onSelect}
           />
         )

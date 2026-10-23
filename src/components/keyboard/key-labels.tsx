@@ -101,11 +101,93 @@ function RealisticLabels({ keyDef }: { keyDef: KeyDef }) {
   )
 }
 
+const { paint } = deviceTheme
+/** Средняя ширина знака подписи в долях кегля — для подбора размера под клавишу */
+const CHAR_WIDTH = 0.58
+/** Поля подписи действия от краёв верхней грани, в юнитах */
+const ACTION_INSET = 0.04
+
+/**
+ * Кегль подписи действия: слово не разрывается, поэтому самое длинное слово
+ * должно уместиться в ширину грани. Не меньше minLabelSize.
+ */
+function actionFont(label: string, faceWidth: number): { size: number; fits: boolean } {
+  const longest = Math.max(...label.split(/\s+/).map((w) => w.length), 1)
+  const fit = (faceWidth - 2 * ACTION_INSET) / (longest * CHAR_WIDTH)
+  return {
+    size: Math.max(paint.minLabelSize, Math.min(paint.labelSize, fit)),
+    fits: fit >= paint.minLabelSize,
+  }
+}
+const COMPACT: CSSProperties = { fontSize: `${legend.sizeShift}em`, fontWeight: legend.weightMain }
+const COMPACT_RU: CSSProperties = { ...GRAY, fontWeight: legend.weightRu }
+
+/**
+ * Клавиша с подписью действия (FR-26): название клавиши мелко слева сверху,
+ * действие — строкой снизу. В EN/RU у букв — обе раскладки рядом.
+ */
+function CompactLabels({ keyDef, labelLang }: { keyDef: KeyDef; labelLang: LabelMode }) {
+  const { en, ru, icon, game } = keyDef.label
+  const ruText = ru ?? keyDef.label.ruSymbol
+  let main = labelLang === 'ru' ? (game?.ru ?? ru ?? en) : (game?.en ?? en)
+  if (icon) main = `${icon} ${en}`
+  const second = labelLang === 'enru' && ruText && !game ? ruText : null
+  return (
+    <span className="legend" style={{ ...COMPACT, ...TOP_LEFT }}>
+      {main}
+      {second && <span style={COMPACT_RU}> {second}</span>}
+    </span>
+  )
+}
+
+export interface ActionCaption {
+  label: string
+  /** Сколько ещё действий: «+N» */
+  extra: number
+  /** Ширина верхней грани, в юнитах */
+  faceWidth: number
+}
+
 /**
  * Подписи клавиши по режиму (FR-04): EN/RU — как на настоящей клавиатуре;
  * EN и RU — буквы, цифры и символы одним знаком по центру, остальное как обычно.
+ * С подписью действия (FR-26) название клавиши ужимается в угол.
  */
-export function KeyLabels({ keyDef, labelLang }: { keyDef: KeyDef; labelLang: LabelMode }) {
+export function KeyLabels({
+  keyDef,
+  labelLang,
+  action,
+}: {
+  keyDef: KeyDef
+  labelLang: LabelMode
+  action?: ActionCaption
+}) {
+  if (action) {
+    // Подпись действия — во всю ширину грани, а не в полях подписей клавиши
+    // Слово не влезает и мелким кеглем — одна строка с многоточием
+    const { size, fits } = actionFont(action.label, action.faceWidth)
+    return (
+      <>
+        <span className="legend-box" style={BOX}>
+          <CompactLabels keyDef={keyDef} labelLang={labelLang} />
+        </span>
+        <span
+          className="action-label"
+          style={{
+            left: `${ACTION_INSET}em`,
+            right: `${ACTION_INSET}em`,
+            bottom: `${ACTION_INSET}em`,
+            fontSize: `${size}em`,
+          }}
+        >
+          <span className="action-label-text" data-single={fits ? undefined : true}>
+            {action.label}
+          </span>
+          {action.extra > 0 && <span className="action-label-extra">+{action.extra}</span>}
+        </span>
+      </>
+    )
+  }
   const single = labelLang === 'enru' ? null : singleLegend(keyDef, labelLang)
   return (
     <span className="legend-box" style={BOX}>

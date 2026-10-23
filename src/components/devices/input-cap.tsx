@@ -4,6 +4,7 @@ import { useCurrentGameName } from '@/features/devices/blocked-keys'
 import { ru } from '@/i18n/ru'
 import { fill } from '@/lib/format'
 import { cn } from '@/lib/utils'
+import { deviceTheme } from '@/styles/device-theme'
 
 export interface InputCapProps {
   code: InputCode
@@ -18,6 +19,12 @@ export interface InputCapProps {
   selected: boolean
   pressed: boolean
   disabled?: boolean
+  /** Конфликт или нарушение правил (FR-15) */
+  conflict?: boolean
+  /** Приглушён: чужой слой или поиск (FR-14, FR-16) */
+  dimmed?: boolean
+  /** Полное название действия — подсказка браузера */
+  title?: string
   className?: string
   /** Где показывать подсказку у неназначаемого входа: над ним или под ним (нижний ряд) */
   hintPlacement?: 'below' | 'above'
@@ -39,6 +46,9 @@ export const InputCap = memo(function InputCap({
   selected,
   pressed,
   disabled = false,
+  conflict = false,
+  dimmed = false,
+  title,
   className,
   hintPlacement = 'above',
   style,
@@ -81,6 +91,9 @@ export const InputCap = memo(function InputCap({
       data-selected={selected || undefined}
       data-pressed={pressed || undefined}
       data-disabled={disabled || undefined}
+      data-conflict={conflict || undefined}
+      data-dimmed={dimmed || undefined}
+      title={title}
       data-rejected={holding || (disabled && selected) || undefined}
       className={cn('cap', className)}
       style={{ left, top, width, height, ...style }}
@@ -106,3 +119,20 @@ export const InputCap = memo(function InputCap({
     </div>
   )
 })
+
+/** Знак — 70 % значка; ширина и высота — от своего font-size */
+const BADGE_GLYPH = 0.7
+const BADGE_STYLE = {
+  width: `${1 / BADGE_GLYPH}em`,
+  height: `${1 / BADGE_GLYPH}em`,
+  fontSize: `${deviceTheme.paint.badgeSize * BADGE_GLYPH}em`,
+}
+
+/** Значок конфликта в углу верхней грани (FR-15); размер — от юнита в font-size */
+export function ConflictBadge() {
+  return (
+    <span aria-hidden="true" className="cap-badge" style={BADGE_STYLE}>
+      !
+    </span>
+  )
+}

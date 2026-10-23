@@ -109,6 +109,12 @@
     --shadow: var(--scene-shadow-dark);
   }
 
+  /* FR-12: режим захвата «Нажмите клавишу…» — сцена обведена акцентным цветом */
+  .device-scene[data-capturing] {
+    box-shadow: inset 0 0 0 3px var(--capture-color);
+    cursor: crosshair;
+  }
+
   .device-body {
     position: relative;
     background: var(--case);
@@ -267,6 +273,63 @@
     transform: translateY(-50%);
   }
 
+  /* FR-26: подпись действия — строкой внизу верхней грани */
+  .action-label {
+    position: absolute;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 0.25em;
+    line-height: 1.1;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  /* До двух строк: на клавише 1u десять символов в одну строку не помещаются */
+  .action-label-text {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+  }
+
+  .action-label-text[data-single] {
+    display: block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .action-label-extra {
+    flex: none;
+    color: var(--legend-ru);
+  }
+
+  /* FR-15: конфликт — красная обводка верха клавиши и значок в углу */
+  .key[data-conflict] .key-top,
+  .cap3d[data-conflict] .cap3d-top {
+    box-shadow: inset 0 0 0 var(--conflict-width) var(--conflict-color);
+  }
+
+  .cap-badge {
+    position: absolute;
+    top: 0.06em;
+    right: 0.06em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background: var(--conflict-color);
+    color: #fff;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  /* FR-14, FR-16: приглушение в чужом слое и при поиске */
+  .cap[data-dimmed] {
+    opacity: var(--dim-opacity);
+  }
+
   .mouse-callout {
     stroke: var(--muted-foreground);
     fill: var(--muted-foreground);
@@ -282,6 +345,35 @@
 
   .mouse-zone {
     border-radius: 9999px;
+  }
+
+  .mouse-zone-ring[style*='--zone-fill'] {
+    background: var(--zone-fill);
+  }
+
+  .mouse-zone-ring[data-conflict] {
+    box-shadow: inset 0 0 0 var(--conflict-width-px, 3px) var(--conflict-color);
+  }
+
+  .mouse-callout-action {
+    display: block;
+    margin-top: 0.2em;
+    color: var(--foreground);
+    font-weight: 600;
+  }
+
+  .mouse-action-label {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-weight: 600;
+    white-space: nowrap;
+    pointer-events: none;
+    text-shadow: 0 0 0.3em rgb(0 0 0 / 60%);
+  }
+
+  :is(.mouse-callout-action, .mouse-action-label)[data-dimmed] {
+    opacity: var(--dim-opacity);
   }
 
   .mouse-zone-ring[data-pressed] {

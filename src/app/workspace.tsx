@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { AppHeader } from '@/components/header/app-header'
 import { DeviceStage } from '@/components/devices/device-stage'
+import { StageToolbar } from '@/components/devices/stage-toolbar'
 import { useDataStore } from '@/features/data/store'
 import { useKeyboardInput } from '@/features/devices/use-keyboard-input'
 import { EmptyGames } from '@/features/games/empty-games'
@@ -17,7 +18,10 @@ export function Workspace({ banners }: { banners?: ReactNode }) {
       {banners}
       <main className="flex min-h-0 flex-1">
         {!hasGames && <EmptyGames />}
-        <DeviceStage />
+        <div className="flex min-w-0 flex-1 flex-col">
+          {hasGames && <StageToolbar />}
+          <DeviceStage />
+        </div>
       </main>
       <GamesDialogs />
     </div>

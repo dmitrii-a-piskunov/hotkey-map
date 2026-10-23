@@ -172,3 +172,56 @@ describe('key capture (FR-12)', () => {
     expect(ui().capture).toBeNull()
   })
 })
+
+describe('keys on the stage (FR-14, FR-15, FR-26, FR-30)', () => {
+  it('a bound key is painted with its category and shows the action label', async () => {
+    await renderApp()
+    expect(input('Space').style.getPropertyValue('--cap-top')).toBe('#3B82F6')
+    expect(input('Space')).toHaveTextContent('Прыжок')
+    expect(input('Space')).toHaveAttribute('title', 'Прыжок')
+    expect(input('KeyQ').style.getPropertyValue('--cap-top')).not.toBe('#3B82F6')
+  })
+
+  it('labels can be switched off', async () => {
+    await renderApp()
+    fireEvent.click(screen.getByRole('button', { name: ru.bindings.showLabelsShort }))
+    expect(useDataStore.getState().data.appSettings.showLabels).toBe(false)
+    expect(input('Space')).not.toHaveTextContent('Прыжок')
+  })
+
+  it('TC-05: in the Ctrl layer Ctrl+1 is lit and free keys are dimmed', async () => {
+    await renderApp()
+    startCapture(SLOT)
+    keyDown('Digit1', { ctrlKey: true })
+    expect(input('Digit1')).not.toHaveTextContent('Прыжок')
+    expect(input('Digit1')).not.toHaveAttribute('data-dimmed')
+    fireEvent.click(screen.getByRole('radio', { name: /^Ctrl/ }))
+    expect(ui().layer).toBe('ctrl')
+    expect(input('Digit1')).toHaveTextContent('Прыжок')
+    expect(input('Digit1')).not.toHaveAttribute('data-dimmed')
+    expect(input('KeyQ')).toHaveAttribute('data-dimmed')
+  })
+
+  it('a conflict marks the key', async () => {
+    await renderApp()
+    const data = useDataStore.getState().data
+    const game = at(data.games, 0)
+    const twin = {
+      ...at(game.actions, 0),
+      id: '44444444-4444-4444-8444-444444444449',
+      name: 'Двойник',
+      order: 1,
+    }
+    const profile = at(game.profiles, 0)
+    const bindings = [
+      ...profile.bindings,
+      { ...at(profile.bindings, 0), id: '77777777-7777-4777-8777-777777777779', actionId: twin.id },
+    ]
+    useDataStore.getState().replaceData({
+      ...data,
+      games: [{ ...game, actions: [...game.actions, twin], profiles: [{ ...profile, bindings }] }],
+    })
+    expect(await screen.findByText('+1')).toBeInTheDocument()
+    expect(input('Space')).toHaveAttribute('data-conflict')
+  })
+})

@@ -1,5 +1,5 @@
 import { Keyboard } from 'lucide-react'
-import type { ReactNode } from 'react'
+import { Segmented } from '@/components/common/segmented'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import type { LabelMode } from '@/domain/input'
 import type { InputMode, ViewMode } from '@/domain/types'
@@ -9,34 +9,6 @@ import { GamePicker } from '@/features/games/game-picker'
 import { ProfilePicker } from '@/features/profiles/profile-picker'
 import { SaveStatusIndicator } from '@/features/persistence/storage-banners'
 import { ru } from '@/i18n/ru'
-
-interface SegmentedProps<T extends string> {
-  label: string
-  value: T
-  options: readonly { value: T; label: ReactNode }[]
-  onChange: (value: T) => void
-}
-
-function Segmented<T extends string>({ label, value, options, onChange }: SegmentedProps<T>) {
-  return (
-    <ToggleGroup
-      type="single"
-      aria-label={label}
-      value={value}
-      onValueChange={(next) => {
-        // Radix отдаёт пустую строку при повторном клике — выбор не снимаем
-        const option = options.find((o) => o.value === next)
-        if (option) onChange(option.value)
-      }}
-    >
-      {options.map((o) => (
-        <ToggleGroupItem key={o.value} value={o.value}>
-          {o.label}
-        </ToggleGroupItem>
-      ))}
-    </ToggleGroup>
-  )
-}
 
 const INPUT_MODES = [
   { value: 'check', label: ru.header.modeCheck },

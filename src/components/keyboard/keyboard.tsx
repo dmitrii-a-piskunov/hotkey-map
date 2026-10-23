@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react'
-import { InputCap } from '@/components/devices/input-cap'
+import { ConflictBadge, InputCap } from '@/components/devices/input-cap'
+import { keyAriaLabel, viewOf, type InputView } from '@/components/devices/input-views'
 import { keyboardWidth, keyWells } from '@/components/devices/device-geometry'
 import { CAP_VARS, KNOB_CODE, hintPlacementOf, rejectHatch } from '@/components/keyboard/cap-style'
 import { KeyLabels } from '@/components/keyboard/key-labels'
@@ -41,6 +42,8 @@ export interface KeyboardProps {
   view: ViewMode
   selected: ReadonlySet<InputCode>
   pressed: ReadonlySet<InputCode>
+  /** Цвет, подпись действия, конфликт и приглушение каждого входа */
+  views: ReadonlyMap<string, InputView>
   onSelect: (code: InputCode, mods: ClickModifiers) => void
 }
 
@@ -49,7 +52,15 @@ export function Keyboard(props: KeyboardProps) {
   return props.view === '3d' ? <Keyboard3D {...props} /> : <Keyboard2D {...props} />
 }
 
-function Keyboard2D({ layout, unit, labelLang, selected, pressed, onSelect }: KeyboardProps) {
+function Keyboard2D({
+  layout,
+  unit,
+  labelLang,
+  selected,
+  pressed,
+  views,
+  onSelect,
+}: KeyboardProps) {
   const blockedKeys = useBlockedKeys()
   const { bezel } = caseTheme
   const gap = cap.gap * unit
@@ -123,6 +134,7 @@ function Keyboard2D({ layout, unit, labelLang, selected, pressed, onSelect }: Ke
       )}
       {layout.keys.map((k) => {
         const off = !k.assignable || blockedKeys.includes(k.code)
+        const view = viewOf(views, k.code)
         return (
           <InputCap
             key={k.code}
@@ -132,17 +144,33 @@ function Keyboard2D({ layout, unit, labelLang, selected, pressed, onSelect }: Ke
             top={toY(k.y) + gap / 2}
             width={k.w * unit - gap}
             height={k.h * unit - gap}
-            ariaLabel={off ? `${k.label.en}. ${ru.devices.notAssignable}` : k.label.en}
+            ariaLabel={keyAriaLabel(k.label.en, off, view)}
             selected={selected.has(k.code)}
             pressed={pressed.has(k.code)}
             disabled={off}
+            conflict={view.conflict}
+            dimmed={view.dimmed}
+            title={view.title}
             className="key"
             hintPlacement={hintPlacementOf(k)}
-            style={CAP_VARS[capStyleOf(k.code)]}
+            style={view.style ?? CAP_VARS[capStyleOf(k.code)]}
             onSelect={onSelect}
           >
             <div className="key-top" style={TOP_STYLE}>
-              <KeyLabels keyDef={k} labelLang={labelLang} />
+              <KeyLabels
+                keyDef={k}
+                labelLang={labelLang}
+                action={
+                  view.label
+                    ? {
+                        label: view.label,
+                        extra: view.extra,
+                        faceWidth: k.w - cap.gap - 2 * cap.topInset.side,
+                      }
+                    : undefined
+                }
+              />
+              {view.conflict && <ConflictBadge />}
             </div>
           </InputCap>
         )

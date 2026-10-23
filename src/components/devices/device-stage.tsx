@@ -8,6 +8,7 @@ import {
   type PointerEvent,
 } from 'react'
 import { keyboardWidth } from '@/components/devices/device-geometry'
+import { useInputViews } from '@/components/devices/input-views'
 import { keyboard3d } from '@/components/keyboard/keyboard-3d-geometry'
 import { Keyboard } from '@/components/keyboard/keyboard'
 import { Mouse } from '@/components/mouse/mouse'
@@ -23,7 +24,7 @@ import {
   type SelectionState,
 } from '@/domain/selection'
 import { captureInputCmd, clickModifiers } from '@/features/bindings/commands'
-import { cancelCapture, isCapturing } from '@/features/bindings/ui-store'
+import { cancelCapture, isCapturing, useBindingsUi } from '@/features/bindings/ui-store'
 import { useSettings } from '@/features/data/store'
 import { keyboardLayout, mouseLayout } from '@/features/devices/devices'
 import { useDevicesStore } from '@/features/devices/store'
@@ -53,14 +54,19 @@ const MOUSE_SLOT = Math.max(
 )
 const TOTAL_UNITS = KEYBOARD_SLOT + DEVICE_GAP + MOUSE_SLOT
 
-const { scene } = deviceTheme
+const { scene, state } = deviceTheme
 
-/** Фон сцены и тень по теме приложения */
+/** Фон сцены и тень по теме приложения; конфликт и приглушение клавиш */
 const SCENE_STYLE = {
   '--scene-bg': scene.light.background,
   '--scene-shadow': scene.light.shadow,
   '--scene-bg-dark': scene.dark.background,
   '--scene-shadow-dark': scene.dark.shadow,
+  // em — от юнита клавиши: у верхней грани font-size равен юниту
+  '--conflict-width': `${state.conflict.width}em`,
+  '--conflict-color': state.conflict.color,
+  '--dim-opacity': state.dimOpacity,
+  '--capture-color': state.selected.color,
 } as CSSProperties
 
 interface Drag {
@@ -140,6 +146,8 @@ export function DeviceStage() {
   const labelLang = useSettings((s) => s.labelLang)
   const view = useSettings((s) => s.view)
   const click = useDevicesStore((s) => s.click)
+  const capturing = useBindingsUi((s) => s.capture !== null)
+  const views = useInputViews()
 
   const selected = useMemo(() => new Set(selection.selected), [selection])
   const pressed = useMemo(() => new Set(pressedList), [pressedList])
@@ -263,6 +271,7 @@ export function DeviceStage() {
       className="device-scene relative flex min-h-0 flex-1 touch-none items-center justify-center overflow-hidden select-none"
       style={SCENE_STYLE}
       data-view={view}
+      data-capturing={capturing || undefined}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
@@ -281,6 +290,7 @@ export function DeviceStage() {
             view={view}
             selected={selected}
             pressed={pressed}
+            views={views}
             onSelect={onSelect}
           />
         </div>
@@ -291,6 +301,7 @@ export function DeviceStage() {
             view={view}
             selected={selected}
             pressed={pressed}
+            views={views}
             onSelect={onSelect}
           />
         </div>
