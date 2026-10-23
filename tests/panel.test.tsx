@@ -250,3 +250,23 @@ describe('profile settings and notes (FR-18, FR-11)', () => {
     expect(profile().notes).toBe('Сенса 42!')
   })
 })
+
+describe('conflict counter in the header (FR-15)', () => {
+  it('TC-04: counts one conflict, lists it and jumps to the key', async () => {
+    const user = userEvent.setup()
+    await renderApp(data())
+    expect(screen.getByTestId('issues-button')).toHaveTextContent(ru.bindings.noIssues)
+    const fire = within(panel()).getByRole('group', { name: 'Огонь' })
+    await user.click(within(fire).getByRole('button', { name: /Клавиша 1 действия «Огонь»/ }))
+    fireEvent.keyDown(window, { code: 'Space', key: ' ' })
+    expect(screen.getByTestId('issues-button')).toHaveTextContent('Конфликты: 1')
+
+    await user.click(screen.getByTestId('issues-button'))
+    const list = await screen.findByRole('dialog', { name: ru.bindings.issuesTitle })
+    expect(list).toHaveTextContent('Space · Нажатие')
+    expect(list).toHaveTextContent('Прыжок, Огонь')
+    await user.click(within(list).getByRole('button', { name: /Space/ }))
+    expect(input('Space')).toHaveAttribute('data-selected')
+    expect(within(panel()).getByRole('heading', { name: 'Space' })).toBeInTheDocument()
+  })
+})

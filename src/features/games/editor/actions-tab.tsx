@@ -22,7 +22,11 @@ import {
 } from '@/domain/actions'
 import { globalContext, sortedContexts } from '@/domain/contexts'
 import { LIMITS } from '@/domain/names'
+import { bindingsOfAction } from '@/domain/bindings'
+import { currentProfile } from '@/domain/current'
 import type { Action, Game } from '@/domain/types'
+import { comboName } from '@/features/bindings/format'
+import { useSettings } from '@/features/data/store'
 import { ru } from '@/i18n/ru'
 import { fill } from '@/lib/format'
 import { addActionCmd, moveActionCmd, removeActionCmd, updateActionCmd } from '../commands'
@@ -168,6 +172,9 @@ export function ActionsTab({ game }: { game: Game }) {
   const searching = query.trim() !== ''
   const contexts = new Map(game.contexts.map((c) => [c.id, c.name]))
   const colors = new Map(game.categories.map((c) => [c.id, c.color]))
+  // Клавиши текущего профиля — для справки: назначают их в панели справа (FR-12)
+  const settings = useSettings((s) => s)
+  const profile = currentProfile(game, settings)
 
   const row = (a: Action): ReactNode => (
     <SortableRow key={a.id} id={a.id} disabled={searching}>
@@ -189,13 +196,17 @@ export function ActionsTab({ game }: { game: Game }) {
       <span className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
         {contexts.get(a.contextId)}
       </span>
-      {/* Место под кнопки клавиш (FR-12, этап 4) */}
-      <div
+      <span
         data-slot="action-keys"
-        className="shrink-0"
-        style={{ width: `${game.rules.maxKeysPerAction * 5.5}rem` }}
-        title={t.keysSoon}
-      />
+        className="w-24 shrink-0 truncate text-right text-xs text-muted-foreground"
+        title={t.keysHint}
+      >
+        {profile
+          ? bindingsOfAction(profile, a.id)
+              .map((b) => comboName(b.input))
+              .join(', ') || ru.bindings.notAssigned
+          : null}
+      </span>
       <Button
         variant="ghost"
         size="icon"

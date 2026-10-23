@@ -4,9 +4,11 @@
  */
 
 import { layerModifiers } from '@/domain/bindings'
+import type { Violation } from '@/domain/conflicts'
 import type { BindingInput, KeyGroup, Modifier, PressType } from '@/domain/types'
 import { keyboardLayout } from '@/features/devices/devices'
 import { ru } from '@/i18n/ru'
+import { fill } from '@/lib/format'
 
 const keyNames = new Map(
   keyboardLayout.keys.map((k) => [k.code, k.label.game?.en ?? (k.label.en || k.code)]),
@@ -43,4 +45,18 @@ export function pressTypeName(t: PressType): string {
 /** Список «W (Движение), A (Движение)» для вопроса о переносе клавиш (FR-29) */
 export function movedList(items: readonly { code: string; group: KeyGroup }[]): string {
   return items.map((i) => `${inputName(i.code)} (${i.group.name})`).join(', ')
+}
+
+/** Нарушение правил игры у бинда (FR-15) */
+export function violationText(v: Violation): string {
+  switch (v.kind) {
+    case 'extraSlot':
+      return fill(ru.bindings.violations.extraSlot, { max: v.max })
+    case 'modifierNotAllowed':
+      return fill(ru.bindings.violations.modifierNotAllowed, {
+        mods: v.modifiers.map(modifierName).join(', '),
+      })
+    case 'blockedKey':
+      return ru.bindings.violations.blockedKey
+  }
 }

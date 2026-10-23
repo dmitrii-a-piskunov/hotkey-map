@@ -3,6 +3,7 @@ import { Segmented } from '@/components/common/segmented'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import type { LabelMode } from '@/domain/input'
 import type { InputMode, ViewMode } from '@/domain/types'
+import { IssuesButton } from '@/features/bindings/issues-button'
 import { useDataStore, useSettings } from '@/features/data/store'
 import { useDevicesStore } from '@/features/devices/store'
 import { GamePicker } from '@/features/games/game-picker'
@@ -46,6 +47,7 @@ export function AppHeader() {
       <div className="flex min-w-0 items-center gap-1 border-l pl-3">
         <GamePicker />
         <ProfilePicker />
+        <IssuesButton />
       </div>
       <div className="ml-auto flex items-center gap-3">
         <SaveStatusIndicator />

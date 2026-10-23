@@ -1,14 +1,14 @@
 import { ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { bindingInSlot, bindingsOfAction, hasCustomParam } from '@/domain/bindings'
-import { conflictsWith, violationsOf, type Violation } from '@/domain/conflicts'
+import { conflictsWith, violationsOf } from '@/domain/conflicts'
 import { BASE_LAYER } from '@/domain/layers'
 import type { Action, Binding, Game, Profile } from '@/domain/types'
 import { ru } from '@/i18n/ru'
 import { fill } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { unbindOthersCmd } from '../commands'
-import { comboName, layerName, modifierName, pressTypeName } from '../format'
+import { comboName, layerName, modifierName, pressTypeName, violationText } from '../format'
 import { setFeedback, useBindingsUi, type SlotFeedback } from '../ui-store'
 import { useCurrentIssues } from '../use-bindings'
 import { BindingOptionsMenu, SlotButton } from './slot-button'
@@ -19,19 +19,6 @@ function slotsOf(game: Game, profile: Profile, actionId: string): (1 | 2)[] {
   // Бинд в лишнем слоте (правило сменилось с 2 на 1) тоже виден — как нарушение
   const extra = profile.bindings.some((b) => b.actionId === actionId && b.slot === 2)
   return game.rules.maxKeysPerAction === 2 || extra ? [1, 2] : [1]
-}
-
-function violationText(v: Violation): string {
-  switch (v.kind) {
-    case 'extraSlot':
-      return fill(t.violations.extraSlot, { max: v.max })
-    case 'modifierNotAllowed':
-      return fill(t.violations.modifierNotAllowed, {
-        mods: v.modifiers.map(modifierName).join(', '),
-      })
-    case 'blockedKey':
-      return t.violations.blockedKey
-  }
 }
 
 function feedbackError(game: Game, fb: SlotFeedback): string | null {
