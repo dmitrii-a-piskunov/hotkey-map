@@ -1,5 +1,6 @@
+import { Slot } from '@radix-ui/react-slot'
 import { Ellipsis, X } from 'lucide-react'
-import type { ReactNode } from 'react'
+import { useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -22,7 +23,15 @@ import { useCurrentIssues } from '../use-bindings'
 
 const t = ru.bindings
 
-/** Меню типа нажатия и параметра бинда (FR-09, FR-12) */
+/** Как подключено меню: ещё нет, по фокусу или сразу открытым */
+type MenuMount = 'none' | 'focus' | 'open'
+
+/**
+ * Меню типа нажатия и параметра бинда (FR-09, FR-12). Radix-меню — десяток
+ * компонентов на строку, а строк в панели бывает под сотню, поэтому до
+ * первого нажатия или фокуса кнопка обычная. Нажатие сразу открывает
+ * настоящее меню, фокус подключает его заранее — Enter и стрелки работают как у Radix.
+ */
 export function BindingOptionsMenu({
   game,
   binding,
@@ -32,10 +41,64 @@ export function BindingOptionsMenu({
   binding: Binding
   children: ReactNode
 }) {
+  const [mount, setMount] = useState<MenuMount>('none')
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  // Кнопка пересоздаётся вместе с меню — фокус возвращаем на новую
+  useLayoutEffect(() => {
+    if (mount === 'focus') triggerRef.current?.focus()
+  }, [mount])
+
+  if (mount === 'none') {
+    return (
+      <Slot
+        aria-haspopup="menu"
+        aria-expanded={false}
+        data-state="closed"
+        onFocus={() => {
+          setMount('focus')
+        }}
+        onPointerDown={(e) => {
+          // Как у Radix: меню открывает левая кнопка без Ctrl, кнопка фокус не получает
+          if (e.button !== 0 || e.ctrlKey) return
+          e.preventDefault()
+          setMount('open')
+        }}
+      >
+        {children}
+      </Slot>
+    )
+  }
+  return (
+    <BindingOptionsMenuReal
+      game={game}
+      binding={binding}
+      defaultOpen={mount === 'open'}
+      triggerRef={triggerRef}
+    >
+      {children}
+    </BindingOptionsMenuReal>
+  )
+}
+
+function BindingOptionsMenuReal({
+  game,
+  binding,
+  defaultOpen,
+  triggerRef,
+  children,
+}: {
+  game: Game
+  binding: Binding
+  defaultOpen: boolean
+  triggerRef: RefObject<HTMLButtonElement | null>
+  children: ReactNode
+}) {
   const param = game.bindParam
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
+    <DropdownMenu defaultOpen={defaultOpen}>
+      <DropdownMenuTrigger asChild ref={triggerRef}>
+        {children}
+      </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>{t.pressType}</DropdownMenuLabel>
         <DropdownMenuRadioGroup

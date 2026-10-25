@@ -174,6 +174,26 @@ describe('assigning from the panel (FR-12, FR-13, FR-17)', () => {
     expect(within(jump).getByRole('button', { name: /Удержание/ })).toBeInTheDocument()
   })
 
+  it('the press type menu opens from the keyboard (FR-12)', async () => {
+    const user = userEvent.setup()
+    await renderApp(data())
+    // В «Проверке нажатий» Enter выделил бы экранную клавишу; в «Навигации» он свободен
+    act(() => {
+      useDataStore.getState().updateSettings({ inputMode: 'nav' })
+    })
+    const jump = within(panel()).getByRole('group', { name: 'Прыжок' })
+    // Меню подключается при фокусе: кнопка пересоздаётся, фокус остаётся на ней
+    act(() => {
+      within(jump)
+        .getByRole('button', { name: /Тип нажатия и параметр/ })
+        .focus()
+    })
+    expect(document.activeElement).toHaveAccessibleName(/Тип нажатия и параметр/)
+    await user.keyboard('{Enter}')
+    await user.click(await screen.findByRole('menuitemradio', { name: 'Двойное нажатие' }))
+    expect(at(profile().bindings, 0).pressType).toBe('double')
+  })
+
   it('the unbound tab lists actions without a key (FR-17)', async () => {
     const user = userEvent.setup()
     await renderApp(data())
