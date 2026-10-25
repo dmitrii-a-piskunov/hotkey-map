@@ -102,5 +102,5 @@ test('a mouse button is bound in the bind window; hidden devices give the settin
   await expect(page.getByTestId('device-stage')).toBeHidden()
   const nav = page.getByRole('navigation', { name: 'Разделы' })
   await nav.getByRole('button', { name: 'Мини-карта' }).click()
-  await expect(panel(page).getByText('Размер героев на мини-карте')).toBeInViewport()
+  await expect(panel(page).getByRole('heading', { name: 'Мини-карта', level: 3 })).toBeInViewport()
 })

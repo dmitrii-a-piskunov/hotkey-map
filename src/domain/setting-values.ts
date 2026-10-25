@@ -65,3 +65,10 @@ export function resetSettingValue(
     return { ...p, settingValues: rest }
   })
 }
+
+/** Сброс всех настроек профиля к значениям по умолчанию (FR-18) */
+export function resetAllSettingValues(game: Game, profileId: string, now: string): Game {
+  return updateProfile(game, profileId, now, (p) =>
+    Object.keys(p.settingValues).length === 0 ? p : { ...p, settingValues: {} },
+  )
+}

@@ -1,5 +1,6 @@
 import { RotateCcw, Settings2 } from 'lucide-react'
 import { useId, useState } from 'react'
+import { ConfirmDialog } from '@/components/common/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Input, NativeSelect } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
@@ -11,7 +12,8 @@ import type { Game, Profile, SettingDef, SettingValue } from '@/domain/types'
 import { openEditor } from '@/features/games/ui-store'
 import { ru } from '@/i18n/ru'
 import { fill, formatDecimal, parseDecimal } from '@/lib/format'
-import { resetSettingValueCmd, setSettingValueCmd } from '../commands'
+import { cn } from '@/lib/utils'
+import { resetAllSettingValuesCmd, resetSettingValueCmd, setSettingValueCmd } from '../commands'
 
 const t = ru.values
 type SliderDef = Extract<SettingDef, { type: 'slider' }>
@@ -150,38 +152,39 @@ function SettingRow({ def, profile }: { def: ValueSettingDef; profile: Profile }
     <div className="grid gap-1.5 px-2 py-1.5" data-setting-id={def.id}>
       <div className="flex items-center gap-2">
         {def.type === 'toggle' ? (
-          <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 text-sm">
+          <label className="flex min-w-0 flex-1 cursor-pointer items-start gap-2 text-sm">
             <input
               type="checkbox"
-              className="size-4 shrink-0 accent-sky-500"
+              className="mt-0.5 size-4 shrink-0 accent-sky-500"
               checked={value === true}
               onChange={(e) => {
                 setSettingValueCmd(def.id, e.target.checked)
               }}
             />
-            <span id={labelId} className="truncate" title={def.name}>
+            <span id={labelId} className="min-w-0 break-words">
               {def.name}
             </span>
           </label>
         ) : (
-          <span id={labelId} className="min-w-0 flex-1 truncate text-sm" title={def.name}>
+          <span id={labelId} className="min-w-0 flex-1 text-sm break-words">
             {def.name}
           </span>
         )}
-        {custom && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-6 text-muted-foreground"
-            aria-label={fill(t.reset, { value: shown(def, def.defaultValue) })}
-            title={fill(t.reset, { value: shown(def, def.defaultValue) })}
-            onClick={() => {
-              resetSettingValueCmd(def.id)
-            }}
-          >
-            <RotateCcw className="size-3.5" />
-          </Button>
-        )}
+        {/* Место под сброс есть всегда: появление кнопки не сдвигает строки */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn('size-6 shrink-0 text-muted-foreground', !custom && 'invisible')}
+          aria-hidden={!custom || undefined}
+          tabIndex={custom ? undefined : -1}
+          aria-label={fill(t.reset, { value: shown(def, def.defaultValue) })}
+          title={fill(t.reset, { value: shown(def, def.defaultValue) })}
+          onClick={() => {
+            resetSettingValueCmd(def.id)
+          }}
+        >
+          <RotateCcw className="size-3.5" />
+        </Button>
       </div>
       {def.type === 'slider' && (
         <SliderValue key={profile.id} def={def} value={value as number} labelId={labelId} />
@@ -227,6 +230,37 @@ function SettingRow({ def, profile }: { def: ValueSettingDef; profile: Profile }
   )
 }
 
+/** «Сбросить все настройки» профиля — с подтверждением */
+function ResetAll({ profile }: { profile: Profile }) {
+  const [asking, setAsking] = useState(false)
+  return (
+    <div className="flex justify-end px-2">
+      <Button
+        size="sm"
+        variant="outline"
+        disabled={Object.keys(profile.settingValues).length === 0}
+        onClick={() => {
+          setAsking(true)
+        }}
+      >
+        <RotateCcw />
+        {t.resetAll}
+      </Button>
+      <ConfirmDialog
+        open={asking}
+        onOpenChange={setAsking}
+        title={t.resetAllTitle}
+        description={fill(t.resetAllText, { profile: profile.name })}
+        confirmLabel={t.resetAllConfirm}
+        onConfirm={() => {
+          resetAllSettingValuesCmd()
+          setAsking(false)
+        }}
+      />
+    </div>
+  )
+}
+
 /** Вкладка «Настройки» (FR-18): значения шаблона настроек в текущем профиле */
 export function ValuesTab({ game, profile }: { game: Game; profile: Profile }) {
   const sections = settingSections(game)
@@ -249,6 +283,7 @@ export function ValuesTab({ game, profile }: { game: Game; profile: Profile }) {
   }
   return (
     <div className="grid gap-4">
+      <ResetAll profile={profile} />
       {sections.map((s) => (
         <section
           key={s.group}

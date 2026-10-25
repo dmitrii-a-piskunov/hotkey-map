@@ -15,6 +15,7 @@ import {
 import {
   fitSliderValue,
   isDefaultValue,
+  resetAllSettingValues,
   resetSettingValue,
   setSettingValue,
   settingValueOf,
@@ -147,5 +148,14 @@ describe('setting values (FR-18)', () => {
     game = resetSettingValue(game, MAIN, SENS, LATER)
     expect(main(game).settingValues).toEqual({})
     expect(resetSettingValue(game, MAIN, SENS, LATER)).toBe(game)
+  })
+})
+
+describe('reset all setting values (FR-18)', () => {
+  it('clears the values of one profile and keeps the game when nothing is set', () => {
+    let game = setSettingValue(sampleGame(), MAIN, SENS, 70, LATER)
+    game = resetAllSettingValues(game, MAIN, LATER)
+    expect(main(game).settingValues).toEqual({})
+    expect(resetAllSettingValues(game, MAIN, LATER)).toBe(game)
   })
 })

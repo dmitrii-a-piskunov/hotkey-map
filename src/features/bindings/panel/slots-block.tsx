@@ -10,6 +10,12 @@ import { comboName } from '../format'
 import { startCapture, useBindingsUi } from '../ui-store'
 import { useCurrentIssues } from '../use-bindings'
 
+/**
+ * Основные ячейки предметов — 3×2, как в Dota 2. Остальные (нейтральный
+ * предмет, свиток телепортации) — отдельной колонкой за чертой
+ */
+const MAIN_ITEMS = 6
+
 /** Ячейка способности или предмета: клавиша в углу, короткая подпись в центре */
 function SlotCell({ profile, action }: { profile: Profile; action: Action }) {
   const binding = bindingInSlot(profile, action.id, 1)
@@ -144,10 +150,22 @@ export function SlotsBlock({
         )}
         {items.length > 0 && (
           <div className="grid content-start gap-2">
-            <div className="grid grid-cols-4 gap-1.5">
-              {items.map((a) => (
-                <SlotCell key={a.id} profile={profile} action={a} />
-              ))}
+            <div className="flex gap-1.5">
+              <div className="grid flex-3 grid-cols-3 gap-1.5">
+                {items.slice(0, MAIN_ITEMS).map((a) => (
+                  <SlotCell key={a.id} profile={profile} action={a} />
+                ))}
+              </div>
+              {items.length > MAIN_ITEMS && (
+                <div
+                  data-testid="extra-items"
+                  className="grid flex-1 content-start gap-1.5 border-l pl-1.5"
+                >
+                  {items.slice(MAIN_ITEMS).map((a) => (
+                    <SlotCell key={a.id} profile={profile} action={a} />
+                  ))}
+                </div>
+              )}
             </div>
             <CastMode
               game={game}

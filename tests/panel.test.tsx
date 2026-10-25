@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import type { AppData, Game } from '@/domain/types'
 import { useDataStore } from '@/features/data/store'
 import { runFlushHooks } from '@/features/data/flush-hooks'
+import { exportFileSchema } from '@/domain/schema'
 import { ru } from '@/i18n/ru'
 import { at, sampleData, sampleGame } from './fixtures'
 import { disposeApp, renderApp, resetAppStores } from './mocks/render-app'
@@ -273,7 +274,7 @@ describe('profile settings and notes (FR-18, FR-11)', () => {
     expect(field).toHaveValue('100')
     expect(within(panel()).getByRole('status')).toHaveTextContent('Допустимо от 1 до 100')
     // Значение не по умолчанию — есть сброс
-    await user.click(within(panel()).getByRole('button', { name: /Сбросить/ }))
+    await user.click(within(panel()).getByRole('button', { name: /Сбросить к значению/ }))
     expect(field).toHaveValue('50')
   })
 
@@ -331,5 +332,38 @@ describe('hiding the keyboard and the mouse (header)', () => {
     expect(within(panel()).getByRole('textbox', { name: ru.profiles.notes })).toBeInTheDocument()
     await user.click(within(nav).getByRole('button', { name: 'Мышь' }))
     expect(within(panel()).getByRole('textbox', { name: 'Чувствительность' })).toBeInTheDocument()
+  })
+})
+
+describe('Dota 2 preset in the panel', () => {
+  it('items are 3×2 with the neutral item and TP behind a line; all settings reset', async () => {
+    const user = userEvent.setup()
+    const { default: file } = await import('@/presets/dota2.json')
+    const dota = exportFileSchema.parse(file).games[0]
+    if (!dota) throw new Error('No Dota 2 preset')
+    await renderApp({
+      ...sampleData(),
+      games: [dota],
+      appSettings: {
+        ...sampleData().appSettings,
+        lastGameId: dota.id,
+        lastProfileId: at(dota.profiles, 1).id,
+      },
+    })
+    const extra = screen.getByTestId('extra-items')
+    expect(
+      within(extra)
+        .getAllByRole('button')
+        .map((b) => b.textContent),
+    ).toEqual(['NНП', 'MТП'])
+
+    await user.click(within(panel()).getByRole('tab', { name: ru.panel.tabs.settings }))
+    await user.click(within(panel()).getByRole('button', { name: ru.values.resetAll }))
+    await user.click(
+      within(screen.getByRole('alertdialog')).getByRole('button', {
+        name: ru.values.resetAllConfirm,
+      }),
+    )
+    expect(profile().settingValues).toEqual({})
   })
 })

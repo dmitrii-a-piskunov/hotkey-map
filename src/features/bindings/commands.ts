@@ -30,7 +30,7 @@ import {
 } from '@/domain/key-groups'
 import { actionHighlight } from '@/domain/layers'
 import { setProfileNotes } from '@/domain/profiles'
-import { resetSettingValue, setSettingValue } from '@/domain/setting-values'
+import { resetAllSettingValues, resetSettingValue, setSettingValue } from '@/domain/setting-values'
 import type { Game, Modifier, PressType, Profile, SettingValue } from '@/domain/types'
 import { useDataStore } from '@/features/data/store'
 import {
@@ -209,6 +209,12 @@ export function setSettingValueCmd(settingId: string, value: SettingValue): void
   const cur = current()
   if (!cur) return
   onGame(cur.game.id, (g) => setSettingValue(g, cur.profile.id, settingId, value, clock.now()))
+}
+
+export function resetAllSettingValuesCmd(): void {
+  const cur = current()
+  if (!cur) return
+  onGame(cur.game.id, (g) => resetAllSettingValues(g, cur.profile.id, clock.now()))
 }
 
 export function resetSettingValueCmd(settingId: string): void {

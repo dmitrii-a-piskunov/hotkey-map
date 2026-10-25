@@ -37,6 +37,18 @@
           "name": "Существа",
           "isGlobal": false,
           "order": 3
+        },
+        {
+          "id": "c726abb0-0f54-56f7-8dff-0f6e950420f6",
+          "name": "Выбор таланта",
+          "isGlobal": false,
+          "order": 4
+        },
+        {
+          "id": "ff6c64c3-85ee-5a51-9d2e-54c975d4ecdc",
+          "name": "Выбор нейтрального предмета",
+          "isGlobal": false,
+          "order": 5
         }
       ],
       "categories": [
@@ -354,7 +366,7 @@
         {
           "id": "b53c2161-3df3-5f02-ba77-210ab7ac3949",
           "name": "Изучить левый талант",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "c726abb0-0f54-56f7-8dff-0f6e950420f6",
           "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
           "order": 32,
           "column": 1
@@ -362,7 +374,7 @@
         {
           "id": "ce8effb2-04c2-5f9d-9a8d-68af68809a2c",
           "name": "Изучить правый талант",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "c726abb0-0f54-56f7-8dff-0f6e950420f6",
           "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
           "order": 33,
           "column": 1
@@ -370,7 +382,7 @@
         {
           "id": "fc1b3317-7681-5418-99b2-2f8fc797cf98",
           "name": "Изучить бонус к атрибутам",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "c726abb0-0f54-56f7-8dff-0f6e950420f6",
           "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
           "order": 34,
           "column": 1
@@ -378,7 +390,7 @@
         {
           "id": "d95ef155-01c5-5b6c-9512-a32593071efe",
           "name": "Выбрать 1-й нейтральный предмет",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "ff6c64c3-85ee-5a51-9d2e-54c975d4ecdc",
           "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
           "order": 35,
           "column": 1
@@ -386,7 +398,7 @@
         {
           "id": "9f46d3b9-175b-5627-bf63-07b08c516a80",
           "name": "Выбрать 2-й нейтральный предмет",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "ff6c64c3-85ee-5a51-9d2e-54c975d4ecdc",
           "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
           "order": 36,
           "column": 1
@@ -466,7 +478,7 @@
         {
           "id": "4bf3c576-a50b-55c8-833c-35e3ff03d8b8",
           "name": "Выбрать 3-й нейтральный предмет",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "ff6c64c3-85ee-5a51-9d2e-54c975d4ecdc",
           "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
           "order": 46,
           "column": 2
@@ -474,7 +486,7 @@
         {
           "id": "80c6f171-8fd1-56d1-88b5-4d8b161f7ac8",
           "name": "Выбрать 4-й нейтральный предмет",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "ff6c64c3-85ee-5a51-9d2e-54c975d4ecdc",
           "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
           "order": 47,
           "column": 2
@@ -482,7 +494,7 @@
         {
           "id": "4e9bd0b3-04f6-5ba5-9804-ba559992fc92",
           "name": "Выбрать 5-й нейтральный предмет",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "ff6c64c3-85ee-5a51-9d2e-54c975d4ecdc",
           "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
           "order": 48,
           "column": 2
@@ -1066,6 +1078,7 @@
           "name": "Привязка к типам применения",
           "type": "toggle",
           "order": 0,
+          "column": 1,
           "defaultValue": false
         },
         {
@@ -1074,6 +1087,7 @@
           "name": "Не использовать в игротеке настройки управления для отдельных существ",
           "type": "toggle",
           "order": 1,
+          "column": 1,
           "defaultValue": true
         },
         {
@@ -1082,6 +1096,7 @@
           "name": "Использовать быстрое применение по умолчанию",
           "type": "toggle",
           "order": 2,
+          "column": 1,
           "defaultValue": true
         },
         {
@@ -1090,6 +1105,7 @@
           "name": "Классическая раскладка",
           "type": "toggle",
           "order": 3,
+          "column": 1,
           "defaultValue": false
         },
         {
@@ -1098,6 +1114,7 @@
           "name": "Разрешить привязку к клавишам Windows/Command",
           "type": "toggle",
           "order": 4,
+          "column": 1,
           "defaultValue": false
         },
         {
@@ -1106,6 +1123,7 @@
           "name": "Использовать позицию клавиш",
           "type": "toggle",
           "order": 5,
+          "column": 1,
           "defaultValue": true
         },
         {
@@ -1114,6 +1132,7 @@
           "name": "Rubick: использовать тип применения украденных способностей, а не ячеек",
           "type": "toggle",
           "order": 6,
+          "column": 1,
           "subgroup": "Особые настройки героев",
           "defaultValue": true
         },
@@ -1123,6 +1142,7 @@
           "name": "Largo: отображать индикатор ритма над героем",
           "type": "toggle",
           "order": 7,
+          "column": 1,
           "subgroup": "Особые настройки героев",
           "defaultValue": true
         },
@@ -1132,6 +1152,7 @@
           "name": "Largo: отображать индикатор ритма над панелью способностей",
           "type": "toggle",
           "order": 8,
+          "column": 1,
           "subgroup": "Особые настройки героев",
           "defaultValue": true
         },
@@ -1141,6 +1162,7 @@
           "name": "Переключение клавишей",
           "type": "toggle",
           "order": 9,
+          "column": 1,
           "defaultValue": false
         },
         {
@@ -1149,6 +1171,7 @@
           "name": "Пояснение",
           "type": "info",
           "order": 10,
+          "column": 2,
           "text": "Если включено, модификатор продолжает действовать, пока вы не нажмёте на его клавишу снова. Если выключено, действует только при зажатой клавише.",
           "height": 3
         },
