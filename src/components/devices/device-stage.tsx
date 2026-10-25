@@ -3,7 +3,6 @@ import {
   useEffect,
   useMemo,
   useRef,
-  useState,
   type CSSProperties,
   type PointerEvent,
 } from 'react'
@@ -18,6 +17,7 @@ import { heldModifiers, mouseCodeForButton, mouseCodeForWheel } from '@/domain/i
 import {
   marqueeSelect,
   rectSelect,
+  sameSelection,
   type ClickModifiers,
   type HitBox,
   type InputCode,
@@ -79,6 +79,9 @@ interface Drag {
   clickCode: InputCode | null
   /** Вход, который показан нажатым с начала клика (FR-01, анимация нажатия) */
   pressedCode: InputCode | null
+  /** Последняя точка указателя: рамка и выделение обновляются раз за кадр */
+  point: Point
+  frame: number | null
 }
 
 /** Вход под указателем и можно ли его выделить */
@@ -110,6 +113,17 @@ function captureFromPointer(e: PointerEvent<HTMLDivElement>): void {
   if (code) captureInputCmd(code, mods)
 }
 
+/** Показать рамку в прямоугольнике или спрятать */
+function showMarquee(el: HTMLDivElement | null, r: Rect | null): void {
+  if (!el) return
+  el.hidden = r === null
+  if (!r) return
+  el.style.left = `${r.x}px`
+  el.style.top = `${r.y}px`
+  el.style.width = `${r.w}px`
+  el.style.height = `${r.h}px`
+}
+
 function toLocal(container: HTMLElement, r: Rect): Rect {
   const box = container.getBoundingClientRect()
   return { x: r.x - box.left, y: r.y - box.top, w: r.w, h: r.h }
@@ -136,7 +150,8 @@ function keyHitBoxes(container: HTMLElement): HitBox[] {
 export function DeviceStage() {
   const containerRef = useRef<HTMLDivElement>(null)
   const dragRef = useRef<Drag | null>(null)
-  const [marquee, setMarquee] = useState<Rect | null>(null)
+  // Рамка рисуется напрямую в DOM: иначе каждое движение перерисовывало бы сцену
+  const marqueeRef = useRef<HTMLDivElement>(null)
 
   const selection = useDevicesStore((s) => s.selection)
   const pressedList = useDevicesStore((s) => s.pressed)
@@ -219,7 +234,23 @@ export function DeviceStage() {
       startCode: hit?.code ?? null,
       clickCode: hit?.code ?? null,
       pressedCode,
+      point: { x: e.clientX, y: e.clientY },
+      frame: null,
     }
+  }
+
+  /** Рамка и выделение по последней точке; выделение — только если под рамкой другие входы */
+  function applyDrag(drag: Drag) {
+    if (drag.frame !== null) cancelAnimationFrame(drag.frame)
+    drag.frame = null
+    const container = containerRef.current
+    if (!container) return
+    const area = rectFromPoints(drag.start, drag.point)
+    showMarquee(marqueeRef.current, toLocal(container, area))
+    const hits = rectSelect(keyHitBoxes(container), area)
+    const store = useDevicesStore.getState()
+    const next = marqueeSelect(drag.base, hits, drag.additive)
+    if (!sameSelection(store.selection, next)) store.setSelection(next)
   }
 
   function releasePressed(drag: Drag) {
@@ -241,16 +272,18 @@ export function DeviceStage() {
       releasePressed(drag)
       e.currentTarget.setPointerCapture(e.pointerId)
     }
-    const area = rectFromPoints(drag.start, point)
-    setMarquee(toLocal(container, area))
-    const hits = rectSelect(keyHitBoxes(container), area)
-    useDevicesStore.getState().setSelection(marqueeSelect(drag.base, hits, drag.additive))
+    drag.point = point
+    drag.frame ??= requestAnimationFrame(() => {
+      applyDrag(drag)
+    })
   }
 
   function onPointerUp(e: PointerEvent<HTMLDivElement>) {
     const drag = dragRef.current
     dragRef.current = null
-    setMarquee(null)
+    // Движение, которое не успело дойти до кадра, тоже выделяет
+    if (drag?.frame != null) applyDrag(drag)
+    showMarquee(marqueeRef.current, null)
     if (e.currentTarget.hasPointerCapture(e.pointerId)) {
       e.currentTarget.releasePointerCapture(e.pointerId)
     }
@@ -315,13 +348,12 @@ export function DeviceStage() {
           </div>
         )}
       </div>
-      {marquee && (
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute border border-(--marquee-border) bg-(--marquee)"
-          style={{ left: marquee.x, top: marquee.y, width: marquee.w, height: marquee.h }}
-        />
-      )}
+      <div
+        ref={marqueeRef}
+        aria-hidden="true"
+        hidden
+        className="pointer-events-none absolute border border-(--marquee-border) bg-(--marquee)"
+      />
     </div>
   )
 }

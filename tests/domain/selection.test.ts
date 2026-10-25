@@ -3,6 +3,7 @@ import {
   clickSelect,
   emptySelection,
   marqueeSelect,
+  sameSelection,
   navigate,
   neighbor,
   planInputs,
@@ -172,6 +173,19 @@ describe('rectSelect and marqueeSelect', () => {
   it('adds to selection with Ctrl', () => {
     const base = click(emptySelection, 'KeyX')
     expect(marqueeSelect(base, ['KeyA', 'KeyX'], true).selected).toEqual(['KeyX', 'KeyA'])
+  })
+})
+
+describe('sameSelection', () => {
+  const sel = { selected: ['KeyQ', 'KeyW'], anchor: 'KeyQ', focus: 'KeyQ' }
+  it('is true for equal selections in another object', () => {
+    expect(sameSelection(sel, { ...sel, selected: ['KeyQ', 'KeyW'] })).toBe(true)
+  })
+  it('is false when keys, their order, anchor or column differ', () => {
+    expect(sameSelection(sel, { ...sel, selected: ['KeyQ'] })).toBe(false)
+    expect(sameSelection(sel, { ...sel, selected: ['KeyW', 'KeyQ'] })).toBe(false)
+    expect(sameSelection(sel, { ...sel, anchor: 'KeyW' })).toBe(false)
+    expect(sameSelection(sel, { ...sel, focusCol: 2 })).toBe(false)
   })
 })
 

@@ -59,6 +59,18 @@ export interface SelectionState {
 
 export const emptySelection: SelectionState = { selected: [], anchor: null, focus: null }
 
+/** Одно и то же выделение: рамка не создаёт новое состояние, пока под ней те же клавиши */
+export function sameSelection(a: SelectionState, b: SelectionState): boolean {
+  return (
+    a.anchor === b.anchor &&
+    a.focus === b.focus &&
+    a.anchorCol === b.anchorCol &&
+    a.focusCol === b.focusCol &&
+    a.selected.length === b.selected.length &&
+    a.selected.every((code, i) => code === b.selected[i])
+  )
+}
+
 export interface ClickModifiers {
   ctrl: boolean
   shift: boolean
