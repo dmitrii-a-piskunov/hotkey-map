@@ -9,8 +9,15 @@ import { CURRENT_SCHEMA_VERSION } from './schema'
 export type MigrationStep = (data: Record<string, unknown>) => Record<string, unknown>
 export type Migrations = Readonly<Record<number, MigrationStep>>
 
-/** Пока версия одна, шагов нет. Новый шаг — вместе с тестом (CLAUDE.md) */
-export const MIGRATIONS: Migrations = {}
+/** Новый шаг — вместе с тестом (CLAUDE.md) */
+export const MIGRATIONS: Migrations = {
+  /**
+   * 1 → 2: необязательные поля раскладки меню игры (колонки, подразделы,
+   * короткие подписи, пояснения), тип настройки info, видимость клавиатуры
+   * и мыши. Старые данные подходят без изменений
+   */
+  1: (data) => data,
+}
 
 export type MigrationResult =
   | { kind: 'ok'; data: Record<string, unknown>; fromVersion: number; migrated: boolean }

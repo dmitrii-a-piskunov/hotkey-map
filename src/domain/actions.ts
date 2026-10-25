@@ -16,6 +16,11 @@ export interface ActionDraft {
   contextId: string
   categoryId?: string
   description?: string
+  /** Короткая подпись на клавише (FR-26) */
+  short?: string
+  /** Раскладка меню игры: задаётся в заготовках, правка её сохраняет */
+  column?: 1 | 2
+  subgroup?: string
 }
 
 export interface ActionSection {
@@ -28,6 +33,7 @@ export interface ActionDraftErrors {
   name?: NameError
   nameEn?: 'tooLong'
   description?: 'tooLong'
+  short?: 'tooLong'
 }
 
 export function actionDraftErrors(draft: ActionDraft): ActionDraftErrors {
@@ -36,6 +42,7 @@ export function actionDraftErrors(draft: ActionDraft): ActionDraftErrors {
   if (name) errors.name = name
   if (lengthError(draft.nameEn ?? '', LIMITS.actionEn)) errors.nameEn = 'tooLong'
   if (lengthError(draft.description ?? '', LIMITS.description)) errors.description = 'tooLong'
+  if (lengthError(draft.short ?? '', LIMITS.short)) errors.short = 'tooLong'
   return errors
 }
 
@@ -74,13 +81,18 @@ function sectionIndex(sections: readonly ActionSection[], categoryId: string | u
 }
 
 function normalizeDraft(draft: ActionDraft): Omit<Action, 'id' | 'order'> {
-  return {
+  const action: Omit<Action, 'id' | 'order'> = {
     name: draft.name.trim(),
     nameEn: optionalText(draft.nameEn),
     contextId: draft.contextId,
     categoryId: draft.categoryId,
     description: optionalText(draft.description),
   }
+  const short = optionalText(draft.short)
+  if (short !== undefined) action.short = short
+  if (draft.column !== undefined) action.column = draft.column
+  if (draft.subgroup !== undefined) action.subgroup = draft.subgroup
+  return action
 }
 
 /** Новое действие — в конец своего раздела */

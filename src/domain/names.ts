@@ -20,6 +20,8 @@ export const LIMITS = {
   setting: 80,
   unit: 20,
   text: 200,
+  info: 500,
+  short: 5,
 } as const
 
 export type NameError = 'required' | 'tooLong' | 'duplicate'

@@ -15,6 +15,12 @@ type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K>
 export type SettingDraft = DistributiveOmit<SettingDef, 'id' | 'order'>
 export type SettingType = SettingDef['type']
 type SliderRange = Pick<Extract<SettingDef, { type: 'slider' }>, 'min' | 'max' | 'step'>
+/** Настройка со значением; info — только пояснение */
+export type ValueSettingDef = Exclude<SettingDef, { type: 'info' }>
+
+export function hasValue(def: SettingDef): def is ValueSettingDef {
+  return def.type !== 'info'
+}
 
 function decimals(n: number): number {
   const text = String(n)
@@ -49,6 +55,8 @@ export function coerceSettingValue(def: SettingDef, value: SettingValue): Settin
         : undefined
     case 'text':
       return typeof value === 'string' && value.length <= LIMITS.text ? value : undefined
+    case 'info':
+      return undefined
   }
 }
 
@@ -104,6 +112,8 @@ export interface SettingDraftErrors {
   defaultValue?: true
   /** Список: нет вариантов или пустой/повторяющийся вариант */
   options?: true
+  /** Пояснение длиннее 500 символов */
+  text?: true
 }
 
 export function settingDraftErrors(draft: SettingDraft): SettingDraftErrors {
@@ -140,6 +150,9 @@ export function settingDraftErrors(draft: SettingDraft): SettingDraftErrors {
       if (draft.defaultValue.length > LIMITS.text) errors.defaultValue = true
       break
     case 'toggle':
+      break
+    case 'info':
+      if (draft.text.length > LIMITS.info) errors.text = true
       break
   }
   return errors
@@ -248,5 +261,7 @@ export function emptySettingDraft(type: SettingType, group: string, clock: Clock
     }
     case 'text':
       return { ...base, type, defaultValue: '' }
+    case 'info':
+      return { ...base, type, text: '' }
   }
 }

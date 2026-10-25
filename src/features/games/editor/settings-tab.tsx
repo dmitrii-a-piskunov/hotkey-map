@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Input, NativeSelect } from '@/components/ui/input'
+import { Input, NativeSelect, Textarea } from '@/components/ui/input'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { systemClock } from '@/domain/clock'
 import { LIMITS } from '@/domain/names'
@@ -31,7 +31,7 @@ import { fill, formatDecimal, parseDecimal } from '@/lib/format'
 import { addSettingCmd, moveSettingCmd, removeSettingCmd, updateSettingCmd } from '../commands'
 
 const t = ru.editor.settings
-const TYPES: readonly SettingType[] = ['slider', 'toggle', 'select', 'text']
+const TYPES: readonly SettingType[] = ['slider', 'toggle', 'select', 'text', 'info']
 
 /** Поля формы как текст: числа вводятся с запятой (раздел 8.6) */
 interface Form {
@@ -46,7 +46,10 @@ interface Form {
   toggleDefault: boolean
   options: { id: string; name: string }[]
   selectDefault: string
+  /** Список выпадающий или кружками, как в меню игры */
+  selectDisplay: 'list' | 'radio'
   textDefault: string
+  infoText: string
 }
 
 function formOf(def: SettingDef | null, group: string): Form {
@@ -63,7 +66,9 @@ function formOf(def: SettingDef | null, group: string): Form {
     toggleDefault: false,
     options: [{ id: optionId, name: '' }],
     selectDefault: optionId,
+    selectDisplay: 'list',
     textDefault: '',
+    infoText: '',
   }
   switch (def?.type) {
     case 'slider':
@@ -81,16 +86,29 @@ function formOf(def: SettingDef | null, group: string): Form {
         ...form,
         options: def.options.map((o) => ({ ...o })),
         selectDefault: def.defaultValue,
+        selectDisplay: def.display ?? 'list',
       }
     case 'text':
       return { ...form, textDefault: def.defaultValue }
+    case 'info':
+      return { ...form, infoText: def.text }
     default:
       return form
   }
 }
 
-function draftOf(f: Form): SettingDraft {
-  const base = { group: f.group, name: f.name, unit: f.unit }
+/**
+ * Черновик из формы. Колонку, подраздел и высоту пояснения форма не
+ * показывает: они приходят из заготовки и при правке сохраняются
+ */
+function draftOf(f: Form, setting: SettingDef | null): SettingDraft {
+  const base = {
+    group: f.group,
+    name: f.name,
+    unit: f.unit,
+    ...(setting?.column !== undefined && { column: setting.column }),
+    ...(setting?.subgroup !== undefined && { subgroup: setting.subgroup }),
+  }
   const num = (s: string) => parseDecimal(s) ?? Number.NaN
   switch (f.type) {
     case 'slider':
@@ -105,9 +123,22 @@ function draftOf(f: Form): SettingDraft {
     case 'toggle':
       return { ...base, type: 'toggle', defaultValue: f.toggleDefault }
     case 'select':
-      return { ...base, type: 'select', options: f.options, defaultValue: f.selectDefault }
+      return {
+        ...base,
+        type: 'select',
+        options: f.options,
+        defaultValue: f.selectDefault,
+        ...(f.selectDisplay === 'radio' && { display: 'radio' as const }),
+      }
     case 'text':
       return { ...base, type: 'text', defaultValue: f.textDefault }
+    case 'info':
+      return {
+        ...base,
+        type: 'info',
+        text: f.infoText,
+        ...(setting?.type === 'info' && setting.height !== undefined && { height: setting.height }),
+      }
   }
 }
 
@@ -125,7 +156,7 @@ function SettingDialog({
   const id = useId()
   const [form, setForm] = useState<Form>(() => formOf(setting, group))
   const [touched, setTouched] = useState(setting !== null)
-  const draft = draftOf(form)
+  const draft = draftOf(form, setting)
   const errors = settingDraftErrors(draft)
   const invalid = Object.keys(errors).length > 0
   const show = (text: string | null | undefined) => (touched ? (text ?? null) : null)
@@ -260,6 +291,21 @@ function SettingDialog({
               {t.addOption}
             </Button>
           </div>
+          <div className="grid gap-1.5">
+            <span className="text-sm font-medium">{t.display}</span>
+            <ToggleGroup
+              type="single"
+              aria-label={t.display}
+              className="w-fit"
+              value={form.selectDisplay}
+              onValueChange={(v) => {
+                if (v === 'list' || v === 'radio') update({ selectDisplay: v })
+              }}
+            >
+              <ToggleGroupItem value="list">{t.displayList}</ToggleGroupItem>
+              <ToggleGroupItem value="radio">{t.displayRadio}</ToggleGroupItem>
+            </ToggleGroup>
+          </div>
         </div>
       )
       break
@@ -274,6 +320,23 @@ function SettingDialog({
               update({ textDefault: e.target.value })
             }}
             {...invalidProps(`${id}-text`, error)}
+          />
+        </Field>
+      )
+      break
+    }
+    case 'info': {
+      const error = show(errors.text ? t.infoError : null)
+      typeFields = (
+        <Field label={t.infoText} htmlFor={`${id}-info`} error={error}>
+          <Textarea
+            id={`${id}-info`}
+            rows={4}
+            value={form.infoText}
+            onChange={(e) => {
+              update({ infoText: e.target.value })
+            }}
+            {...invalidProps(`${id}-info`, error)}
           />
         </Field>
       )
@@ -394,6 +457,8 @@ function describe(def: SettingDef): string {
       return `${t.types.select}: ${def.options.map((o) => o.name).join(', ')}`
     case 'text':
       return t.types.text
+    case 'info':
+      return t.types.info
   }
 }
 

@@ -72,7 +72,7 @@ describe('first launch (scenario 1, FR-19)', () => {
     await session.chooseFolder()
     expect(phase()).toBe('ready')
     expect(t.folder.fileNames()).toEqual(['backups', 'data.json', 'icons'])
-    expect(await dataJson(t)).toMatchObject({ schemaVersion: 1, games: [] })
+    expect(await dataJson(t)).toMatchObject({ schemaVersion: 2, games: [] })
     expect(t.saved).not.toBeNull()
     expect(status()).toMatchObject({ mode: 'folder', folderName: 'hotkey-map-test' })
   })

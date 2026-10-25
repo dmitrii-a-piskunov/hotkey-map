@@ -117,6 +117,34 @@ export function conflictsWith(game: Game, profile: Profile, bindingId: string): 
   )
 }
 
+/**
+ * Конфликты бинда, который ещё не сохранён (окно привязки, FR-12): вход в
+ * слот действия. Прежний бинд этого слота не считается.
+ */
+export function conflictsForInput(
+  game: Game,
+  profile: Profile,
+  target: { actionId: string; slot: 1 | 2 },
+  input: BindingInput,
+  pressType: PressType,
+): Binding[] {
+  const contexts = new Map(game.actions.map((a) => [a.id, a.contextId]))
+  const pending: Binding = {
+    id: '',
+    actionId: target.actionId,
+    input,
+    pressType,
+    slot: target.slot,
+  }
+  const key = conflictKey(pending)
+  return profile.bindings.filter(
+    (b) =>
+      !(b.actionId === target.actionId && b.slot === target.slot) &&
+      conflictKey(b) === key &&
+      clash(game, contexts, pending, b),
+  )
+}
+
 /** Нарушения правил одного бинда */
 export function violationsOf(issues: ProfileIssues, bindingId: string): Violation[] {
   return issues.violations.filter((v) => v.binding.id === bindingId)

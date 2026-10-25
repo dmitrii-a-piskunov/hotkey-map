@@ -10,7 +10,7 @@
 import { z } from 'zod'
 import { ru } from '@/i18n/ru'
 
-export const CURRENT_SCHEMA_VERSION = 1
+export const CURRENT_SCHEMA_VERSION = 2
 
 const id = z.uuid()
 const isoDate = z.iso.datetime({ offset: true })
@@ -48,10 +48,19 @@ export const contextSchema = z.object({
   order: z.int(),
 })
 
+/** Колонка в разделе, как в меню игры: 1 — левая, 2 — правая */
+const column = z.union([z.literal(1), z.literal(2)]).optional()
+/** Подраздел внутри раздела: «Союзники», «Позиции камеры» */
+const subgroup = z.string().trim().min(1).max(60).optional()
+
 export const categorySchema = z.object({
   id,
   name: name(60),
   color: hexColor,
+  /** Пояснение раздела, как в меню игры */
+  note: z.string().max(500).optional(),
+  /** slots — ячейки способностей и предметов, как в Dota 2 */
+  display: z.enum(['list', 'slots']).optional(),
 })
 
 export const actionSchema = z.object({
@@ -61,6 +70,10 @@ export const actionSchema = z.object({
   contextId: id,
   categoryId: id.optional(),
   description: z.string().max(300).optional(),
+  /** Короткая подпись на клавише (FR-26), например «СП1» */
+  short: z.string().trim().min(1).max(5).optional(),
+  column,
+  subgroup,
   order: z.int(),
 })
 
@@ -76,6 +89,8 @@ const settingBase = {
   group: name(60),
   name: name(80),
   unit: z.string().max(20).optional(),
+  column,
+  subgroup,
   order: z.int(),
 }
 
@@ -95,8 +110,20 @@ export const settingDefSchema = z.discriminatedUnion('type', [
     options: z.array(optionSchema).min(1),
     /** id варианта из options */
     defaultValue: id,
+    /** Выпадающий список или кружки, как в меню игры */
+    display: z.enum(['list', 'radio']).optional(),
   }),
   z.object({ ...settingBase, type: z.literal('text'), defaultValue: z.string().max(200) }),
+  /**
+   * Пояснение без значения: текст в рамке на месте картинки из меню игры
+   * (схема мини-карты, полосы здоровья). Высота — в строках текста
+   */
+  z.object({
+    ...settingBase,
+    type: z.literal('info'),
+    text: z.string().max(500),
+    height: z.int().min(1).max(20).optional(),
+  }),
 ])
 
 export const settingValueSchema = z.union([z.number(), z.boolean(), z.string().max(200)])
@@ -290,6 +317,9 @@ export const appSettingsSchema = z.object({
   colorMode: z.enum(['category', 'group']).default('category'),
   /** FR-03 */
   inputMode: z.enum(['check', 'nav']).default('check'),
+  /** Показывать клавиатуру и мышь (шапка): скрытое не мешает настраивать другое */
+  showKeyboard: z.boolean().default(true),
+  showMouse: z.boolean().default(true),
   lastGameId: id.optional(),
   lastProfileId: id.optional(),
   /** FR-23: дата последнего экспорта, для напоминания в режиме Firefox */

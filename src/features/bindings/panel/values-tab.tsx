@@ -6,7 +6,7 @@ import { Input, NativeSelect } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
 import { LIMITS } from '@/domain/names'
 import { fitSliderValue, isDefaultValue, settingValueOf } from '@/domain/setting-values'
-import { settingSections } from '@/domain/settings-template'
+import { settingSections, type ValueSettingDef } from '@/domain/settings-template'
 import type { Game, Profile, SettingDef, SettingValue } from '@/domain/types'
 import { openEditor } from '@/features/games/ui-store'
 import { ru } from '@/i18n/ru'
@@ -17,7 +17,7 @@ const t = ru.values
 type SliderDef = Extract<SettingDef, { type: 'slider' }>
 
 /** Значение для показа рядом с кнопкой сброса */
-function shown(def: SettingDef, value: SettingValue): string {
+function shown(def: ValueSettingDef, value: SettingValue): string {
   switch (def.type) {
     case 'slider':
       return `${formatDecimal(value as number)}${def.unit ? ` ${def.unit}` : ''}`
@@ -123,7 +123,19 @@ function TextValue({ def, value, labelId }: { def: SettingDef; value: string; la
   )
 }
 
-function SettingRow({ def, profile }: { def: SettingDef; profile: Profile }) {
+/** Пояснение на месте картинки из меню игры */
+function InfoBlock({ def }: { def: Extract<SettingDef, { type: 'info' }> }) {
+  return (
+    <div
+      className="mx-2 my-1.5 flex items-center rounded-md border border-dashed px-3 py-2 text-xs text-muted-foreground"
+      style={{ minHeight: `${(def.height ?? 3) * 1.25}rem` }}
+    >
+      {def.text}
+    </div>
+  )
+}
+
+function SettingRow({ def, profile }: { def: ValueSettingDef; profile: Profile }) {
   const labelId = useId()
   const value = settingValueOf(def, profile)
   const custom = !isDefaultValue(def, profile)
@@ -215,9 +227,13 @@ export function ValuesTab({ game, profile }: { game: Game; profile: Profile }) {
           <h3 className="mb-1 px-2 text-xs font-semibold text-muted-foreground uppercase">
             {s.group}
           </h3>
-          {s.settings.map((def) => (
-            <SettingRow key={def.id} def={def} profile={profile} />
-          ))}
+          {s.settings.map((def) =>
+            def.type === 'info' ? (
+              <InfoBlock key={def.id} def={def} />
+            ) : (
+              <SettingRow key={def.id} def={def} profile={profile} />
+            ),
+          )}
         </section>
       ))}
     </div>

@@ -5,17 +5,17 @@
  */
 
 import { updateProfile } from './profiles'
-import { coerceSettingValue, snapToSlider } from './settings-template'
+import { coerceSettingValue, snapToSlider, type ValueSettingDef } from './settings-template'
 import type { Game, Profile, SettingDef, SettingValue } from './types'
 
 /** Значение настройки в профиле: своё или по умолчанию */
-export function settingValueOf(def: SettingDef, profile: Profile): SettingValue {
+export function settingValueOf(def: ValueSettingDef, profile: Profile): SettingValue {
   const own = profile.settingValues[def.id]
   if (own === undefined) return def.defaultValue
   return coerceSettingValue(def, own) ?? def.defaultValue
 }
 
-export function isDefaultValue(def: SettingDef, profile: Profile): boolean {
+export function isDefaultValue(def: ValueSettingDef, profile: Profile): boolean {
   return settingValueOf(def, profile) === def.defaultValue
 }
 

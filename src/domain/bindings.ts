@@ -202,6 +202,49 @@ export function hasCustomParam(game: Game, binding: Binding): boolean {
   return binding.paramOptionId !== undefined && binding.paramOptionId !== defaultParamOptionId(game)
 }
 
+/**
+ * Режим каста для группы действий (ячейки «Способности и предметы», как в
+ * Dota 2): вариант ставится всем их биндам; первый вариант не хранится.
+ */
+export function setParamForActions(
+  game: Game,
+  profileId: string,
+  actionIds: readonly string[],
+  optionId: string | undefined,
+  now: string,
+): Game {
+  const value = optionId === defaultParamOptionId(game) ? undefined : optionId
+  return updateProfile(game, profileId, now, (p) => {
+    const touched = (b: Binding) => actionIds.includes(b.actionId) && b.paramOptionId !== value
+    if (!p.bindings.some(touched)) return p
+    const bindings = p.bindings.map((b) => {
+      if (!touched(b)) return b
+      const next = { ...b, paramOptionId: value }
+      if (value === undefined) delete next.paramOptionId
+      return next
+    })
+    return { ...p, bindings }
+  })
+}
+
+/**
+ * Общий режим каста биндов группы: вариант, если он у всех одинаковый;
+ * null — разные или биндов нет
+ */
+export function commonParam(
+  game: Game,
+  profile: Profile,
+  actionIds: readonly string[],
+): string | null {
+  const values = new Set(
+    profile.bindings
+      .filter((b) => actionIds.includes(b.actionId))
+      .map((b) => b.paramOptionId ?? defaultParamOptionId(game)),
+  )
+  const [only] = values
+  return values.size === 1 && only !== undefined ? only : null
+}
+
 /** Бинды на физическом входе: все слои, текущий — первым */
 export function bindingsOnInput(profile: Profile, code: string, layer: string): Binding[] {
   const own = profile.bindings.filter((b) => b.input.code === code)

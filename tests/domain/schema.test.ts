@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import { createAppData } from '@/domain/app-data'
-import { appDataSchema, appSettingsSchema, exportFileSchema } from '@/domain/schema'
+import {
+  appDataSchema,
+  appSettingsSchema,
+  CURRENT_SCHEMA_VERSION,
+  exportFileSchema,
+} from '@/domain/schema'
 import type { Game } from '@/domain/types'
 import { ru } from '@/i18n/ru'
 import dota2 from '@/presets/dota2.json'
@@ -28,7 +33,7 @@ describe('appDataSchema', () => {
 
   it('fills appSettings defaults for partial or missing settings (appendix B)', () => {
     const parsed = appDataSchema.parse({
-      schemaVersion: 1,
+      schemaVersion: 2,
       games: [],
       appSettings: { theme: 'dark', labelLang: 'en', view: '3d', showLabels: true },
     })
@@ -39,7 +44,7 @@ describe('appDataSchema', () => {
       colorMode: 'category',
       inputMode: 'check',
     })
-    expect(appDataSchema.parse({ schemaVersion: 1, games: [] }).appSettings).toEqual(
+    expect(appDataSchema.parse({ schemaVersion: 2, games: [] }).appSettings).toEqual(
       appSettingsSchema.parse({}),
     )
   })
@@ -57,7 +62,10 @@ describe('appDataSchema', () => {
   })
 
   it('rejects wrong schemaVersion, bad colors and field limits', () => {
-    expect(appDataSchema.safeParse({ ...createAppData(), schemaVersion: 2 }).success).toBe(false)
+    expect(
+      appDataSchema.safeParse({ ...createAppData(), schemaVersion: CURRENT_SCHEMA_VERSION + 1 })
+        .success,
+    ).toBe(false)
     expect(messages(withGame((g) => (at(g.categories, 0).color = 'blue')))).not.toEqual([])
     expect(messages(withGame((g) => (g.name = 'x'.repeat(61))))).not.toEqual([])
     expect(messages(withGame((g) => (g.rules.maxKeysPerAction = 3 as 1)))).not.toEqual([])
