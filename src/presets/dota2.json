@@ -1,714 +1,3376 @@
 {
   "schemaVersion": 2,
   "scope": "game",
-  "exportedAt": "2026-10-21T00:00:00.000Z",
+  "exportedAt": "2026-10-25T10:00:00.000Z",
   "preset": true,
   "games": [
     {
-      "id": "e708af0c-0831-5d42-bef8-0537fe4b394d",
+      "id": "f478b2b5-8076-51f8-91b3-38137e0cc9ed",
       "name": "Dota 2",
       "steamAppId": 570,
       "rules": {
         "maxKeysPerAction": 1,
-        "allowedModifiers": ["ctrl", "shift", "alt"]
+        "allowedModifiers": ["ctrl", "shift", "alt"],
+        "blockedKeys": ["Fn", "Knob", "MetaLeft"]
       },
       "contexts": [
         {
-          "id": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
+          "id": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
           "name": "Везде",
           "isGlobal": true,
           "order": 0
+        },
+        {
+          "id": "2debc068-161f-594d-86ed-c6f3d336d98b",
+          "name": "Герой",
+          "isGlobal": false,
+          "order": 1
+        },
+        {
+          "id": "ec814013-0609-5103-bd3c-b1973bf68083",
+          "name": "Курьер",
+          "isGlobal": false,
+          "order": 2
+        },
+        {
+          "id": "6e340630-3f88-5690-a4dc-785b808a7169",
+          "name": "Существа",
+          "isGlobal": false,
+          "order": 3
         }
       ],
       "categories": [
         {
-          "id": "f4391589-ec38-54ab-81b1-1ca0154c8678",
-          "name": "Способности",
-          "color": "#8B5CF6"
+          "id": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
+          "name": "Способности и предметы",
+          "color": "#8B5CF6",
+          "display": "slots"
         },
         {
-          "id": "05a6ecfc-ceda-5526-9937-d028b0f01bff",
-          "name": "Предметы",
-          "color": "#F59E0B"
-        },
-        {
-          "id": "a1e358f8-3386-5c98-a6d5-67d79b1a6852",
-          "name": "Действия юнита",
+          "id": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
+          "name": "Существа",
           "color": "#3B82F6"
         },
         {
-          "id": "5a84c08d-3e20-5f35-8dc7-35da175549e2",
-          "name": "Магазин",
-          "color": "#10B981"
-        },
-        {
-          "id": "8a3fac78-d221-5758-9eab-5e1739116315",
-          "name": "Чат и связь",
-          "color": "#EC4899"
-        },
-        {
-          "id": "dfbab417-1c24-5baa-9831-91a5d7750f71",
+          "id": "ca470c20-610c-5d6e-af38-45e5524f3445",
           "name": "Интерфейс",
           "color": "#64748B"
         },
         {
-          "id": "3cc1abc8-bf06-5891-a7c2-8eb09da3828d",
-          "name": "Группы юнитов",
+          "id": "e7aab8be-7110-5228-8c89-432be66619d9",
+          "name": "Курьер",
+          "color": "#F59E0B"
+        },
+        {
+          "id": "3d09aad4-dccd-5c3c-91e7-49a95609c8fd",
+          "name": "Лавка",
+          "color": "#10B981"
+        },
+        {
+          "id": "37d76782-0a2e-5124-88d7-69796eb39041",
+          "name": "Подконтрольные группы",
           "color": "#06B6D4"
         },
         {
-          "id": "3b38b10e-c569-5ad7-a345-a1e70dcf8d0e",
+          "id": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
           "name": "Камера",
           "color": "#84CC16"
+        },
+        {
+          "id": "02513fc8-2eaa-5be8-a965-b99b908fa086",
+          "name": "Чат",
+          "color": "#EC4899"
+        },
+        {
+          "id": "a5f495bf-9c24-56cc-800b-90ebff604ace",
+          "name": "Клавиши-модификаторы",
+          "color": "#14B8A6",
+          "note": "Эта функция позволит вам взаимодействовать с определённым типом существ. Зажав назначенные здесь клавиши, вы сможете выбрать целью только врагов, союзников, крипов или героев. Так вы точно ультанёте в кого нужно."
+        },
+        {
+          "id": "71b0fa91-6a99-5434-a776-4b359e59db52",
+          "name": "Карта на весь экран",
+          "color": "#EF4444",
+          "note": "В отличие от мини-карты, эта карта видна только при нажатии на указанную здесь клавишу. Также в отличие от мини-карты, она большая, полупрозрачная и находится в центре экрана."
         }
       ],
       "actions": [
         {
-          "id": "7f59eccb-d774-547a-b310-228aa08fbf7a",
+          "id": "3403e8bf-3240-5677-ad14-982f47ff43ee",
           "name": "Способность 1",
-          "nameEn": "Ability 1",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "f4391589-ec38-54ab-81b1-1ca0154c8678",
-          "order": 0
+          "contextId": "2debc068-161f-594d-86ed-c6f3d336d98b",
+          "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
+          "order": 0,
+          "short": "СП1"
         },
         {
-          "id": "ef377d82-20f1-568a-9917-58da7858819c",
+          "id": "8035247d-ff26-5fa5-97f3-2936d83d9abe",
           "name": "Способность 2",
-          "nameEn": "Ability 2",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "f4391589-ec38-54ab-81b1-1ca0154c8678",
-          "order": 1
+          "contextId": "2debc068-161f-594d-86ed-c6f3d336d98b",
+          "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
+          "order": 1,
+          "short": "СП2"
         },
         {
-          "id": "6d140c3b-a860-5882-b49f-1865dc3b2214",
+          "id": "e66ede5a-7057-50c4-af62-73a4f1153da5",
           "name": "Способность 3",
-          "nameEn": "Ability 3",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "f4391589-ec38-54ab-81b1-1ca0154c8678",
-          "order": 2
+          "contextId": "2debc068-161f-594d-86ed-c6f3d336d98b",
+          "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
+          "order": 2,
+          "short": "СП3"
         },
         {
-          "id": "b1c871f7-803d-546f-930a-9a59749c9583",
+          "id": "29afce4d-91c0-5045-b569-640282314b6c",
           "name": "Способность 4",
-          "nameEn": "Ability 4",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "f4391589-ec38-54ab-81b1-1ca0154c8678",
-          "order": 3
+          "contextId": "2debc068-161f-594d-86ed-c6f3d336d98b",
+          "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
+          "order": 3,
+          "short": "СП4"
         },
         {
-          "id": "04e248e1-5457-5fb3-bad6-97c1597a7bd0",
+          "id": "f0101f81-a9dc-5fb7-b40b-9a5527a2f891",
           "name": "Способность 5",
-          "nameEn": "Ability 5",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "f4391589-ec38-54ab-81b1-1ca0154c8678",
-          "order": 4
+          "contextId": "2debc068-161f-594d-86ed-c6f3d336d98b",
+          "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
+          "order": 4,
+          "short": "СП5"
         },
         {
-          "id": "be80afbd-8a05-5b24-a490-35ef7a3c7085",
+          "id": "db0a038e-c9ef-5298-b549-143e643f599e",
           "name": "Ультимейт",
-          "nameEn": "Ultimate",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "f4391589-ec38-54ab-81b1-1ca0154c8678",
-          "order": 5
+          "contextId": "2debc068-161f-594d-86ed-c6f3d336d98b",
+          "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
+          "order": 5,
+          "short": "УЛЬТ"
         },
         {
-          "id": "a23b16a4-94f9-50e2-befc-ec057e804c25",
-          "name": "Режим изучения способностей",
-          "nameEn": "Learn Ability Mode",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "f4391589-ec38-54ab-81b1-1ca0154c8678",
-          "order": 6
+          "id": "46c43842-fff5-5980-9ae4-b281da039a0f",
+          "name": "Курьер: забрать предметы",
+          "contextId": "ec814013-0609-5103-bd3c-b1973bf68083",
+          "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
+          "order": 6,
+          "short": "КР1"
         },
         {
-          "id": "4035ebc1-ceef-57fb-8407-6f7086deea39",
-          "name": "Предмет: слот 1",
-          "nameEn": "Item Slot 1",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "05a6ecfc-ceda-5526-9937-d028b0f01bff",
-          "order": 7
+          "id": "baae87fe-ca11-5af3-972d-fedb760c4817",
+          "name": "Курьер: в потайную лавку",
+          "contextId": "ec814013-0609-5103-bd3c-b1973bf68083",
+          "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
+          "order": 7,
+          "short": "КР2"
         },
         {
-          "id": "4ae6f1e2-d87c-5709-83fd-4a0852457fd0",
-          "name": "Предмет: слот 2",
-          "nameEn": "Item Slot 2",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "05a6ecfc-ceda-5526-9937-d028b0f01bff",
-          "order": 8
+          "id": "5156235f-15de-5e16-9d48-0c5211fe5233",
+          "name": "Курьер: вернуть предметы",
+          "contextId": "ec814013-0609-5103-bd3c-b1973bf68083",
+          "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
+          "order": 8,
+          "short": "КР3"
         },
         {
-          "id": "c2fb3016-cb81-5016-92b1-941495d5a262",
-          "name": "Предмет: слот 3",
-          "nameEn": "Item Slot 3",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "05a6ecfc-ceda-5526-9937-d028b0f01bff",
-          "order": 9
+          "id": "147607ab-ae0b-5073-b104-71bcb1248c0c",
+          "name": "Курьер: ускорение",
+          "contextId": "ec814013-0609-5103-bd3c-b1973bf68083",
+          "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
+          "order": 9,
+          "short": "КР4"
         },
         {
-          "id": "accd13d3-43d2-5176-858a-475299349b37",
-          "name": "Предмет: слот 4",
-          "nameEn": "Item Slot 4",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "05a6ecfc-ceda-5526-9937-d028b0f01bff",
-          "order": 10
+          "id": "bf8c6a40-fb47-54de-913b-7d3c354955bd",
+          "name": "Курьер: передать предметы",
+          "contextId": "ec814013-0609-5103-bd3c-b1973bf68083",
+          "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
+          "order": 10,
+          "short": "КР5"
         },
         {
-          "id": "fa9cd4fd-098d-5336-9d8c-8a1420942a11",
-          "name": "Предмет: слот 5",
-          "nameEn": "Item Slot 5",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "05a6ecfc-ceda-5526-9937-d028b0f01bff",
-          "order": 11
+          "id": "5e43b42a-f535-56ec-bdca-95468796c96b",
+          "name": "Курьер: щит",
+          "contextId": "ec814013-0609-5103-bd3c-b1973bf68083",
+          "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
+          "order": 11,
+          "short": "КР6"
         },
         {
-          "id": "084631aa-a23e-5b4a-b638-20536de81c8c",
-          "name": "Предмет: слот 6",
-          "nameEn": "Item Slot 6",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "05a6ecfc-ceda-5526-9937-d028b0f01bff",
-          "order": 12
+          "id": "88ddb435-2ac1-5ab7-80ea-9e3697959233",
+          "name": "Способность существа 1",
+          "contextId": "6e340630-3f88-5690-a4dc-785b808a7169",
+          "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
+          "order": 12,
+          "short": "СЩ1"
         },
         {
-          "id": "8dec888f-3013-541d-b5e8-ea4e79645776",
+          "id": "6f5dc7d2-996b-522f-9819-e7117e7246d8",
+          "name": "Способность существа 2",
+          "contextId": "6e340630-3f88-5690-a4dc-785b808a7169",
+          "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
+          "order": 13,
+          "short": "СЩ2"
+        },
+        {
+          "id": "96943d9e-d0ca-50ec-8206-75d55dfd6493",
+          "name": "Способность существа 3",
+          "contextId": "6e340630-3f88-5690-a4dc-785b808a7169",
+          "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
+          "order": 14,
+          "short": "СЩ3"
+        },
+        {
+          "id": "0c30bce0-73a9-5f41-94f0-e7a9e7795170",
+          "name": "Способность существа 4",
+          "contextId": "6e340630-3f88-5690-a4dc-785b808a7169",
+          "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
+          "order": 15,
+          "short": "СЩ4"
+        },
+        {
+          "id": "2587c31b-4feb-5e25-b681-30e1b7cdde09",
+          "name": "Способность существа 5",
+          "contextId": "6e340630-3f88-5690-a4dc-785b808a7169",
+          "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
+          "order": 16,
+          "short": "СЩ5"
+        },
+        {
+          "id": "92f82ea9-cb1f-5191-82c9-8269c597b803",
+          "name": "Способность существа 6",
+          "contextId": "6e340630-3f88-5690-a4dc-785b808a7169",
+          "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
+          "order": 17,
+          "short": "СЩ6"
+        },
+        {
+          "id": "a3dce0e4-7bca-56b2-ae50-3ac6cf078fa0",
+          "name": "Предмет 1",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
+          "order": 18,
+          "short": "П1"
+        },
+        {
+          "id": "bf2038aa-8507-5028-b201-89a201760d93",
+          "name": "Предмет 2",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
+          "order": 19,
+          "short": "П2"
+        },
+        {
+          "id": "9b051aaa-bf10-5563-bedc-8643559d6175",
+          "name": "Предмет 3",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
+          "order": 20,
+          "short": "П3"
+        },
+        {
+          "id": "b19d2a57-d995-551d-9819-5fe8c60a01ec",
+          "name": "Предмет 4",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
+          "order": 21,
+          "short": "П4"
+        },
+        {
+          "id": "c5523dfc-2dae-5261-a026-34c9663396a7",
+          "name": "Предмет 5",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
+          "order": 22,
+          "short": "П5"
+        },
+        {
+          "id": "aba88f7c-ec18-5998-9fdd-55e23c58e817",
+          "name": "Предмет 6",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
+          "order": 23,
+          "short": "П6"
+        },
+        {
+          "id": "5d283cac-a2bc-578f-9734-a4b8b222887a",
           "name": "Нейтральный предмет",
-          "nameEn": "Neutral Item",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "05a6ecfc-ceda-5526-9937-d028b0f01bff",
-          "order": 13
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
+          "order": 24,
+          "short": "НП"
         },
         {
-          "id": "f56942ac-e821-5abc-bec0-52c3b8b3156c",
+          "id": "44ab4919-209f-5ef9-ac17-21f8a03ce3e7",
           "name": "Свиток телепортации",
-          "nameEn": "Teleport Scroll",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "05a6ecfc-ceda-5526-9937-d028b0f01bff",
-          "order": 14
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
+          "order": 25,
+          "short": "ТП"
         },
         {
-          "id": "247d1345-a209-568d-a0b8-b31c56a39d2f",
-          "name": "Атаковать",
-          "nameEn": "Attack",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "a1e358f8-3386-5c98-a6d5-67d79b1a6852",
-          "order": 15
-        },
-        {
-          "id": "e571bca3-422c-57a1-9753-7f10af801c74",
-          "name": "Двигаться",
-          "nameEn": "Move",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "a1e358f8-3386-5c98-a6d5-67d79b1a6852",
-          "order": 16
-        },
-        {
-          "id": "af986ddc-9383-5c6a-ac83-e4e91b712a52",
-          "name": "Стоп",
-          "nameEn": "Stop",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "a1e358f8-3386-5c98-a6d5-67d79b1a6852",
-          "order": 17
-        },
-        {
-          "id": "fd4516ce-8660-5378-bb65-cf784cf53212",
-          "name": "Удерживать позицию",
-          "nameEn": "Hold Position",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "a1e358f8-3386-5c98-a6d5-67d79b1a6852",
-          "order": 18
-        },
-        {
-          "id": "bc18fb47-ca40-5a77-8d47-6bcc55e37aef",
+          "id": "e2ce61bb-f71a-5f6a-987f-17011888be7d",
           "name": "Выбрать героя",
-          "nameEn": "Select Hero",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "a1e358f8-3386-5c98-a6d5-67d79b1a6852",
-          "order": 19
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
+          "order": 26,
+          "column": 1
         },
         {
-          "id": "a5792645-bb49-50ad-a2fb-65b1e7a764b6",
-          "name": "Выбрать всех подконтрольных юнитов",
-          "nameEn": "Select All Controlled Units",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "a1e358f8-3386-5c98-a6d5-67d79b1a6852",
-          "order": 20
+          "id": "001b4185-f3d0-539c-be62-0c22357139c9",
+          "name": "Выбрать всех своих существ",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
+          "order": 27,
+          "column": 1
         },
         {
-          "id": "e81f036d-db78-5362-b5c0-d039ffdc97b4",
-          "name": "Выбрать всех остальных юнитов",
-          "nameEn": "Select All Other Units",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "a1e358f8-3386-5c98-a6d5-67d79b1a6852",
-          "order": 21
+          "id": "df40ec8f-f246-5ab6-ad45-1016bc7823ab",
+          "name": "Атаковать",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
+          "order": 28,
+          "column": 1
         },
         {
-          "id": "e21f6e4d-2727-5daf-8566-ee2af02ad8ac",
-          "name": "Следующий юнит в группе",
-          "nameEn": "Control Group Tab",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "a1e358f8-3386-5c98-a6d5-67d79b1a6852",
-          "order": 22
+          "id": "db9aa136-28b5-5325-8c46-bdd5eeef9914",
+          "name": "Удерживать позицию",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
+          "order": 29,
+          "column": 1
         },
         {
-          "id": "6746fc7f-872f-534c-b416-2abb6cbc11cd",
-          "name": "Выбрать курьера",
-          "nameEn": "Select Courier",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "a1e358f8-3386-5c98-a6d5-67d79b1a6852",
-          "order": 23
+          "id": "d0b52fd7-01a1-5c2d-b753-04fb60177274",
+          "name": "Изучить способность",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
+          "order": 30,
+          "column": 1
         },
         {
-          "id": "0cbc2b92-43ff-58b4-beb8-82bd85c9af62",
-          "name": "Курьер: доставить предметы",
-          "nameEn": "Courier Deliver Items",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "a1e358f8-3386-5c98-a6d5-67d79b1a6852",
-          "order": 24
+          "id": "34d29264-1063-595c-a295-136ba0608543",
+          "name": "Выбрать талант",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
+          "order": 31,
+          "column": 1
         },
         {
-          "id": "8e695116-f347-5eee-b797-d38358965c8e",
-          "name": "Открыть магазин",
-          "nameEn": "Open Shop",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "5a84c08d-3e20-5f35-8dc7-35da175549e2",
-          "order": 25
+          "id": "b53c2161-3df3-5f02-ba77-210ab7ac3949",
+          "name": "Изучить левый талант",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
+          "order": 32,
+          "column": 1
         },
         {
-          "id": "36631c12-f901-5745-8ef6-aa253d1c2f77",
-          "name": "Купить быстрые покупки",
-          "nameEn": "Purchase Quickbuy",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "5a84c08d-3e20-5f35-8dc7-35da175549e2",
-          "order": 26
+          "id": "ce8effb2-04c2-5f9d-9a8d-68af68809a2c",
+          "name": "Изучить правый талант",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
+          "order": 33,
+          "column": 1
         },
         {
-          "id": "daa7e935-a9f9-57d8-b758-03bee2333635",
-          "name": "Купить закреплённый предмет",
-          "nameEn": "Purchase Sticky",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "5a84c08d-3e20-5f35-8dc7-35da175549e2",
-          "order": 27
+          "id": "fc1b3317-7681-5418-99b2-2f8fc797cf98",
+          "name": "Изучить бонус к атрибутам",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
+          "order": 34,
+          "column": 1
         },
         {
-          "id": "be6ebb37-138f-5f84-a0db-d8b5d77b92ef",
-          "name": "Забрать предметы из тайника",
-          "nameEn": "Take Stash Items",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "5a84c08d-3e20-5f35-8dc7-35da175549e2",
-          "order": 28
+          "id": "d95ef155-01c5-5b6c-9512-a32593071efe",
+          "name": "Выбрать 1-й нейтральный предмет",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
+          "order": 35,
+          "column": 1
         },
         {
-          "id": "34b58b1d-eda0-563c-bcd5-a3ab347bb76c",
-          "name": "Чат команды",
-          "nameEn": "Team Chat",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "8a3fac78-d221-5758-9eab-5e1739116315",
-          "order": 29
+          "id": "9f46d3b9-175b-5627-bf63-07b08c516a80",
+          "name": "Выбрать 2-й нейтральный предмет",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
+          "order": 36,
+          "column": 1
         },
         {
-          "id": "b7a520d4-2c3f-5d3a-98bc-c6cf80ee5323",
-          "name": "Общий чат",
-          "nameEn": "All Chat",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "8a3fac78-d221-5758-9eab-5e1739116315",
-          "order": 30
+          "id": "69461abf-c7c6-5ac2-bf7b-9a91b23f255d",
+          "name": "Идти",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
+          "order": 37,
+          "column": 2
         },
         {
-          "id": "54eb7750-8147-588f-b54b-83c9c3f30aff",
-          "name": "Колесо фраз",
-          "nameEn": "Chat Wheel",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "8a3fac78-d221-5758-9eab-5e1739116315",
-          "order": 31
+          "id": "24a96b34-24b4-5bf4-b5af-3c67baf7fc0e",
+          "name": "Идти в направлении",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
+          "order": 38,
+          "column": 2
         },
         {
-          "id": "ee697ecc-b41e-561a-8771-e6dd5e2f76cf",
-          "name": "Голосовой чат: команда",
-          "nameEn": "Voice Team",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "8a3fac78-d221-5758-9eab-5e1739116315",
-          "order": 32
+          "id": "0e0b61af-5e73-529d-aad2-3ebb83b90b9c",
+          "name": "Патрулировать",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
+          "order": 39,
+          "column": 2
         },
         {
-          "id": "0364d26d-3cb0-5c18-ad82-26d3dd436ffb",
-          "name": "Голосовой чат: группа",
-          "nameEn": "Voice Party",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "8a3fac78-d221-5758-9eab-5e1739116315",
-          "order": 33
+          "id": "35309ead-b763-539d-9b83-64a32f62f199",
+          "name": "Отменить текущее действие",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
+          "order": 40,
+          "column": 2
         },
         {
-          "id": "27d471d1-f573-5a6c-ad3b-122fb84687ff",
+          "id": "1ead27dc-8b04-5fd5-b2b4-1d0a4b528f05",
+          "name": "Выбрать всех прочих существ",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
+          "order": 41,
+          "column": 2
+        },
+        {
+          "id": "1ecc4d55-445e-5443-a800-1a76835a3dc2",
+          "name": "Укрепить постройки",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
+          "order": 42,
+          "column": 2
+        },
+        {
+          "id": "852477a0-768f-518a-a0c0-8b058dd9ac8c",
+          "name": "Сканировать территорию",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
+          "order": 43,
+          "column": 2
+        },
+        {
+          "id": "00c65e40-8589-5ed6-a41c-625ecf39ca76",
+          "name": "Использовать насмешку",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
+          "order": 44,
+          "column": 2
+        },
+        {
+          "id": "a2830e87-1a13-5be8-931e-819dc70e3523",
+          "name": "Включить/выключить автоатаку",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
+          "order": 45,
+          "column": 2
+        },
+        {
+          "id": "4bf3c576-a50b-55c8-833c-35e3ff03d8b8",
+          "name": "Выбрать 3-й нейтральный предмет",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
+          "order": 46,
+          "column": 2
+        },
+        {
+          "id": "80c6f171-8fd1-56d1-88b5-4d8b161f7ac8",
+          "name": "Выбрать 4-й нейтральный предмет",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
+          "order": 47,
+          "column": 2
+        },
+        {
+          "id": "4e9bd0b3-04f6-5ba5-9804-ba559992fc92",
+          "name": "Выбрать 5-й нейтральный предмет",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
+          "order": 48,
+          "column": 2
+        },
+        {
+          "id": "482e4b5b-40ed-5acd-a968-2ed1b57346dc",
           "name": "Таблица счёта",
-          "nameEn": "Scoreboard",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "dfbab417-1c24-5baa-9831-91a5d7750f71",
-          "order": 34
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "ca470c20-610c-5d6e-af38-45e5524f3445",
+          "order": 49,
+          "column": 1
         },
         {
-          "id": "ddbe2bbc-66f5-5aa5-b5d5-b8342b0859f3",
+          "id": "6c90faae-bfd8-587d-a869-c6363ea0a88f",
           "name": "Пауза",
-          "nameEn": "Pause",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "dfbab417-1c24-5baa-9831-91a5d7750f71",
-          "order": 35
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "ca470c20-610c-5d6e-af38-45e5524f3445",
+          "order": 50,
+          "column": 1
         },
         {
-          "id": "fa05f266-a584-5d0d-87d1-e8f3bbc1cfc2",
+          "id": "2508eee3-8cb3-5c3f-ae7f-74b1c09dd8a0",
+          "name": "Журнал сражения",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "ca470c20-610c-5d6e-af38-45e5524f3445",
+          "order": 51,
+          "column": 1
+        },
+        {
+          "id": "8f1f2d03-da36-56b2-9c62-aae2e7572df1",
+          "name": "Скриншот",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "ca470c20-610c-5d6e-af38-45e5524f3445",
+          "order": 52,
+          "column": 1
+        },
+        {
+          "id": "ee59c4ce-dddd-5937-a24f-d38cfb342377",
           "name": "Консоль",
-          "nameEn": "Console",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "dfbab417-1c24-5baa-9831-91a5d7750f71",
-          "order": 36
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "ca470c20-610c-5d6e-af38-45e5524f3445",
+          "order": 53,
+          "column": 2
         },
         {
-          "id": "5b03ebfd-d00d-51ca-9dd8-132b1a1d2057",
-          "name": "Группа юнитов 1",
-          "nameEn": "Control Group 1",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "3cc1abc8-bf06-5891-a7c2-8eb09da3828d",
-          "order": 37
+          "id": "c709ab4c-1343-5efd-8d45-0b0ec8bdc315",
+          "name": "Сводка смерти",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "ca470c20-610c-5d6e-af38-45e5524f3445",
+          "order": 54,
+          "column": 2
         },
         {
-          "id": "378ac03c-beba-5e62-8af7-d1e0e6fefda0",
-          "name": "Группа юнитов 2",
-          "nameEn": "Control Group 2",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "3cc1abc8-bf06-5891-a7c2-8eb09da3828d",
-          "order": 38
+          "id": "ca96315c-0028-5338-af70-373311f7a088",
+          "name": "Замена клавише Alt",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "ca470c20-610c-5d6e-af38-45e5524f3445",
+          "order": 55,
+          "column": 2
         },
         {
-          "id": "1932fdea-d9a8-5eb8-8325-835a9c3de420",
-          "name": "Группа юнитов 3",
-          "nameEn": "Control Group 3",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "3cc1abc8-bf06-5891-a7c2-8eb09da3828d",
-          "order": 39
+          "id": "8bb33666-ce4b-57f1-8a29-73d601e40707",
+          "name": "Замена клавише альт. применения",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "ca470c20-610c-5d6e-af38-45e5524f3445",
+          "order": 56,
+          "column": 2
         },
         {
-          "id": "a9d46cc9-88bf-5581-bb59-51b9d9d81cf2",
-          "name": "Группа юнитов 4",
-          "nameEn": "Control Group 4",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "3cc1abc8-bf06-5891-a7c2-8eb09da3828d",
-          "order": 40
+          "id": "61c1d993-059b-5007-9eb3-158c4e48d967",
+          "name": "Выбрать курьера",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "e7aab8be-7110-5228-8c89-432be66619d9",
+          "order": 57,
+          "column": 1
         },
         {
-          "id": "eecaf056-a3e7-5fa7-8671-b6c8f7422663",
-          "name": "Группа юнитов 5",
-          "nameEn": "Control Group 5",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "3cc1abc8-bf06-5891-a7c2-8eb09da3828d",
-          "order": 41
+          "id": "7b6310a6-3d4b-5f62-954e-18b01e10a37b",
+          "name": "Доставить предметы",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "e7aab8be-7110-5228-8c89-432be66619d9",
+          "order": 58,
+          "column": 1
         },
         {
-          "id": "c577b194-b765-5a9f-84e5-49fe490e5573",
-          "name": "Группа юнитов 6",
-          "nameEn": "Control Group 6",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "3cc1abc8-bf06-5891-a7c2-8eb09da3828d",
-          "order": 42
+          "id": "7a6a97cb-afa9-5ccd-b60f-9c614db7884d",
+          "name": "Курьер — ускорение",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "e7aab8be-7110-5228-8c89-432be66619d9",
+          "order": 59,
+          "column": 2
         },
         {
-          "id": "948eaef0-eacb-5d3c-9669-8e25287fb4eb",
-          "name": "Группа юнитов 7",
-          "nameEn": "Control Group 7",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "3cc1abc8-bf06-5891-a7c2-8eb09da3828d",
-          "order": 43
+          "id": "1697f81a-3e36-5881-af8f-8ed63a79d144",
+          "name": "Курьер — щит",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "e7aab8be-7110-5228-8c89-432be66619d9",
+          "order": 60,
+          "column": 2
         },
         {
-          "id": "9a985f71-2cdf-5dba-b0fc-f8db97e1b5a1",
-          "name": "Группа юнитов 8",
-          "nameEn": "Control Group 8",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "3cc1abc8-bf06-5891-a7c2-8eb09da3828d",
-          "order": 44
+          "id": "cd58033b-463b-5b1d-a7c8-71eccb822611",
+          "name": "Быстрая покупка",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "3d09aad4-dccd-5c3c-91e7-49a95609c8fd",
+          "order": 61,
+          "column": 1
         },
         {
-          "id": "1979c118-b307-5593-9a4e-80f1d8294e3c",
-          "name": "Группа юнитов 9",
-          "nameEn": "Control Group 9",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "3cc1abc8-bf06-5891-a7c2-8eb09da3828d",
-          "order": 45
+          "id": "0402fd42-dfe5-5f95-8211-0697c1278943",
+          "name": "Купить закреплённый предмет",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "3d09aad4-dccd-5c3c-91e7-49a95609c8fd",
+          "order": 62,
+          "column": 1
         },
         {
-          "id": "4fcaa0c7-3999-58c5-b15a-2198a61a6f7e",
-          "name": "Группа юнитов 10",
-          "nameEn": "Control Group 10",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "3cc1abc8-bf06-5891-a7c2-8eb09da3828d",
-          "order": 46
+          "id": "1db7de89-c6e0-555a-9de4-f6793a5fad93",
+          "name": "Забрать предметы из тайника",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "3d09aad4-dccd-5c3c-91e7-49a95609c8fd",
+          "order": 63,
+          "column": 2
         },
         {
-          "id": "9a97c0f4-fcb1-539d-a6f4-8d2548fe5d27",
-          "name": "Камера на героя",
-          "nameEn": "Center Camera on Hero",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "3b38b10e-c569-5ad7-a345-a1e70dcf8d0e",
-          "order": 47
+          "id": "d732da9a-0e00-5786-8b3c-f7d3350ab02d",
+          "name": "Открыть лавку",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "3d09aad4-dccd-5c3c-91e7-49a95609c8fd",
+          "order": 64,
+          "column": 2
         },
         {
-          "id": "a400e17c-9da3-5203-9ffd-7e37ddf43090",
-          "name": "Камера вверх",
-          "nameEn": "Camera Up",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "3b38b10e-c569-5ad7-a345-a1e70dcf8d0e",
-          "order": 48
+          "id": "9401158b-275c-51a5-8621-b3aa46c4d8fb",
+          "name": "Вкл./выкл. защиту выкупа",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "3d09aad4-dccd-5c3c-91e7-49a95609c8fd",
+          "order": 65,
+          "column": 2
         },
         {
-          "id": "ff3b1002-1c3e-5c08-bb27-fa90dabc1c78",
-          "name": "Камера вниз",
-          "nameEn": "Camera Down",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "3b38b10e-c569-5ad7-a345-a1e70dcf8d0e",
-          "order": 49
+          "id": "3c8c0b9c-9590-5e75-8ed0-50d70f325b0c",
+          "name": "Следующее существо",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
+          "order": 66,
+          "column": 1
         },
         {
-          "id": "eef48316-1439-50a0-b6d8-fe03b309a036",
-          "name": "Камера влево",
-          "nameEn": "Camera Left",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "3b38b10e-c569-5ad7-a345-a1e70dcf8d0e",
-          "order": 50
+          "id": "9d6ac485-56b3-5847-9703-e465f65eb510",
+          "name": "Предыдущее существо",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
+          "order": 67,
+          "column": 2
         },
         {
-          "id": "61a48bc4-6b5d-5977-bb0a-8313be2132b0",
-          "name": "Камера вправо",
-          "nameEn": "Camera Right",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "3b38b10e-c569-5ad7-a345-a1e70dcf8d0e",
-          "order": 51
+          "id": "5570dd1b-6569-50ef-a704-216abc270d8c",
+          "name": "1-я группа",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
+          "order": 68,
+          "column": 1
         },
         {
-          "id": "fabec1ce-5466-54d1-9835-9d2681188938",
-          "name": "Перетаскивание камеры",
-          "nameEn": "Camera Grip",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "3b38b10e-c569-5ad7-a345-a1e70dcf8d0e",
-          "order": 52
+          "id": "edb34f56-bb4e-5a91-ac7b-c21f326e55e1",
+          "name": "2-я группа",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
+          "order": 69,
+          "column": 2
         },
         {
-          "id": "d2a24db1-e93f-580a-81ba-6c2b4deef095",
-          "name": "Сохранённая позиция камеры 1",
-          "nameEn": "Saved Camera Position 1",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "3b38b10e-c569-5ad7-a345-a1e70dcf8d0e",
-          "order": 53
+          "id": "13fa36e5-0ffb-58fc-9460-de2edf66f673",
+          "name": "3-я группа",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
+          "order": 70,
+          "column": 1
         },
         {
-          "id": "1c16c6d2-fcf0-5397-a2d5-b1b2a40af14f",
-          "name": "Сохранённая позиция камеры 2",
-          "nameEn": "Saved Camera Position 2",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "3b38b10e-c569-5ad7-a345-a1e70dcf8d0e",
-          "order": 54
+          "id": "ccc07a29-d5ba-5a78-b56d-ab7b348a7a26",
+          "name": "4-я группа",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
+          "order": 71,
+          "column": 2
         },
         {
-          "id": "f7806a06-1dcd-5e98-b135-c7d3a2b00c8d",
-          "name": "Сохранённая позиция камеры 3",
-          "nameEn": "Saved Camera Position 3",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "3b38b10e-c569-5ad7-a345-a1e70dcf8d0e",
-          "order": 55
+          "id": "f99a3add-c9ce-53dd-9295-bd0c6f9deac4",
+          "name": "5-я группа",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
+          "order": 72,
+          "column": 1
         },
         {
-          "id": "da064c2e-3c2a-542d-9c62-b914eb08557b",
-          "name": "Сохранённая позиция камеры 4",
-          "nameEn": "Saved Camera Position 4",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "3b38b10e-c569-5ad7-a345-a1e70dcf8d0e",
-          "order": 56
+          "id": "9e529148-e564-5517-8f28-653f42f56635",
+          "name": "6-я группа",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
+          "order": 73,
+          "column": 2
         },
         {
-          "id": "6a132335-dcc9-5f77-abd8-926c3cb18ab6",
-          "name": "Сохранённая позиция камеры 5",
-          "nameEn": "Saved Camera Position 5",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "3b38b10e-c569-5ad7-a345-a1e70dcf8d0e",
-          "order": 57
+          "id": "cfb85503-3158-5b1d-a19c-383cde8b442e",
+          "name": "7-я группа",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
+          "order": 74,
+          "column": 1
         },
         {
-          "id": "e751da75-86b5-5019-843b-44b9939b590e",
-          "name": "Сохранённая позиция камеры 6",
-          "nameEn": "Saved Camera Position 6",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "3b38b10e-c569-5ad7-a345-a1e70dcf8d0e",
-          "order": 58
+          "id": "30cdc886-8ae0-5192-a8f6-deaecdc55add",
+          "name": "8-я группа",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
+          "order": 75,
+          "column": 2
         },
         {
-          "id": "0a96342d-559c-5b7a-b75a-d06b9b14c8db",
-          "name": "Сохранённая позиция камеры 7",
-          "nameEn": "Saved Camera Position 7",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "3b38b10e-c569-5ad7-a345-a1e70dcf8d0e",
-          "order": 59
+          "id": "53101807-e29d-5883-b10a-64006ae9e8c4",
+          "name": "9-я группа",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
+          "order": 76,
+          "column": 1
         },
         {
-          "id": "9f866495-2b4a-5a49-b51a-853cefb62191",
-          "name": "Сохранённая позиция камеры 8",
-          "nameEn": "Saved Camera Position 8",
-          "contextId": "ce9f125c-9ca9-5287-ab4b-6a6c0c06d9ec",
-          "categoryId": "3b38b10e-c569-5ad7-a345-a1e70dcf8d0e",
-          "order": 60
+          "id": "42c27705-93ed-5d07-a8c2-6a792e2a2b75",
+          "name": "10-я группа",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
+          "order": 77,
+          "column": 2
+        },
+        {
+          "id": "0ad0a24f-27e6-565a-ac7f-4077fceb19a8",
+          "name": "1-й союзник",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
+          "order": 78,
+          "column": 1,
+          "subgroup": "Союзники"
+        },
+        {
+          "id": "c8c078ff-7a95-54ee-905b-2c7b8d2e3945",
+          "name": "2-й союзник",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
+          "order": 79,
+          "column": 2,
+          "subgroup": "Союзники"
+        },
+        {
+          "id": "d4197e30-5c58-5309-bffb-6520b0668e91",
+          "name": "3-й союзник",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
+          "order": 80,
+          "column": 1,
+          "subgroup": "Союзники"
+        },
+        {
+          "id": "da45e0e9-9556-59b5-a99b-5c5f10ac32a1",
+          "name": "4-й союзник",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
+          "order": 81,
+          "column": 2,
+          "subgroup": "Союзники"
+        },
+        {
+          "id": "f4bffd11-f65c-5b41-8449-a178270b8006",
+          "name": "5-й союзник",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
+          "order": 82,
+          "column": 1,
+          "subgroup": "Союзники"
+        },
+        {
+          "id": "02366bad-6cdd-59e2-83b6-19f368f70e9c",
+          "name": "Сдвинуть камеру вверх",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
+          "order": 83,
+          "column": 1,
+          "subgroup": "Передвижение камеры"
+        },
+        {
+          "id": "e871f2cc-3071-58bd-a10a-61c27e8feac1",
+          "name": "Сдвинуть камеру вниз",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
+          "order": 84,
+          "column": 1,
+          "subgroup": "Передвижение камеры"
+        },
+        {
+          "id": "44af50e2-9869-5f33-be3b-f4a1ab6de896",
+          "name": "Сдвинуть камеру влево",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
+          "order": 85,
+          "column": 1,
+          "subgroup": "Передвижение камеры"
+        },
+        {
+          "id": "ad6cd237-3ab4-5263-89d2-3907e37320d2",
+          "name": "Сдвинуть камеру вправо",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
+          "order": 86,
+          "column": 1,
+          "subgroup": "Передвижение камеры"
+        },
+        {
+          "id": "8ce07e2c-3a6e-5efe-9f73-8cdc0ca9e403",
+          "name": "Показать недавнее событие",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
+          "order": 87,
+          "column": 1,
+          "subgroup": "Передвижение камеры"
+        },
+        {
+          "id": "8ade7ca3-d896-5ee3-b826-19d5be07cb35",
+          "name": "Приблизить камеру",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
+          "order": 88,
+          "column": 2,
+          "subgroup": "Передвижение камеры"
+        },
+        {
+          "id": "9a94c703-b117-5619-9ba4-0813a225c7a5",
+          "name": "Отдалить камеру",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
+          "order": 89,
+          "column": 2,
+          "subgroup": "Передвижение камеры"
+        },
+        {
+          "id": "55e833bd-72a7-5c47-866f-95f740856fc9",
+          "name": "Подробный просмотр",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
+          "order": 90,
+          "column": 2,
+          "subgroup": "Передвижение камеры"
+        },
+        {
+          "id": "d2f4facc-9fce-52c3-92cc-6ba8118f891d",
+          "name": "Захват камеры",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
+          "order": 91,
+          "column": 2,
+          "subgroup": "Передвижение камеры"
+        },
+        {
+          "id": "9de46338-6c1d-5e92-ba39-95037a4419aa",
+          "name": "1-я позиция камеры",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
+          "order": 92,
+          "short": "ПК1",
+          "column": 1,
+          "subgroup": "Позиции камеры"
+        },
+        {
+          "id": "94d5f505-478e-53fa-8a98-354d0a77dd14",
+          "name": "2-я позиция камеры",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
+          "order": 93,
+          "short": "ПК2",
+          "column": 2,
+          "subgroup": "Позиции камеры"
+        },
+        {
+          "id": "4f8b2602-3d2e-5fd5-94a5-2057ba7e99d6",
+          "name": "3-я позиция камеры",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
+          "order": 94,
+          "short": "ПК3",
+          "column": 1,
+          "subgroup": "Позиции камеры"
+        },
+        {
+          "id": "57645402-1191-56ef-8dce-71c038b265c2",
+          "name": "4-я позиция камеры",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
+          "order": 95,
+          "short": "ПК4",
+          "column": 2,
+          "subgroup": "Позиции камеры"
+        },
+        {
+          "id": "a924eeb6-8630-5704-8c4d-504ab92caaf6",
+          "name": "5-я позиция камеры",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
+          "order": 96,
+          "short": "ПК5",
+          "column": 1,
+          "subgroup": "Позиции камеры"
+        },
+        {
+          "id": "39fd224f-d8a8-5d77-baa8-bb7126074a87",
+          "name": "6-я позиция камеры",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
+          "order": 97,
+          "short": "ПК6",
+          "column": 2,
+          "subgroup": "Позиции камеры"
+        },
+        {
+          "id": "160006c3-3bb7-5780-be5e-51a10b7c2f44",
+          "name": "7-я позиция камеры",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
+          "order": 98,
+          "short": "ПК7",
+          "column": 1,
+          "subgroup": "Позиции камеры"
+        },
+        {
+          "id": "9223b442-228f-5a4d-943f-59023632d988",
+          "name": "8-я позиция камеры",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
+          "order": 99,
+          "short": "ПК8",
+          "column": 2,
+          "subgroup": "Позиции камеры"
+        },
+        {
+          "id": "324c8a6c-9d50-5b32-8539-5e25f645643b",
+          "name": "9-я позиция камеры",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
+          "order": 100,
+          "short": "ПК9",
+          "column": 1,
+          "subgroup": "Позиции камеры"
+        },
+        {
+          "id": "803d3bf9-fe59-5dd8-9f3e-82c106f9c600",
+          "name": "10-я позиция камеры",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
+          "order": 101,
+          "short": "ПК10",
+          "column": 2,
+          "subgroup": "Позиции камеры"
+        },
+        {
+          "id": "d1314b4b-d992-5b06-87d2-c14a27147e89",
+          "name": "Командный чат",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "02513fc8-2eaa-5be8-a965-b99b908fa086",
+          "order": 102,
+          "column": 1
+        },
+        {
+          "id": "930be01c-e7f0-5804-b937-b61dde23881b",
+          "name": "Общий чат",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "02513fc8-2eaa-5be8-a965-b99b908fa086",
+          "order": 103,
+          "column": 1
+        },
+        {
+          "id": "f8f94e3a-7120-53d4-b960-f13f48530380",
+          "name": "Голос (группе)",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "02513fc8-2eaa-5be8-a965-b99b908fa086",
+          "order": 104,
+          "column": 1
+        },
+        {
+          "id": "6f0e7600-9fae-566d-bafe-e33f330a3b49",
+          "name": "Голос (команде)",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "02513fc8-2eaa-5be8-a965-b99b908fa086",
+          "order": 105,
+          "column": 1
+        },
+        {
+          "id": "678b90c0-c216-5555-be98-81e8e6782d9f",
+          "name": "Первое колесо чата",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "02513fc8-2eaa-5be8-a965-b99b908fa086",
+          "order": 106,
+          "column": 2
+        },
+        {
+          "id": "7b44665e-dbea-511f-970f-3c9cc3da40d7",
+          "name": "Второе колесо чата",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "02513fc8-2eaa-5be8-a965-b99b908fa086",
+          "order": 107,
+          "column": 2
+        },
+        {
+          "id": "ab814a88-b218-5fc0-bb19-925db27056dc",
+          "name": "Геройское колесо чата",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "02513fc8-2eaa-5be8-a965-b99b908fa086",
+          "order": 108,
+          "column": 2
+        },
+        {
+          "id": "7c2285d7-380f-5eb6-ae6d-487b0aa5cf91",
+          "name": "Только вражеские существа",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "a5f495bf-9c24-56cc-800b-90ebff604ace",
+          "order": 109,
+          "column": 1
+        },
+        {
+          "id": "43110255-68c3-56ad-a897-22e0d67fe104",
+          "name": "Только союзные существа",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "a5f495bf-9c24-56cc-800b-90ebff604ace",
+          "order": 110,
+          "column": 1
+        },
+        {
+          "id": "edfdf6f4-e4d0-55cc-a0cb-ba41e18b179a",
+          "name": "Только герои",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "a5f495bf-9c24-56cc-800b-90ebff604ace",
+          "order": 111,
+          "column": 1
+        },
+        {
+          "id": "ba25c1fa-20f1-5550-9003-d112305e938c",
+          "name": "Все существа, кроме героев",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "a5f495bf-9c24-56cc-800b-90ebff604ace",
+          "order": 112,
+          "column": 1
+        },
+        {
+          "id": "21ef34fb-e109-587b-965e-df69ab91efef",
+          "name": "Карта на весь экран",
+          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "categoryId": "71b0fa91-6a99-5434-a776-4b359e59db52",
+          "order": 113,
+          "column": 1
         }
       ],
+      "bindParam": {
+        "name": "Режим каста",
+        "options": [
+          {
+            "id": "65ebef2e-73b6-5ba9-a144-99c01f791bec",
+            "name": "Обычное"
+          },
+          {
+            "id": "2a28bfac-e30b-57b2-82a7-b9765529ec8e",
+            "name": "Быстрое"
+          },
+          {
+            "id": "2d03c88b-1cae-5401-a429-c0ea6ace5c4f",
+            "name": "Автоматическое"
+          }
+        ]
+      },
       "settingsTemplate": [
         {
-          "id": "5231b1c1-dbef-57ec-a086-9e90877ff0fe",
-          "order": 0,
-          "group": "Мышь",
-          "name": "DPI мыши",
-          "type": "slider",
-          "min": 100,
-          "max": 32000,
-          "step": 50,
-          "defaultValue": 800
-        },
-        {
-          "id": "715b4c12-8c49-50ba-acdf-c4012d9b5e84",
-          "order": 1,
-          "group": "Камера",
-          "name": "Скорость камеры",
-          "type": "slider",
-          "min": 1000,
-          "max": 6000,
-          "step": 100,
-          "defaultValue": 3000
-        },
-        {
-          "id": "b5647d9d-1f8f-5674-a63e-bcac02544250",
-          "order": 2,
-          "group": "Камера",
-          "name": "Камера на героя при возрождении",
+          "id": "5671a214-84f1-56bd-a873-0874ea7570a2",
+          "group": "Настройки управления",
+          "name": "Привязка к типам применения",
           "type": "toggle",
+          "order": 0,
+          "defaultValue": false
+        },
+        {
+          "id": "fa96c4ad-29c8-56a0-b03f-94c3f5e623ed",
+          "group": "Настройки управления",
+          "name": "Не использовать в игротеке настройки управления для отдельных существ",
+          "type": "toggle",
+          "order": 1,
           "defaultValue": true
         },
         {
-          "id": "38f51522-2b9e-52bd-92e1-0c692a8898b1",
+          "id": "3b095f76-0e44-5a6e-847a-937d27d653ad",
+          "group": "Настройки управления",
+          "name": "Использовать быстрое применение по умолчанию",
+          "type": "toggle",
+          "order": 2,
+          "defaultValue": true
+        },
+        {
+          "id": "99631a2d-fbed-594d-b13f-997ca2b64cda",
+          "group": "Настройки управления",
+          "name": "Классическая раскладка",
+          "type": "toggle",
           "order": 3,
-          "group": "Геймплей",
-          "name": "Автоатака",
+          "defaultValue": false
+        },
+        {
+          "id": "1ac14347-4f34-5a46-9cdd-7d10b8fb6f89",
+          "group": "Настройки управления",
+          "name": "Разрешить привязку к клавишам Windows/Command",
+          "type": "toggle",
+          "order": 4,
+          "defaultValue": false
+        },
+        {
+          "id": "e18d8405-ba03-5aef-9a2c-90c650b15599",
+          "group": "Настройки управления",
+          "name": "Использовать позицию клавиш",
+          "type": "toggle",
+          "order": 5,
+          "defaultValue": true
+        },
+        {
+          "id": "8dde565c-7696-5eb0-8f56-e54bcaf73379",
+          "group": "Настройки управления",
+          "name": "Rubick: использовать тип применения украденных способностей, а не ячеек",
+          "type": "toggle",
+          "order": 6,
+          "subgroup": "Особые настройки героев",
+          "defaultValue": true
+        },
+        {
+          "id": "e135a38e-0772-55be-bc8e-3b8fdeec181a",
+          "group": "Настройки управления",
+          "name": "Largo: отображать индикатор ритма над героем",
+          "type": "toggle",
+          "order": 7,
+          "subgroup": "Особые настройки героев",
+          "defaultValue": true
+        },
+        {
+          "id": "4c42b6e8-1ef2-51e8-82a4-5666be2526d8",
+          "group": "Настройки управления",
+          "name": "Largo: отображать индикатор ритма над панелью способностей",
+          "type": "toggle",
+          "order": 8,
+          "subgroup": "Особые настройки героев",
+          "defaultValue": true
+        },
+        {
+          "id": "2615f8ca-d136-5130-95ac-737ac179b5b9",
+          "group": "Клавиши-модификаторы",
+          "name": "Переключение клавишей",
+          "type": "toggle",
+          "order": 9,
+          "defaultValue": false
+        },
+        {
+          "id": "a3237c08-53b0-52be-b9f2-1926d3449f77",
+          "group": "Клавиши-модификаторы",
+          "name": "Пояснение",
+          "type": "info",
+          "order": 10,
+          "text": "Если включено, модификатор продолжает действовать, пока вы не нажмёте на его клавишу снова. Если выключено, действует только при зажатой клавише.",
+          "height": 3
+        },
+        {
+          "id": "b3f0a097-7889-5776-a69d-5ebe7890885d",
+          "group": "Карта на весь экран",
+          "name": "Действие клавиши",
           "type": "select",
+          "order": 11,
           "options": [
             {
-              "id": "75cbad91-b167-56e4-9748-a45a2635e3bb",
-              "name": "Стандартная"
+              "id": "66992aef-5bc9-5634-830b-c6e5260bdb36",
+              "name": "Показать карту при зажатии"
             },
             {
-              "id": "e14e2200-3157-51be-9ac9-93a95ece4d82",
+              "id": "fde18acc-aebf-5c03-9993-4f2746b7fab1",
+              "name": "Показать/скрыть карту нажатием"
+            }
+          ],
+          "display": "radio",
+          "defaultValue": "fde18acc-aebf-5c03-9993-4f2746b7fab1"
+        },
+        {
+          "id": "a5c70282-eeb5-56db-9703-3611fd28ca80",
+          "group": "Карта на весь экран",
+          "name": "Ввод по карте на весь экран",
+          "type": "select",
+          "order": 12,
+          "options": [
+            {
+              "id": "6166b9ee-e8d5-51ce-b446-9bc296c29768",
+              "name": "Никогда"
+            },
+            {
+              "id": "cfc792d6-e952-5fc9-adb7-7295bc6ae8be",
               "name": "Всегда"
             },
             {
-              "id": "efb01f36-4db4-5df7-b193-9297c58f414c",
-              "name": "Никогда"
+              "id": "8813ac48-0959-52cc-8151-7b745e488252",
+              "name": "Когда зажата клавиша"
             }
           ],
-          "defaultValue": "75cbad91-b167-56e4-9748-a45a2635e3bb"
+          "display": "radio",
+          "defaultValue": "6166b9ee-e8d5-51ce-b446-9bc296c29768"
         },
         {
-          "id": "258f4b70-d7e7-51df-9a5d-4c54d96eb7de",
-          "order": 4,
-          "group": "Геймплей",
-          "name": "Двойное нажатие — применить на себя",
+          "id": "b9570e55-1ad2-5568-96b8-8a25d1c7d8ee",
+          "group": "Карта на весь экран",
+          "name": "Непрозрачность карты",
+          "type": "slider",
+          "order": 13,
+          "min": 25,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "defaultValue": 100
+        },
+        {
+          "id": "3eb71710-0d56-5794-9711-9f676a56e192",
+          "group": "Карта на весь экран",
+          "name": "Позиция карты на весь экран",
+          "type": "select",
+          "order": 14,
+          "options": [
+            {
+              "id": "c4a1748a-8d82-5cd9-b2dd-c0af286fe8b6",
+              "name": "По центру"
+            },
+            {
+              "id": "5eb6bcc3-aee1-5009-88a7-67bb2e21b665",
+              "name": "Слева"
+            },
+            {
+              "id": "e4134c91-3c7e-5185-8b38-1102f458e6a9",
+              "name": "Справа"
+            }
+          ],
+          "display": "radio",
+          "defaultValue": "c4a1748a-8d82-5cd9-b2dd-c0af286fe8b6"
+        },
+        {
+          "id": "161d6823-e6dc-5e49-8a0b-791928d5aa91",
+          "group": "Приказы существам",
+          "name": "Автовыбор призванных существ",
           "type": "toggle",
+          "order": 15,
+          "column": 1,
+          "defaultValue": false
+        },
+        {
+          "id": "596afe83-28bf-57d9-b725-6f43d229ad42",
+          "group": "Приказы существам",
+          "name": "Приказ всем юнитам клавишей Ctrl",
+          "type": "toggle",
+          "order": 16,
+          "column": 1,
           "defaultValue": true
         },
         {
-          "id": "88b9f21a-0b27-5140-b546-af04a35255f4",
-          "order": 5,
-          "group": "Геймплей",
-          "name": "Быстрый каст при нажатии клавиши",
+          "id": "aa2f48fe-18ff-5c23-b4cd-44ab48169ed7",
+          "group": "Приказы существам",
+          "name": "Автоповтор нажатий правой кнопки мыши",
           "type": "toggle",
+          "order": 17,
+          "column": 1,
+          "defaultValue": true
+        },
+        {
+          "id": "de638d4e-e13f-5e70-bda7-ee5922fb7752",
+          "group": "Приказы существам",
+          "name": "Умные группы выбора",
+          "type": "toggle",
+          "order": 18,
+          "column": 1,
           "defaultValue": false
         },
         {
-          "id": "75557d9b-29f9-59a0-87ce-069d8043701a",
-          "order": 6,
-          "group": "Геймплей",
+          "id": "d678236a-8703-5071-a99b-f5a0a28b6d45",
+          "group": "Приказы существам",
+          "name": "Умное применение несколькими существами",
+          "type": "toggle",
+          "order": 19,
+          "column": 1,
+          "defaultValue": false
+        },
+        {
+          "id": "c7c80f0f-402c-500f-9145-920d95905448",
+          "group": "Приказы существам",
+          "name": "Автоатака",
+          "type": "select",
+          "order": 20,
+          "column": 2,
+          "options": [
+            {
+              "id": "6a961018-afb5-5118-8013-6191dd1e8618",
+              "name": "Никогда"
+            },
+            {
+              "id": "07f50bdb-d2e4-58bf-85ee-3fbfdd9ad66b",
+              "name": "Стандартно"
+            },
+            {
+              "id": "5520089a-a8e7-5caf-af38-1f46d7d18728",
+              "name": "Всегда"
+            }
+          ],
+          "display": "radio",
+          "defaultValue": "07f50bdb-d2e4-58bf-85ee-3fbfdd9ad66b"
+        },
+        {
+          "id": "41778a56-b673-56a3-be8d-4c7207b2e6c5",
+          "group": "Приказы существам",
+          "name": "При нажатии ПКМ на союзника",
+          "type": "select",
+          "order": 21,
+          "column": 2,
+          "options": [
+            {
+              "id": "fdce3eca-f4e9-590b-a176-a7d1475d3acb",
+              "name": "Следовать"
+            },
+            {
+              "id": "2652b78e-1cae-5ef0-a137-9394ee3d7a8c",
+              "name": "Атаковать"
+            },
+            {
+              "id": "871f426d-f97b-562c-8e19-9bd1db120c1d",
+              "name": "Добивать"
+            }
+          ],
+          "display": "radio",
+          "defaultValue": "871f426d-f97b-562c-8e19-9bd1db120c1d"
+        },
+        {
+          "id": "1838c37d-132c-50e5-91e1-f78cab9ee083",
+          "group": "Приказы существам",
+          "name": "Автоатака у призванных юнитов",
+          "type": "select",
+          "order": 22,
+          "column": 2,
+          "options": [
+            {
+              "id": "a22e90cd-d4e1-5577-a471-35738cba98a0",
+              "name": "Как у героя"
+            },
+            {
+              "id": "23e9ed8b-bb17-5594-ae6f-002fb43993ec",
+              "name": "Никогда"
+            },
+            {
+              "id": "45ffc034-d96c-5ffb-9483-abc8b36f3bda",
+              "name": "Стандартно"
+            },
+            {
+              "id": "eefe8f81-c1fc-5da0-a04c-091b7489ee82",
+              "name": "Всегда"
+            }
+          ],
+          "display": "radio",
+          "defaultValue": "eefe8f81-c1fc-5da0-a04c-091b7489ee82"
+        },
+        {
+          "id": "10a8f3ca-b5de-5d4c-9549-4df6b04450e5",
+          "group": "Приказы существам",
+          "name": "Скорость двойного нажатия",
+          "type": "slider",
+          "order": 23,
+          "column": 2,
+          "min": 0,
+          "max": 2,
+          "step": 0.01,
+          "defaultValue": 0.6
+        },
+        {
+          "id": "d435393c-ae39-56de-a017-0a1115a95b1c",
+          "group": "Приказы существам",
+          "name": "Остановка телепортации отдельной клавишей",
+          "type": "toggle",
+          "order": 24,
+          "column": 1,
+          "subgroup": "Прерываемые действия",
+          "defaultValue": true
+        },
+        {
+          "id": "574dad34-3d15-53e0-af0e-d3fab78d2cc3",
+          "group": "Приказы существам",
+          "name": "Остановка способностей отдельной клавишей",
+          "type": "toggle",
+          "order": 25,
+          "column": 1,
+          "subgroup": "Прерываемые действия",
+          "defaultValue": true
+        },
+        {
+          "id": "98897159-d233-5aaf-b8bb-bff79ee98c80",
+          "group": "Приказы существам",
+          "name": "Остановка захвата построек отдельной клавишей",
+          "type": "toggle",
+          "order": 26,
+          "column": 1,
+          "subgroup": "Прерываемые действия",
+          "defaultValue": false
+        },
+        {
+          "id": "37287caa-6a88-585f-8e85-39b19e93af74",
+          "group": "Приказы существам",
+          "name": "Применение способностей на себя двойным нажатием",
+          "type": "toggle",
+          "order": 27,
+          "column": 1,
+          "subgroup": "Двойное нажатие",
+          "defaultValue": false
+        },
+        {
+          "id": "5a8038b2-e703-55c5-8f8e-405dd34f7ccd",
+          "group": "Приказы существам",
+          "name": "Применение предметов на себя двойным нажатием",
+          "type": "toggle",
+          "order": 28,
+          "column": 1,
+          "subgroup": "Двойное нажатие",
+          "defaultValue": true
+        },
+        {
+          "id": "c3d0904e-e4b5-5014-b28c-d7824409de20",
+          "group": "Приказы существам",
+          "name": "Умное применение на себя",
+          "type": "toggle",
+          "order": 29,
+          "column": 1,
+          "subgroup": "Двойное нажатие",
+          "defaultValue": true
+        },
+        {
+          "id": "bea8f2a9-4866-5f70-aa96-96a64bf211f7",
+          "group": "Приказы существам",
           "name": "Быстрая атака",
           "type": "toggle",
-          "defaultValue": false
+          "order": 30,
+          "column": 1,
+          "subgroup": "Атака",
+          "defaultValue": true
         },
         {
-          "id": "2923fe9a-8a62-5aa0-8366-b658a7cb26c4",
-          "order": 7,
-          "group": "Геймплей",
-          "name": "Быстрое движение",
+          "id": "a2e44753-1224-5682-85fb-1a7e68e82d01",
+          "group": "Приказы существам",
+          "name": "Выключать автоатаку зажатием клавиши отмены",
           "type": "toggle",
-          "defaultValue": false
+          "order": 31,
+          "column": 1,
+          "subgroup": "Атака",
+          "defaultValue": true
         },
         {
-          "id": "527f9d94-16a3-5240-a905-7d330ab7c28d",
-          "order": 8,
-          "group": "Горячие клавиши",
-          "name": "Классические клавиши (Legacy Keys)",
+          "id": "3e015a3d-cedb-5ab9-8972-1d05d8a6b4b1",
+          "group": "Приказы существам",
+          "name": "Автоматическое переключение автоатаки",
           "type": "toggle",
+          "order": 32,
+          "column": 1,
+          "subgroup": "Атака",
           "defaultValue": false
         },
         {
-          "id": "38ce4ffe-63b6-516c-b8a3-6559cb5e7383",
-          "order": 9,
-          "group": "Горячие клавиши",
-          "name": "Прямое назначение каста (Direct Cast Bindings)",
+          "id": "f071b8b2-fc97-5a7d-b05e-b1687f99addf",
+          "group": "Приказы существам",
+          "name": "Умная атака",
           "type": "toggle",
+          "order": 33,
+          "column": 1,
+          "subgroup": "Атака",
+          "defaultValue": true
+        },
+        {
+          "id": "b46e6b80-5820-574b-8d44-56849e29e814",
+          "group": "Приказы существам",
+          "name": "Быстрое перемещение",
+          "type": "toggle",
+          "order": 34,
+          "column": 1,
+          "subgroup": "Идти",
+          "defaultValue": true
+        },
+        {
+          "id": "f105a378-15cc-5833-b3c8-fcad444ccc78",
+          "group": "Приказы существам",
+          "name": "Передвижение после отмены способности",
+          "type": "toggle",
+          "order": 35,
+          "column": 1,
+          "subgroup": "Идти",
+          "defaultValue": true
+        },
+        {
+          "id": "7c5e4529-d4bc-5f1f-80a9-0556c811954f",
+          "group": "Приказы существам",
+          "name": "Передвижение в указанном направлении при зажатой Alt",
+          "type": "toggle",
+          "order": 36,
+          "column": 1,
+          "subgroup": "Идти",
           "defaultValue": false
         },
         {
-          "id": "c70c24ab-12ee-563f-a437-4ab4f6a80e8c",
-          "order": 10,
-          "group": "Графика",
-          "name": "Разрешение",
-          "type": "text",
-          "defaultValue": ""
+          "id": "6a43c1ba-ced1-5f80-bcaa-fdf6fb7fae6b",
+          "group": "Мини-карта",
+          "name": "Иконки",
+          "type": "select",
+          "order": 37,
+          "column": 1,
+          "options": [
+            {
+              "id": "a0e881dc-905e-59ce-87a7-320bf171747f",
+              "name": "Герои и стрелки"
+            },
+            {
+              "id": "8dc5c6e8-5145-538d-9205-e7293e9b684b",
+              "name": "Только герои"
+            },
+            {
+              "id": "694aff66-ea7b-573e-b06d-4c3d2e330447",
+              "name": "Стрелки игроков"
+            },
+            {
+              "id": "1ce19bb1-ba90-5ed4-a2c9-e789abeb7671",
+              "name": "Стрелки команд"
+            },
+            {
+              "id": "5decc2ed-9a9a-5c20-a777-4a19b016b1ed",
+              "name": "Имена героев"
+            }
+          ],
+          "display": "radio",
+          "defaultValue": "a0e881dc-905e-59ce-87a7-320bf171747f"
         },
         {
-          "id": "2aabb6f2-c9a1-5394-879a-dc7ec33d3138",
-          "order": 11,
-          "group": "Графика",
-          "name": "Ограничение FPS",
+          "id": "1c066ade-f09d-57a0-b72d-4b93d05dc504",
+          "group": "Мини-карта",
+          "name": "Альт. иконки",
+          "type": "select",
+          "order": 38,
+          "column": 1,
+          "options": [
+            {
+              "id": "16a14217-58be-561d-9ab3-8f5d98346dc9",
+              "name": "Герои и стрелки"
+            },
+            {
+              "id": "c50fe9fd-d43f-584f-9649-da45dda2573d",
+              "name": "Только герои"
+            },
+            {
+              "id": "ae4907e4-de59-5d97-80d5-975ecde2a43f",
+              "name": "Стрелки игроков"
+            },
+            {
+              "id": "e399c318-9cbf-570c-9c81-ff4784130974",
+              "name": "Стрелки команд"
+            },
+            {
+              "id": "472df213-6655-5f00-a2d1-a3def8bba4ea",
+              "name": "Имена героев"
+            }
+          ],
+          "display": "radio",
+          "defaultValue": "16a14217-58be-561d-9ab3-8f5d98346dc9"
+        },
+        {
+          "id": "7afdf609-ba72-59b8-9f0e-ae7ead30eb63",
+          "group": "Мини-карта",
+          "name": "Фон карты",
+          "type": "select",
+          "order": 39,
+          "column": 1,
+          "options": [
+            {
+              "id": "8836d5c0-9494-5bcf-90a2-13d73db3eab7",
+              "name": "Пустой"
+            },
+            {
+              "id": "0bce81ab-4d5c-5910-ba3d-b119415e943a",
+              "name": "Простой"
+            },
+            {
+              "id": "b92edaae-8672-5e91-9ea2-59bf042b1abb",
+              "name": "Реалистичный"
+            }
+          ],
+          "display": "radio",
+          "defaultValue": "0bce81ab-4d5c-5910-ba3d-b119415e943a"
+        },
+        {
+          "id": "815a026d-196a-5c75-bf1a-fcdd9d0ca915",
+          "group": "Мини-карта",
+          "name": "Позиция карты",
+          "type": "select",
+          "order": 40,
+          "column": 1,
+          "options": [
+            {
+              "id": "ccc639f7-4986-50d4-953e-42e27c88ae71",
+              "name": "Слева"
+            },
+            {
+              "id": "6deb921c-3666-538f-9f8c-d12bda115666",
+              "name": "Справа"
+            }
+          ],
+          "display": "radio",
+          "defaultValue": "ccc639f7-4986-50d4-953e-42e27c88ae71"
+        },
+        {
+          "id": "b7cb8504-c114-58f4-a2a6-34f67cb8f8a4",
+          "group": "Мини-карта",
+          "name": "Увеличенная мини-карта",
+          "type": "toggle",
+          "order": 41,
+          "column": 1,
+          "defaultValue": true
+        },
+        {
+          "id": "31ed59e8-9c5c-5276-a86f-323e405f2428",
+          "group": "Мини-карта",
+          "name": "Динамически изменять размер иконок игроков",
+          "type": "toggle",
+          "order": 42,
+          "column": 1,
+          "defaultValue": false
+        },
+        {
+          "id": "6188d35a-e7f4-5839-b24a-75b1237f8bb7",
+          "group": "Мини-карта",
+          "name": "Размер героев на мини-карте",
           "type": "slider",
-          "min": 30,
-          "max": 360,
+          "order": 43,
+          "column": 1,
+          "min": 50,
+          "max": 200,
           "step": 1,
-          "defaultValue": 240,
-          "unit": "кадр/с"
+          "unit": "%",
+          "defaultValue": 150
+        },
+        {
+          "id": "8128045c-b7e8-5890-a3b9-09975b50a549",
+          "group": "Мини-карта",
+          "name": "Защита от случайного нажатия по мини-карте",
+          "type": "slider",
+          "order": 44,
+          "column": 1,
+          "min": 0,
+          "max": 0.5,
+          "step": 0.01,
+          "defaultValue": 0.2
+        },
+        {
+          "id": "04daed2c-5cfb-54a7-8d01-c6f7fccd581e",
+          "group": "Мини-карта",
+          "name": "Предпросмотр мини-карты",
+          "type": "info",
+          "order": 45,
+          "column": 2,
+          "text": "Предпросмотр: мини-карта с иконками героев. При зажатой Alt вместо обычных иконок показываются альтернативные.",
+          "height": 12
+        },
+        {
+          "id": "174079a9-127d-5e96-a16e-b3546b92cf42",
+          "group": "Камера",
+          "name": "Перемещение камеры при касании края экрана",
+          "type": "toggle",
+          "order": 46,
+          "column": 1,
+          "defaultValue": false
+        },
+        {
+          "id": "653984dd-d6ef-5227-8382-71920e137ab2",
+          "group": "Камера",
+          "name": "Инвертировать движение камеры",
+          "type": "toggle",
+          "order": 47,
+          "column": 1,
+          "defaultValue": false
+        },
+        {
+          "id": "39a9abee-a8f9-5969-b29a-16c08a5088c2",
+          "group": "Камера",
+          "name": "Переносить камеру на героя при возрождении",
+          "type": "toggle",
+          "order": 48,
+          "column": 1,
+          "defaultValue": false
+        },
+        {
+          "id": "1745bb01-d64b-519f-8852-dcaa51ae8202",
+          "group": "Камера",
+          "name": "Отключить приближение камеры",
+          "type": "toggle",
+          "order": 49,
+          "column": 1,
+          "defaultValue": true
+        },
+        {
+          "id": "f8c4fdb2-a4e7-54e6-8854-829ad505025b",
+          "group": "Камера",
+          "name": "Следовать за героем клавишей выбора героя",
+          "type": "toggle",
+          "order": 50,
+          "column": 1,
+          "defaultValue": false
+        },
+        {
+          "id": "11d9418e-9a04-56ac-9278-8eeaa7bc3145",
+          "group": "Камера",
+          "name": "Захват камеры левой кнопкой мыши",
+          "type": "toggle",
+          "order": 51,
+          "column": 1,
+          "defaultValue": false
+        },
+        {
+          "id": "a64ee087-0933-5445-bad4-9c2dbcf0e711",
+          "group": "Камера",
+          "name": "Дрожание экрана",
+          "type": "toggle",
+          "order": 52,
+          "column": 1,
+          "defaultValue": false
+        },
+        {
+          "id": "caebc951-cad0-5edb-b89b-6ba5c3cddd20",
+          "group": "Камера",
+          "name": "Плавная камера при наблюдении",
+          "type": "toggle",
+          "order": 53,
+          "column": 1,
+          "defaultValue": false
+        },
+        {
+          "id": "b088b13c-f3d9-5931-944e-7c73e782a9a8",
+          "group": "Камера",
+          "name": "Перехват камеры при касании края экрана",
+          "type": "toggle",
+          "order": 54,
+          "column": 1,
+          "defaultValue": true
+        },
+        {
+          "id": "ab0476d5-5daf-526d-87d6-a5d2a98599a7",
+          "group": "Камера",
+          "name": "Скорость камеры",
+          "type": "slider",
+          "order": 55,
+          "column": 2,
+          "min": 2000,
+          "max": 8000,
+          "step": 1,
+          "defaultValue": 3090
+        },
+        {
+          "id": "fc027d81-5552-5011-a7ea-9e51366ccfd2",
+          "group": "Камера",
+          "name": "Замедление камеры",
+          "type": "slider",
+          "order": 56,
+          "column": 2,
+          "min": 5,
+          "max": 50,
+          "step": 1,
+          "defaultValue": 50
+        },
+        {
+          "id": "6242bc71-acd9-5fa3-87ee-9dfc62a45829",
+          "group": "Камера",
+          "name": "Время перехвата камеры",
+          "type": "slider",
+          "order": 57,
+          "column": 2,
+          "min": 0,
+          "max": 60,
+          "step": 1,
+          "defaultValue": 2
+        },
+        {
+          "id": "d0b491e9-9840-5a07-aa50-c5610d61afc4",
+          "group": "Лавка",
+          "name": "Покупка горячими клавишами",
+          "type": "toggle",
+          "order": 58,
+          "column": 1,
+          "defaultValue": false
+        },
+        {
+          "id": "69d10ecb-a5a2-588f-ae90-689a17b1da61",
+          "group": "Лавка",
+          "name": "Включать поиск при открытии лавки",
+          "type": "toggle",
+          "order": 59,
+          "column": 1,
+          "defaultValue": false
+        },
+        {
+          "id": "5131b816-94fb-5f1b-8b24-4f64143113c8",
+          "group": "Лавка",
+          "name": "Простой интерфейс лавки",
+          "type": "toggle",
+          "order": 60,
+          "column": 1,
+          "defaultValue": false
+        },
+        {
+          "id": "4b62453d-6850-5cbd-895d-6448f50a1c95",
+          "group": "Лавка",
+          "name": "Отмечать для покупки предметы из быстрых покупок",
+          "type": "toggle",
+          "order": 61,
+          "column": 1,
+          "subgroup": "Отметка для покупки",
+          "defaultValue": false
+        },
+        {
+          "id": "e8d3c5a1-d0b7-55af-9cbf-0a5b3518736e",
+          "group": "Лавка",
+          "name": "ПКМ по предмету из потайной лавки: в быстрые покупки и отметить для покупки",
+          "type": "toggle",
+          "order": 62,
+          "column": 1,
+          "subgroup": "Отметка для покупки",
+          "defaultValue": true
+        },
+        {
+          "id": "b5944337-ea95-5425-b32d-5b4602ca591f",
+          "group": "Лавка",
+          "name": "ПКМ по непокупаемому предмету из быстрых покупок отмечает его для покупки",
+          "type": "toggle",
+          "order": 63,
+          "column": 1,
+          "subgroup": "Отметка для покупки",
+          "defaultValue": true
+        },
+        {
+          "id": "5d33aec7-ce14-5761-84be-0456126c3ae9",
+          "group": "Автодоставка курьером",
+          "name": "Автодоставка включается в начале обычных игр",
+          "type": "toggle",
+          "order": 64,
+          "column": 1,
+          "defaultValue": false
+        },
+        {
+          "id": "4eef614e-1e69-5f73-a02b-f1823c7ff0c4",
+          "group": "Автодоставка курьером",
+          "name": "Автодоставка включается в начале игр в режиме Turbo",
+          "type": "toggle",
+          "order": 65,
+          "column": 1,
+          "defaultValue": false
+        },
+        {
+          "id": "d5234dfe-e9af-5b88-88e2-ab588aeef3e6",
+          "group": "Автодоставка курьером",
+          "name": "Автоматически применять способность «Ускорение» при автодоставке",
+          "type": "toggle",
+          "order": 66,
+          "column": 1,
+          "defaultValue": false
+        },
+        {
+          "id": "1cb5e973-6587-596e-abac-f3a877a6e336",
+          "group": "Автодоставка курьером",
+          "name": "Автодоставка не действует, когда ваш герой невидим",
+          "type": "toggle",
+          "order": 67,
+          "column": 1,
+          "defaultValue": false
+        },
+        {
+          "id": "88c3d8c6-ccdf-5784-b181-e6f08ac41d05",
+          "group": "Интерфейс",
+          "name": "Показывать дальность применения способностей",
+          "type": "toggle",
+          "order": 68,
+          "column": 1,
+          "subgroup": "Интерфейс",
+          "defaultValue": true
+        },
+        {
+          "id": "be9f3fcf-7c0c-59d0-bc15-2537d2350b65",
+          "group": "Интерфейс",
+          "name": "Показывать дальность при нажатии клавиши быстрого применения",
+          "type": "toggle",
+          "order": 69,
+          "column": 1,
+          "subgroup": "Интерфейс",
+          "defaultValue": true
+        },
+        {
+          "id": "ba2e39a8-bdee-526d-8084-7c1fa7a420d8",
+          "group": "Интерфейс",
+          "name": "Изменение цвета камеры при смерти",
+          "type": "toggle",
+          "order": 70,
+          "column": 1,
+          "subgroup": "Интерфейс",
+          "defaultValue": false
+        },
+        {
+          "id": "21c060a1-35dc-5894-aca1-0cb6d0824675",
+          "group": "Интерфейс",
+          "name": "Скрыть числа урона",
+          "type": "toggle",
+          "order": 71,
+          "column": 1,
+          "subgroup": "Интерфейс",
+          "defaultValue": false
+        },
+        {
+          "id": "25c9c902-5af4-5019-ac31-676ab353407e",
+          "group": "Интерфейс",
+          "name": "Информация о существах на панели героя",
+          "type": "toggle",
+          "order": 72,
+          "column": 1,
+          "subgroup": "Интерфейс",
+          "defaultValue": true
+        },
+        {
+          "id": "624c8abf-b607-5d64-be45-0fb1e1ec40ed",
+          "group": "Интерфейс",
+          "name": "Очередь команд в интерфейсе",
+          "type": "toggle",
+          "order": 73,
+          "column": 1,
+          "subgroup": "Интерфейс",
+          "defaultValue": true
+        },
+        {
+          "id": "059c0f23-1916-5393-a5e5-cdf817b03e50",
+          "group": "Интерфейс",
+          "name": "Показывать видео в описаниях способностей",
+          "type": "toggle",
+          "order": 74,
+          "column": 1,
+          "subgroup": "Интерфейс",
+          "defaultValue": true
+        },
+        {
+          "id": "445e16cc-bb04-59b9-a96d-352d11e3472c",
+          "group": "Интерфейс",
+          "name": "Режим цветовой слепоты",
+          "type": "toggle",
+          "order": 75,
+          "column": 1,
+          "subgroup": "Интерфейс",
+          "defaultValue": false
+        },
+        {
+          "id": "eac846cf-6001-57a8-9220-341533126068",
+          "group": "Интерфейс",
+          "name": "Выбор героя отображает его обзор",
+          "type": "toggle",
+          "order": 76,
+          "column": 1,
+          "subgroup": "Интерфейс",
+          "defaultValue": false
+        },
+        {
+          "id": "373b43f2-8f91-59c9-ad33-63af8874bffd",
+          "group": "Интерфейс",
+          "name": "Выбирать размер курсора автоматически",
+          "type": "toggle",
+          "order": 77,
+          "column": 2,
+          "subgroup": "Интерфейс",
+          "defaultValue": true
+        },
+        {
+          "id": "c15c1a1f-4abf-58c3-86f4-7b5c3d5bb9bb",
+          "group": "Интерфейс",
+          "name": "Размер курсора",
+          "type": "slider",
+          "order": 78,
+          "column": 2,
+          "subgroup": "Интерфейс",
+          "min": 50,
+          "max": 300,
+          "step": 1,
+          "unit": "%",
+          "defaultValue": 100
+        },
+        {
+          "id": "55cd95f8-6e46-5fe1-9547-0d20edc36a0b",
+          "group": "Интерфейс",
+          "name": "Подсветка героя клавишей Alt",
+          "type": "toggle",
+          "order": 79,
+          "column": 1,
+          "subgroup": "Alt",
+          "defaultValue": true
+        },
+        {
+          "id": "6f4419fb-037d-5dfa-8fe0-7f5fb2f8cf0c",
+          "group": "Интерфейс",
+          "name": "Зоны возрождения нейтралов при зажатой Alt",
+          "type": "toggle",
+          "order": 80,
+          "column": 1,
+          "subgroup": "Alt",
+          "defaultValue": true
+        },
+        {
+          "id": "a4ba7015-8f80-59f5-9cb2-b22fa36bad19",
+          "group": "Интерфейс",
+          "name": "Зоны атаки башен при зажатой Alt",
+          "type": "toggle",
+          "order": 81,
+          "column": 1,
+          "subgroup": "Alt",
+          "defaultValue": true
+        },
+        {
+          "id": "d7c3c44a-14a6-5661-b030-590b6a4763ea",
+          "group": "Интерфейс",
+          "name": "Постоянный индикатор дальности",
+          "type": "toggle",
+          "order": 82,
+          "column": 1,
+          "subgroup": "Alt",
+          "defaultValue": true
+        },
+        {
+          "id": "f56a935e-d308-55c1-a6a9-532d1dcd8145",
+          "group": "Интерфейс",
+          "name": "Показывать советы",
+          "type": "toggle",
+          "order": 83,
+          "column": 1,
+          "subgroup": "Советы",
+          "defaultValue": false
+        },
+        {
+          "id": "7df68e9c-2023-5d7c-8e16-9177678b797a",
+          "group": "Интерфейс",
+          "name": "Не показывать советы на загрузочных экранах",
+          "type": "toggle",
+          "order": 84,
+          "column": 1,
+          "subgroup": "Советы",
+          "defaultValue": false
+        },
+        {
+          "id": "a35d419f-7540-5224-b19c-478d125983cf",
+          "group": "Интерфейс",
+          "name": "Показывать портреты используемых личностей",
+          "type": "toggle",
+          "order": 85,
+          "column": 1,
+          "subgroup": "Сетка героев",
+          "defaultValue": false
+        },
+        {
+          "id": "dccc3321-ae95-5220-9142-f13c88489311",
+          "group": "Полоса здоровья",
+          "name": "Более заметная полоса здоровья",
+          "type": "toggle",
+          "order": 86,
+          "column": 1,
+          "subgroup": "Внешний вид",
+          "defaultValue": false
+        },
+        {
+          "id": "a1f663b0-e30c-51f4-b2b9-4fe2cdc0063c",
+          "group": "Полоса здоровья",
+          "name": "Отдельный цвет для полос здоровья союзников",
+          "type": "toggle",
+          "order": 87,
+          "column": 1,
+          "subgroup": "Внешний вид",
+          "defaultValue": false
+        },
+        {
+          "id": "7fa301d1-f496-52cc-96d1-8a0912aad353",
+          "group": "Полоса здоровья",
+          "name": "Визуализация урона",
+          "type": "toggle",
+          "order": 88,
+          "column": 1,
+          "subgroup": "Внешний вид",
+          "defaultValue": true
+        },
+        {
+          "id": "43ef8e75-a519-5180-927a-c485fc673fca",
+          "group": "Полоса здоровья",
+          "name": "Визуализация лечения",
+          "type": "toggle",
+          "order": 89,
+          "column": 1,
+          "subgroup": "Внешний вид",
+          "defaultValue": false
+        },
+        {
+          "id": "7b9180b9-a2a4-59a7-8c8a-7a89408221f8",
+          "group": "Полоса здоровья",
+          "name": "Показывать над полосой здоровья",
+          "type": "select",
+          "order": 90,
+          "column": 1,
+          "subgroup": "Внешний вид",
+          "options": [
+            {
+              "id": "79a0288e-f969-5e8c-b71e-67cec65f8e76",
+              "name": "Имена героев"
+            },
+            {
+              "id": "bd638aa5-5bef-5b3a-af1e-f724a3498990",
+              "name": "Имена игроков"
+            },
+            {
+              "id": "cb393cb6-6e48-5d03-8d66-c8e28485669e",
+              "name": "Ничего"
+            }
+          ],
+          "display": "radio",
+          "defaultValue": "79a0288e-f969-5e8c-b71e-67cec65f8e76"
+        },
+        {
+          "id": "5d2c937e-92a1-5531-9ed7-6dad375c6743",
+          "group": "Полоса здоровья",
+          "name": "Предпросмотр полосы здоровья",
+          "type": "info",
+          "order": 91,
+          "column": 2,
+          "subgroup": "Внешний вид",
+          "text": "Предпросмотр: ваш герой и союзник, над полосами здоровья — выбранные подписи.",
+          "height": 10
+        },
+        {
+          "id": "dbfe8a08-29e7-5a77-a2b0-afd722638b84",
+          "group": "Полоса здоровья",
+          "name": "Не показывать текст состояния персонажа",
+          "type": "toggle",
+          "order": 92,
+          "column": 1,
+          "subgroup": "Эффекты состояния",
+          "defaultValue": false
+        },
+        {
+          "id": "b6e370ae-df06-5c26-a605-a1e7004bca64",
+          "group": "Внутриигровые уведомления",
+          "name": "Уведомлять, когда союзник покупает или подбирает ключевой предмет",
+          "type": "toggle",
+          "order": 93,
+          "column": 1,
+          "subgroup": "Союзники",
+          "defaultValue": true
+        },
+        {
+          "id": "0a3cbdba-a51c-55f5-a511-cad16daaf4b4",
+          "group": "Внутриигровые уведомления",
+          "name": "Уведомлять, когда у союзника засчитывается прогресс реликвии",
+          "type": "toggle",
+          "order": 94,
+          "column": 1,
+          "subgroup": "Союзники",
+          "defaultValue": true
+        },
+        {
+          "id": "04da1ee3-fe41-5e9f-8964-179c3befa3c2",
+          "group": "Внутриигровые уведомления",
+          "name": "Уведомлять, когда союзник создаёт нейтральный предмет",
+          "type": "toggle",
+          "order": 95,
+          "column": 1,
+          "subgroup": "Союзники",
+          "defaultValue": true
+        },
+        {
+          "id": "8ac1e3cc-5af3-536a-ae70-321b75b8d1a4",
+          "group": "Внутриигровые уведомления",
+          "name": "Уведомлять, когда союзник изучает талант",
+          "type": "toggle",
+          "order": 96,
+          "column": 1,
+          "subgroup": "Союзники",
+          "defaultValue": true
+        },
+        {
+          "id": "61d14578-3888-5ca8-81f5-a684d7eb6e84",
+          "group": "Внутриигровые уведомления",
+          "name": "Уведомлять, когда союзник крадёт заклинание",
+          "type": "toggle",
+          "order": 97,
+          "column": 1,
+          "subgroup": "Союзники",
+          "defaultValue": true
+        },
+        {
+          "id": "36a3ea2c-2530-5091-b5c8-12f603bcace0",
+          "group": "Внутриигровые уведомления",
+          "name": "Уведомлять, когда ваш курьер покидает территорию фонтана",
+          "type": "toggle",
+          "order": 98,
+          "column": 1,
+          "subgroup": "Курьер",
+          "defaultValue": true
+        },
+        {
+          "id": "a1f46ac4-3e5b-514f-9545-40259ad6eaf1",
+          "group": "Фокус окна",
+          "name": "Выводить поверх окон, когда найдена игра",
+          "type": "toggle",
+          "order": 99,
+          "column": 1,
+          "defaultValue": true
+        },
+        {
+          "id": "bf6f3bce-a7af-51dd-80f7-225db4f1c6bc",
+          "group": "Фокус окна",
+          "name": "Выводить поверх окон при выборе героев и начале игры",
+          "type": "toggle",
+          "order": 100,
+          "column": 1,
+          "defaultValue": true
+        },
+        {
+          "id": "c8ae9794-cabc-5ea0-8300-044e1ff4837a",
+          "group": "Фокус окна",
+          "name": "Выводить поверх окон при окончании паузы",
+          "type": "toggle",
+          "order": 101,
+          "column": 1,
+          "defaultValue": true
+        },
+        {
+          "id": "be7efd92-2cdb-500a-82f7-7919dc1c844d",
+          "group": "Фокус окна",
+          "name": "Выводить поверх окон при проверке готовности",
+          "type": "toggle",
+          "order": 102,
+          "column": 1,
+          "defaultValue": true
+        },
+        {
+          "id": "e76ac8cf-8edc-550c-a88b-c38c0a7fbc0a",
+          "group": "Прочее",
+          "name": "Использовать статистику комментатора",
+          "type": "toggle",
+          "order": 103,
+          "column": 1,
+          "defaultValue": true
+        },
+        {
+          "id": "693c7363-c1da-55b8-969d-9f87b7ea400a",
+          "group": "Прочее",
+          "name": "Держать включённой защиту от спойлеров",
+          "type": "toggle",
+          "order": 104,
+          "column": 1,
+          "defaultValue": false
+        },
+        {
+          "id": "0dfa2b4d-7230-5ab2-89cf-5d15a8ede0d4",
+          "group": "Прочее",
+          "name": "Добавлять новые предметы в коллекцию",
+          "type": "toggle",
+          "order": 105,
+          "column": 1,
+          "defaultValue": false
+        },
+        {
+          "id": "8bd3fe84-54bd-51b9-85af-e199ac2bcae7",
+          "group": "Прочее",
+          "name": "Переключение меню доп. кнопками мыши",
+          "type": "toggle",
+          "order": 106,
+          "column": 1,
+          "defaultValue": true
+        },
+        {
+          "id": "a981da53-1ad6-568c-937b-499be5d277bf",
+          "group": "Прочее",
+          "name": "Игры без групп при ролевом поиске",
+          "type": "toggle",
+          "order": 107,
+          "column": 1,
+          "defaultValue": true
+        },
+        {
+          "id": "feb2ffeb-91fe-5672-b583-1ccbb8146271",
+          "group": "Прочее",
+          "name": "Советы помощника Dota Plus вместо руководств",
+          "type": "toggle",
+          "order": 108,
+          "column": 1,
+          "defaultValue": true
+        },
+        {
+          "id": "a72adccb-c29b-5341-badb-1a47fef2622c",
+          "group": "Прочее",
+          "name": "Отображать информацию о сети",
+          "type": "toggle",
+          "order": 109,
+          "column": 1,
+          "defaultValue": true
+        },
+        {
+          "id": "5a4ee671-50f4-5fa2-b84d-10f6838cd2a9",
+          "group": "Прочее",
+          "name": "Включить консоль",
+          "type": "toggle",
+          "order": 110,
+          "column": 1,
+          "defaultValue": false
+        },
+        {
+          "id": "0cb330e8-77ad-500f-9d2e-0f18ae45e01d",
+          "group": "Прочее",
+          "name": "Disable External Application Hotkeys",
+          "type": "toggle",
+          "order": 111,
+          "column": 1,
+          "defaultValue": false
+        },
+        {
+          "id": "899adf30-3a4d-58e1-b95a-471da9315d79",
+          "group": "Прочее",
+          "name": "Качество соединения",
+          "type": "select",
+          "order": 112,
+          "column": 2,
+          "options": [
+            {
+              "id": "061f198f-9dfa-5168-9ffe-63353670bbf0",
+              "name": "Низкое"
+            },
+            {
+              "id": "01c0db17-e45c-5410-867b-5a608e78c1ac",
+              "name": "Высокое"
+            }
+          ],
+          "display": "radio",
+          "defaultValue": "01c0db17-e45c-5410-867b-5a608e78c1ac"
+        },
+        {
+          "id": "34fe808e-00a4-56a4-b006-6a874c1ae54c",
+          "group": "Голос",
+          "name": "Голос (группе): без нажатия",
+          "type": "toggle",
+          "order": 113,
+          "column": 1,
+          "defaultValue": false
+        },
+        {
+          "id": "fdb81401-73b3-515e-8da3-0daa4430c98c",
+          "group": "Голос",
+          "name": "Голос (команде): без нажатия",
+          "type": "toggle",
+          "order": 114,
+          "column": 1,
+          "defaultValue": false
         }
       ],
       "profiles": [
         {
-          "id": "dc3123b1-80f6-5393-9c13-2695e7e7b8e2",
+          "id": "ae07cf7b-44d0-5104-844b-3c55feacf8e5",
           "name": "Основной",
           "notes": "",
           "bindings": [],
           "settingValues": {},
           "keyGroups": [],
-          "createdAt": "2026-10-21T00:00:00.000Z",
-          "updatedAt": "2026-10-21T00:00:00.000Z"
+          "createdAt": "2026-10-25T10:00:00.000Z",
+          "updatedAt": "2026-10-25T10:00:00.000Z"
+        },
+        {
+          "id": "3cde4485-f708-5562-9dd4-2c11f30309ff",
+          "name": "Тестовый",
+          "notes": "",
+          "bindings": [
+            {
+              "id": "222b32bb-c107-58f9-85da-d95030bf1e86",
+              "actionId": "3403e8bf-3240-5677-ad14-982f47ff43ee",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyQ",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1,
+              "paramOptionId": "2a28bfac-e30b-57b2-82a7-b9765529ec8e"
+            },
+            {
+              "id": "04c9d8cb-d17f-5660-a3a9-246c13d4d274",
+              "actionId": "8035247d-ff26-5fa5-97f3-2936d83d9abe",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyW",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1,
+              "paramOptionId": "2a28bfac-e30b-57b2-82a7-b9765529ec8e"
+            },
+            {
+              "id": "3f1956ba-aad4-5b63-acdb-ddaccd7b339e",
+              "actionId": "e66ede5a-7057-50c4-af62-73a4f1153da5",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyE",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1,
+              "paramOptionId": "2a28bfac-e30b-57b2-82a7-b9765529ec8e"
+            },
+            {
+              "id": "51b87bb1-22f8-5b45-8cf7-6006a5ce8a44",
+              "actionId": "29afce4d-91c0-5045-b569-640282314b6c",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyT",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1,
+              "paramOptionId": "2a28bfac-e30b-57b2-82a7-b9765529ec8e"
+            },
+            {
+              "id": "8a67d46b-a1ca-5867-8602-a084d6edd80f",
+              "actionId": "f0101f81-a9dc-5fb7-b40b-9a5527a2f891",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyY",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1,
+              "paramOptionId": "2a28bfac-e30b-57b2-82a7-b9765529ec8e"
+            },
+            {
+              "id": "28de1112-79f5-5db9-b555-a73bee39bf5c",
+              "actionId": "db0a038e-c9ef-5298-b549-143e643f599e",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyR",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1,
+              "paramOptionId": "2a28bfac-e30b-57b2-82a7-b9765529ec8e"
+            },
+            {
+              "id": "6386a8da-52f4-58e1-9750-e69b89bd4e47",
+              "actionId": "46c43842-fff5-5980-9ae4-b281da039a0f",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyE",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1,
+              "paramOptionId": "2a28bfac-e30b-57b2-82a7-b9765529ec8e"
+            },
+            {
+              "id": "de84ad60-23e9-5215-bf75-99d9bcaa8e53",
+              "actionId": "baae87fe-ca11-5af3-972d-fedb760c4817",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyW",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1,
+              "paramOptionId": "2a28bfac-e30b-57b2-82a7-b9765529ec8e"
+            },
+            {
+              "id": "b950bb98-f9c2-5cb1-a411-232910b50492",
+              "actionId": "5156235f-15de-5e16-9d48-0c5211fe5233",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyR",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1,
+              "paramOptionId": "2a28bfac-e30b-57b2-82a7-b9765529ec8e"
+            },
+            {
+              "id": "3a2ea465-d0b9-5ee2-94cd-7c1dd7b027b2",
+              "actionId": "147607ab-ae0b-5073-b104-71bcb1248c0c",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyT",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1,
+              "paramOptionId": "2a28bfac-e30b-57b2-82a7-b9765529ec8e"
+            },
+            {
+              "id": "94f7db0c-6d99-5367-9038-77f5658a3dee",
+              "actionId": "bf8c6a40-fb47-54de-913b-7d3c354955bd",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyQ",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1,
+              "paramOptionId": "2a28bfac-e30b-57b2-82a7-b9765529ec8e"
+            },
+            {
+              "id": "9a6dd798-10bd-5169-8517-c63a033d9b70",
+              "actionId": "5e43b42a-f535-56ec-bdca-95468796c96b",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyY",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1,
+              "paramOptionId": "2a28bfac-e30b-57b2-82a7-b9765529ec8e"
+            },
+            {
+              "id": "62d315c0-9906-5d42-ac9a-2d764e3bd130",
+              "actionId": "88ddb435-2ac1-5ab7-80ea-9e3697959233",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyQ",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1,
+              "paramOptionId": "2a28bfac-e30b-57b2-82a7-b9765529ec8e"
+            },
+            {
+              "id": "40533375-13f5-5b2d-8690-d2aa97d15ab9",
+              "actionId": "6f5dc7d2-996b-522f-9819-e7117e7246d8",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyW",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1,
+              "paramOptionId": "2a28bfac-e30b-57b2-82a7-b9765529ec8e"
+            },
+            {
+              "id": "2e13441e-f4d4-517f-a042-2d2754cc6024",
+              "actionId": "96943d9e-d0ca-50ec-8206-75d55dfd6493",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyE",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1,
+              "paramOptionId": "2a28bfac-e30b-57b2-82a7-b9765529ec8e"
+            },
+            {
+              "id": "48f6b2e8-cef6-5e53-92a6-a2532209dcc5",
+              "actionId": "0c30bce0-73a9-5f41-94f0-e7a9e7795170",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyT",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1,
+              "paramOptionId": "2a28bfac-e30b-57b2-82a7-b9765529ec8e"
+            },
+            {
+              "id": "6ba343cb-2736-5c8b-b0e9-4bb8a4e2808b",
+              "actionId": "2587c31b-4feb-5e25-b681-30e1b7cdde09",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyY",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1,
+              "paramOptionId": "2a28bfac-e30b-57b2-82a7-b9765529ec8e"
+            },
+            {
+              "id": "07d77fb4-ac54-5372-850a-c54a67031b73",
+              "actionId": "92f82ea9-cb1f-5191-82c9-8269c597b803",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyR",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1,
+              "paramOptionId": "2a28bfac-e30b-57b2-82a7-b9765529ec8e"
+            },
+            {
+              "id": "05764e4b-5dd7-5fb3-8347-4b51adb95f92",
+              "actionId": "a3dce0e4-7bca-56b2-ae50-3ac6cf078fa0",
+              "input": {
+                "device": "keyboard",
+                "code": "CapsLock",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1,
+              "paramOptionId": "2a28bfac-e30b-57b2-82a7-b9765529ec8e"
+            },
+            {
+              "id": "bf5e85e9-0bcb-56a6-891a-0da413ecf33a",
+              "actionId": "bf2038aa-8507-5028-b201-89a201760d93",
+              "input": {
+                "device": "mouse",
+                "code": "Mouse4",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1,
+              "paramOptionId": "2a28bfac-e30b-57b2-82a7-b9765529ec8e"
+            },
+            {
+              "id": "7ba5060d-e36b-5b58-ad82-652faa448488",
+              "actionId": "9b051aaa-bf10-5563-bedc-8643559d6175",
+              "input": {
+                "device": "keyboard",
+                "code": "Digit3",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1,
+              "paramOptionId": "2a28bfac-e30b-57b2-82a7-b9765529ec8e"
+            },
+            {
+              "id": "13c2fbbd-8941-593d-b49b-781303330476",
+              "actionId": "b19d2a57-d995-551d-9819-5fe8c60a01ec",
+              "input": {
+                "device": "keyboard",
+                "code": "Digit4",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1,
+              "paramOptionId": "2a28bfac-e30b-57b2-82a7-b9765529ec8e"
+            },
+            {
+              "id": "5b686e56-15c4-5cb7-837f-34a0c09e07b8",
+              "actionId": "c5523dfc-2dae-5261-a026-34c9663396a7",
+              "input": {
+                "device": "keyboard",
+                "code": "Digit5",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1,
+              "paramOptionId": "2a28bfac-e30b-57b2-82a7-b9765529ec8e"
+            },
+            {
+              "id": "50efaaae-db16-5cc8-9268-a2464c2f63dc",
+              "actionId": "aba88f7c-ec18-5998-9fdd-55e23c58e817",
+              "input": {
+                "device": "keyboard",
+                "code": "Digit6",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1,
+              "paramOptionId": "2a28bfac-e30b-57b2-82a7-b9765529ec8e"
+            },
+            {
+              "id": "6aef2e70-5961-56a7-ab71-147001a1301a",
+              "actionId": "5d283cac-a2bc-578f-9734-a4b8b222887a",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyN",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1,
+              "paramOptionId": "2a28bfac-e30b-57b2-82a7-b9765529ec8e"
+            },
+            {
+              "id": "4309c975-6e12-51da-9456-0d2a91555792",
+              "actionId": "44ab4919-209f-5ef9-ac17-21f8a03ce3e7",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyM",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1,
+              "paramOptionId": "2a28bfac-e30b-57b2-82a7-b9765529ec8e"
+            },
+            {
+              "id": "4b5938f3-6d41-5f9a-9f39-c2604204a6d5",
+              "actionId": "e2ce61bb-f71a-5f6a-987f-17011888be7d",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyD",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "2cf855e7-2401-51a8-b7bd-03714f581554",
+              "actionId": "001b4185-f3d0-539c-be62-0c22357139c9",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyD",
+                "modifiers": ["alt"]
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "2ef0c925-62e9-593e-adc6-afc08bdc53e2",
+              "actionId": "df40ec8f-f246-5ab6-ad45-1016bc7823ab",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyA",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "1fdfc4f7-409c-56c5-99a0-a24cc30d6cbd",
+              "actionId": "34d29264-1063-595c-a295-136ba0608543",
+              "input": {
+                "device": "keyboard",
+                "code": "Backquote",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "918b19b8-6d4e-52a2-b72d-125d555a4ade",
+              "actionId": "b53c2161-3df3-5f02-ba77-210ab7ac3949",
+              "input": {
+                "device": "keyboard",
+                "code": "Digit1",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "ebea9c79-3b0d-5d54-8fe4-bf60ed8e0987",
+              "actionId": "ce8effb2-04c2-5f9d-9a8d-68af68809a2c",
+              "input": {
+                "device": "keyboard",
+                "code": "Digit2",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "c275e177-44ea-5e8e-845b-004f4d31cb6f",
+              "actionId": "fc1b3317-7681-5418-99b2-2f8fc797cf98",
+              "input": {
+                "device": "keyboard",
+                "code": "Digit3",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "bec9467a-408b-58e5-a804-861d5e7964df",
+              "actionId": "69461abf-c7c6-5ac2-bf7b-9a91b23f255d",
+              "input": {
+                "device": "mouse",
+                "code": "Mouse5",
+                "modifiers": ["alt"]
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "e07cd0ce-a771-561c-92cc-f927ecb68a42",
+              "actionId": "24a96b34-24b4-5bf4-b5af-3c67baf7fc0e",
+              "input": {
+                "device": "mouse",
+                "code": "Mouse5",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "edfb28ac-893a-5a5b-8da5-4c65b5da4d34",
+              "actionId": "35309ead-b763-539d-9b83-64a32f62f199",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyS",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "dfb69307-891f-5d81-b6b9-c4c7e4ec6eff",
+              "actionId": "1ead27dc-8b04-5fd5-b2b4-1d0a4b528f05",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyS",
+                "modifiers": ["alt"]
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "c7e78e57-32f0-51c3-aa7b-96ebb81e6361",
+              "actionId": "1ecc4d55-445e-5443-a800-1a76835a3dc2",
+              "input": {
+                "device": "keyboard",
+                "code": "Digit8",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "851bff07-f679-5532-ab19-7ac16f2e9571",
+              "actionId": "852477a0-768f-518a-a0c0-8b058dd9ac8c",
+              "input": {
+                "device": "keyboard",
+                "code": "Digit7",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "5bc96a64-d3a4-5b01-b15e-56ae7d9d108a",
+              "actionId": "482e4b5b-40ed-5acd-a968-2ed1b57346dc",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyU",
+                "modifiers": ["alt"]
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "b6929134-97f6-5d1c-aaa0-172c77606f4c",
+              "actionId": "6c90faae-bfd8-587d-a869-c6363ea0a88f",
+              "input": {
+                "device": "keyboard",
+                "code": "F9",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "6fe54119-d83e-52e4-81c2-e6577aafce13",
+              "actionId": "ee59c4ce-dddd-5937-a24f-d38cfb342377",
+              "input": {
+                "device": "keyboard",
+                "code": "Backslash",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "4514d5b4-6674-57a9-97cd-a55a3b4d9c73",
+              "actionId": "ca96315c-0028-5338-af70-373311f7a088",
+              "input": {
+                "device": "keyboard",
+                "code": "Space",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "af611d44-ef96-56c2-9a6f-ccc44afca7b1",
+              "actionId": "61c1d993-059b-5007-9eb3-158c4e48d967",
+              "input": {
+                "device": "keyboard",
+                "code": "Tab",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "2b98f986-caa9-5784-8fd3-1876b8b8da4d",
+              "actionId": "7b6310a6-3d4b-5f62-954e-18b01e10a37b",
+              "input": {
+                "device": "keyboard",
+                "code": "Digit1",
+                "modifiers": ["alt"]
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "01879296-b08d-565f-85f8-8354992b683e",
+              "actionId": "cd58033b-463b-5b1d-a7c8-71eccb822611",
+              "input": {
+                "device": "keyboard",
+                "code": "Digit1",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "8007e80b-10c5-53ab-a46b-c148963610f3",
+              "actionId": "0402fd42-dfe5-5f95-8211-0697c1278943",
+              "input": {
+                "device": "keyboard",
+                "code": "Digit2",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "a2aafe4d-dd52-5385-ab07-b65c91c01943",
+              "actionId": "1db7de89-c6e0-555a-9de4-f6793a5fad93",
+              "input": {
+                "device": "keyboard",
+                "code": "Digit2",
+                "modifiers": ["alt"]
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "fc1492b5-461a-5d69-b91d-af28012b2433",
+              "actionId": "d732da9a-0e00-5786-8b3c-f7d3350ab02d",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyU",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "1f736ba6-94b0-5762-b31e-989d86205b23",
+              "actionId": "9401158b-275c-51a5-8621-b3aa46c4d8fb",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyI",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "ecd2957c-7f86-5653-bd0a-36bbcd818d13",
+              "actionId": "5570dd1b-6569-50ef-a704-216abc270d8c",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyF",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "cc0cf875-6790-5c7c-a0d8-5ac5426559d9",
+              "actionId": "edb34f56-bb4e-5a91-ac7b-c21f326e55e1",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyG",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "cf99a2a0-632e-5a8d-940d-695384a85d47",
+              "actionId": "13fa36e5-0ffb-58fc-9460-de2edf66f673",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyF",
+                "modifiers": ["alt"]
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "bc5f9225-e759-5067-b710-1c666d31d056",
+              "actionId": "ccc07a29-d5ba-5a78-b56d-ab7b348a7a26",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyG",
+                "modifiers": ["alt"]
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "d215b6d4-cee4-5fe5-9db1-8ac45369ed9d",
+              "actionId": "f99a3add-c9ce-53dd-9295-bd0c6f9deac4",
+              "input": {
+                "device": "keyboard",
+                "code": "F1",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "24555eb5-7532-5f8d-822d-fead14c1fbdf",
+              "actionId": "9e529148-e564-5517-8f28-653f42f56635",
+              "input": {
+                "device": "keyboard",
+                "code": "F2",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "db1791b4-34f8-5642-b4bc-67163c46e206",
+              "actionId": "cfb85503-3158-5b1d-a19c-383cde8b442e",
+              "input": {
+                "device": "keyboard",
+                "code": "F3",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "4feefe0f-de49-5058-91e1-56beb1d4ea72",
+              "actionId": "30cdc886-8ae0-5192-a8f6-deaecdc55add",
+              "input": {
+                "device": "keyboard",
+                "code": "F4",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "399c2c11-8229-5e87-8e06-61549fa420ab",
+              "actionId": "53101807-e29d-5883-b10a-64006ae9e8c4",
+              "input": {
+                "device": "keyboard",
+                "code": "F5",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "a839c428-9453-5d07-bdd5-38433c8ae9f9",
+              "actionId": "42c27705-93ed-5d07-a8c2-6a792e2a2b75",
+              "input": {
+                "device": "keyboard",
+                "code": "F6",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "19b2bbd7-6612-52c2-881a-d26ac52bb52a",
+              "actionId": "0ad0a24f-27e6-565a-ac7f-4077fceb19a8",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyZ",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "1b7947de-1bac-53dc-8df7-daef7ba5e9dd",
+              "actionId": "c8c078ff-7a95-54ee-905b-2c7b8d2e3945",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyX",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "1e19dada-628b-5e99-bb2f-d9a3f86e3612",
+              "actionId": "d4197e30-5c58-5309-bffb-6520b0668e91",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyC",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "676d6ab4-7c39-5e77-8b2e-26dcc1dafcc0",
+              "actionId": "da45e0e9-9556-59b5-a99b-5c5f10ac32a1",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyV",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "1632782c-2301-5274-9ca7-0012582d1b97",
+              "actionId": "f4bffd11-f65c-5b41-8449-a178270b8006",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyB",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "3e62d619-22f5-5149-83bd-5750ac3b6b9e",
+              "actionId": "55e833bd-72a7-5c47-866f-95f740856fc9",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyO",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "4df39cf9-52ed-5c28-a61b-c3e71af1cf09",
+              "actionId": "d2f4facc-9fce-52c3-92cc-6ba8118f891d",
+              "input": {
+                "device": "mouse",
+                "code": "MouseMiddle",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "778ec56d-d40c-5a05-a138-624de0cb5ca6",
+              "actionId": "9de46338-6c1d-5e92-ba39-95037a4419aa",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyZ",
+                "modifiers": ["alt"]
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "12304baf-32ce-5968-ac9a-cc82cc676bcf",
+              "actionId": "94d5f505-478e-53fa-8a98-354d0a77dd14",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyX",
+                "modifiers": ["alt"]
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "a7655154-fe15-51df-bcc7-25bc6dffc906",
+              "actionId": "4f8b2602-3d2e-5fd5-94a5-2057ba7e99d6",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyC",
+                "modifiers": ["alt"]
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "d2fc9565-7d58-5bce-bb8d-1b68f3bd62f7",
+              "actionId": "57645402-1191-56ef-8dce-71c038b265c2",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyV",
+                "modifiers": ["alt"]
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "b41e217f-9fd1-5f90-b3d1-7bb94bea08f9",
+              "actionId": "a924eeb6-8630-5704-8c4d-504ab92caaf6",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyB",
+                "modifiers": ["alt"]
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "e5322d0d-9a6f-5faa-9f27-90f25767892d",
+              "actionId": "d1314b4b-d992-5b06-87d2-c14a27147e89",
+              "input": {
+                "device": "keyboard",
+                "code": "Enter",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "3da115a0-01fe-555c-a53a-ff335ee639aa",
+              "actionId": "930be01c-e7f0-5804-b937-b61dde23881b",
+              "input": {
+                "device": "keyboard",
+                "code": "Enter",
+                "modifiers": ["shift"]
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "3adc9abd-f73b-571a-ba26-c363f68b985d",
+              "actionId": "678b90c0-c216-5555-be98-81e8e6782d9f",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyJ",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "341e3c39-5723-545e-b9a4-278f7e6d1231",
+              "actionId": "7b44665e-dbea-511f-970f-3c9cc3da40d7",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyJ",
+                "modifiers": ["alt"]
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "08eef53c-f455-58db-a7d2-6ccf8801fd07",
+              "actionId": "ab814a88-b218-5fc0-bb19-925db27056dc",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyK",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            },
+            {
+              "id": "c5f96bf8-b95e-5be0-b93e-3ec18aecfe04",
+              "actionId": "ba25c1fa-20f1-5550-9003-d112305e938c",
+              "input": {
+                "device": "keyboard",
+                "code": "KeyH",
+                "modifiers": []
+              },
+              "pressType": "press",
+              "slot": 1
+            }
+          ],
+          "settingValues": {
+            "5671a214-84f1-56bd-a873-0874ea7570a2": false,
+            "fa96c4ad-29c8-56a0-b03f-94c3f5e623ed": true,
+            "3b095f76-0e44-5a6e-847a-937d27d653ad": true,
+            "99631a2d-fbed-594d-b13f-997ca2b64cda": false,
+            "1ac14347-4f34-5a46-9cdd-7d10b8fb6f89": false,
+            "e18d8405-ba03-5aef-9a2c-90c650b15599": true,
+            "8dde565c-7696-5eb0-8f56-e54bcaf73379": true,
+            "e135a38e-0772-55be-bc8e-3b8fdeec181a": true,
+            "4c42b6e8-1ef2-51e8-82a4-5666be2526d8": true,
+            "2615f8ca-d136-5130-95ac-737ac179b5b9": false,
+            "b3f0a097-7889-5776-a69d-5ebe7890885d": "fde18acc-aebf-5c03-9993-4f2746b7fab1",
+            "a5c70282-eeb5-56db-9703-3611fd28ca80": "6166b9ee-e8d5-51ce-b446-9bc296c29768",
+            "b9570e55-1ad2-5568-96b8-8a25d1c7d8ee": 100,
+            "3eb71710-0d56-5794-9711-9f676a56e192": "c4a1748a-8d82-5cd9-b2dd-c0af286fe8b6",
+            "161d6823-e6dc-5e49-8a0b-791928d5aa91": false,
+            "596afe83-28bf-57d9-b725-6f43d229ad42": true,
+            "aa2f48fe-18ff-5c23-b4cd-44ab48169ed7": true,
+            "de638d4e-e13f-5e70-bda7-ee5922fb7752": false,
+            "d678236a-8703-5071-a99b-f5a0a28b6d45": false,
+            "c7c80f0f-402c-500f-9145-920d95905448": "07f50bdb-d2e4-58bf-85ee-3fbfdd9ad66b",
+            "41778a56-b673-56a3-be8d-4c7207b2e6c5": "871f426d-f97b-562c-8e19-9bd1db120c1d",
+            "1838c37d-132c-50e5-91e1-f78cab9ee083": "eefe8f81-c1fc-5da0-a04c-091b7489ee82",
+            "10a8f3ca-b5de-5d4c-9549-4df6b04450e5": 0.6,
+            "d435393c-ae39-56de-a017-0a1115a95b1c": true,
+            "574dad34-3d15-53e0-af0e-d3fab78d2cc3": true,
+            "98897159-d233-5aaf-b8bb-bff79ee98c80": false,
+            "37287caa-6a88-585f-8e85-39b19e93af74": false,
+            "5a8038b2-e703-55c5-8f8e-405dd34f7ccd": true,
+            "c3d0904e-e4b5-5014-b28c-d7824409de20": true,
+            "bea8f2a9-4866-5f70-aa96-96a64bf211f7": true,
+            "a2e44753-1224-5682-85fb-1a7e68e82d01": true,
+            "3e015a3d-cedb-5ab9-8972-1d05d8a6b4b1": false,
+            "f071b8b2-fc97-5a7d-b05e-b1687f99addf": true,
+            "b46e6b80-5820-574b-8d44-56849e29e814": true,
+            "f105a378-15cc-5833-b3c8-fcad444ccc78": true,
+            "7c5e4529-d4bc-5f1f-80a9-0556c811954f": false,
+            "6a43c1ba-ced1-5f80-bcaa-fdf6fb7fae6b": "a0e881dc-905e-59ce-87a7-320bf171747f",
+            "1c066ade-f09d-57a0-b72d-4b93d05dc504": "16a14217-58be-561d-9ab3-8f5d98346dc9",
+            "7afdf609-ba72-59b8-9f0e-ae7ead30eb63": "0bce81ab-4d5c-5910-ba3d-b119415e943a",
+            "815a026d-196a-5c75-bf1a-fcdd9d0ca915": "ccc639f7-4986-50d4-953e-42e27c88ae71",
+            "b7cb8504-c114-58f4-a2a6-34f67cb8f8a4": true,
+            "31ed59e8-9c5c-5276-a86f-323e405f2428": false,
+            "6188d35a-e7f4-5839-b24a-75b1237f8bb7": 150,
+            "8128045c-b7e8-5890-a3b9-09975b50a549": 0.2,
+            "174079a9-127d-5e96-a16e-b3546b92cf42": false,
+            "653984dd-d6ef-5227-8382-71920e137ab2": false,
+            "39a9abee-a8f9-5969-b29a-16c08a5088c2": false,
+            "1745bb01-d64b-519f-8852-dcaa51ae8202": true,
+            "f8c4fdb2-a4e7-54e6-8854-829ad505025b": false,
+            "11d9418e-9a04-56ac-9278-8eeaa7bc3145": false,
+            "a64ee087-0933-5445-bad4-9c2dbcf0e711": false,
+            "caebc951-cad0-5edb-b89b-6ba5c3cddd20": false,
+            "b088b13c-f3d9-5931-944e-7c73e782a9a8": true,
+            "ab0476d5-5daf-526d-87d6-a5d2a98599a7": 3090,
+            "fc027d81-5552-5011-a7ea-9e51366ccfd2": 50,
+            "6242bc71-acd9-5fa3-87ee-9dfc62a45829": 2,
+            "d0b491e9-9840-5a07-aa50-c5610d61afc4": false,
+            "69d10ecb-a5a2-588f-ae90-689a17b1da61": false,
+            "5131b816-94fb-5f1b-8b24-4f64143113c8": false,
+            "4b62453d-6850-5cbd-895d-6448f50a1c95": false,
+            "e8d3c5a1-d0b7-55af-9cbf-0a5b3518736e": true,
+            "b5944337-ea95-5425-b32d-5b4602ca591f": true,
+            "5d33aec7-ce14-5761-84be-0456126c3ae9": false,
+            "4eef614e-1e69-5f73-a02b-f1823c7ff0c4": false,
+            "d5234dfe-e9af-5b88-88e2-ab588aeef3e6": false,
+            "1cb5e973-6587-596e-abac-f3a877a6e336": false,
+            "88c3d8c6-ccdf-5784-b181-e6f08ac41d05": true,
+            "be9f3fcf-7c0c-59d0-bc15-2537d2350b65": true,
+            "ba2e39a8-bdee-526d-8084-7c1fa7a420d8": false,
+            "21c060a1-35dc-5894-aca1-0cb6d0824675": false,
+            "25c9c902-5af4-5019-ac31-676ab353407e": true,
+            "624c8abf-b607-5d64-be45-0fb1e1ec40ed": true,
+            "059c0f23-1916-5393-a5e5-cdf817b03e50": true,
+            "445e16cc-bb04-59b9-a96d-352d11e3472c": false,
+            "eac846cf-6001-57a8-9220-341533126068": false,
+            "373b43f2-8f91-59c9-ad33-63af8874bffd": true,
+            "c15c1a1f-4abf-58c3-86f4-7b5c3d5bb9bb": 100,
+            "55cd95f8-6e46-5fe1-9547-0d20edc36a0b": true,
+            "6f4419fb-037d-5dfa-8fe0-7f5fb2f8cf0c": true,
+            "a4ba7015-8f80-59f5-9cb2-b22fa36bad19": true,
+            "d7c3c44a-14a6-5661-b030-590b6a4763ea": true,
+            "f56a935e-d308-55c1-a6a9-532d1dcd8145": false,
+            "7df68e9c-2023-5d7c-8e16-9177678b797a": false,
+            "a35d419f-7540-5224-b19c-478d125983cf": false,
+            "dccc3321-ae95-5220-9142-f13c88489311": false,
+            "a1f663b0-e30c-51f4-b2b9-4fe2cdc0063c": false,
+            "7fa301d1-f496-52cc-96d1-8a0912aad353": true,
+            "43ef8e75-a519-5180-927a-c485fc673fca": false,
+            "7b9180b9-a2a4-59a7-8c8a-7a89408221f8": "79a0288e-f969-5e8c-b71e-67cec65f8e76",
+            "dbfe8a08-29e7-5a77-a2b0-afd722638b84": false,
+            "b6e370ae-df06-5c26-a605-a1e7004bca64": true,
+            "0a3cbdba-a51c-55f5-a511-cad16daaf4b4": true,
+            "04da1ee3-fe41-5e9f-8964-179c3befa3c2": true,
+            "8ac1e3cc-5af3-536a-ae70-321b75b8d1a4": true,
+            "61d14578-3888-5ca8-81f5-a684d7eb6e84": true,
+            "36a3ea2c-2530-5091-b5c8-12f603bcace0": true,
+            "a1f46ac4-3e5b-514f-9545-40259ad6eaf1": true,
+            "bf6f3bce-a7af-51dd-80f7-225db4f1c6bc": true,
+            "c8ae9794-cabc-5ea0-8300-044e1ff4837a": true,
+            "be7efd92-2cdb-500a-82f7-7919dc1c844d": true,
+            "e76ac8cf-8edc-550c-a88b-c38c0a7fbc0a": true,
+            "693c7363-c1da-55b8-969d-9f87b7ea400a": false,
+            "0dfa2b4d-7230-5ab2-89cf-5d15a8ede0d4": false,
+            "8bd3fe84-54bd-51b9-85af-e199ac2bcae7": true,
+            "a981da53-1ad6-568c-937b-499be5d277bf": true,
+            "feb2ffeb-91fe-5672-b583-1ccbb8146271": true,
+            "a72adccb-c29b-5341-badb-1a47fef2622c": true,
+            "5a4ee671-50f4-5fa2-b84d-10f6838cd2a9": false,
+            "0cb330e8-77ad-500f-9d2e-0f18ae45e01d": false,
+            "899adf30-3a4d-58e1-b95a-471da9315d79": "01c0db17-e45c-5410-867b-5a608e78c1ac",
+            "34fe808e-00a4-56a4-b006-6a874c1ae54c": false,
+            "fdb81401-73b3-515e-8da3-0daa4430c98c": false
+          },
+          "keyGroups": [],
+          "createdAt": "2026-10-25T10:00:00.000Z",
+          "updatedAt": "2026-10-25T10:00:00.000Z"
         }
       ],
-      "createdAt": "2026-10-21T00:00:00.000Z",
-      "updatedAt": "2026-10-21T00:00:00.000Z",
-      "bindParam": {
-        "name": "Режим каста",
-        "options": [
-          {
-            "id": "cf67f273-e5d9-5bd3-89ef-ebc611873ea7",
-            "name": "Обычный каст"
-          },
-          {
-            "id": "da62af51-42a9-56e3-a6d9-0beb7f81bbca",
-            "name": "Быстрый каст"
-          },
-          {
-            "id": "4d24a789-f1a1-5498-8dba-a888a73c1268",
-            "name": "Быстрый каст при отпускании"
-          },
-          {
-            "id": "b2ba63da-e00b-5c45-aecd-4d3bd3573d8c",
-            "name": "Автокаст"
-          }
-        ]
-      }
+      "createdAt": "2026-10-25T10:00:00.000Z",
+      "updatedAt": "2026-10-25T10:00:00.000Z"
     }
   ]
 }
