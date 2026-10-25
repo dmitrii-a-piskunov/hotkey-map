@@ -12,6 +12,7 @@ import {
   makeInput,
   removeBindings,
   setBindingParam,
+  setParamForActions,
   setPressType,
 } from '@/domain/bindings'
 import { systemClock } from '@/domain/clock'
@@ -132,6 +133,15 @@ export function setPressTypeCmd(bindingId: string, pressType: PressType): void {
   const cur = current()
   if (!cur) return
   onGame(cur.game.id, (g) => setPressType(g, cur.profile.id, bindingId, pressType, clock.now()))
+}
+
+/** Режим каста для группы ячеек «Способности и предметы» (FR-09) */
+export function setParamForActionsCmd(actionIds: readonly string[], optionId: string): void {
+  const cur = current()
+  if (!cur) return
+  onGame(cur.game.id, (g) =>
+    setParamForActions(g, cur.profile.id, actionIds, optionId, clock.now()),
+  )
 }
 
 export function setBindingParamCmd(bindingId: string, optionId: string | undefined): void {

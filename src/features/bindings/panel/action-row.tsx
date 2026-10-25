@@ -54,6 +54,11 @@ interface ActionRowProps {
   onHover?: (hovered: boolean) => void
   onPick?: () => void
   picked?: boolean
+  /**
+   * Строка в разделе категории, как в меню игры: без метки категории,
+   * контекст — только если не «Везде»
+   */
+  compact?: boolean
 }
 
 /**
@@ -69,6 +74,7 @@ export function ActionRow({
   onHover,
   onPick,
   picked = false,
+  compact = false,
 }: ActionRowProps) {
   const issues = useCurrentIssues()
   const category = game.categories.find((c) => c.id === action.categoryId)
@@ -76,6 +82,11 @@ export function ActionRow({
   const slots = slotsOf(game, profile, action.id)
   const bindings = bindingsOfAction(profile, action.id)
   const violations = bindings.flatMap((b) => violationsOf(issues, b.id))
+  const meta = compact
+    ? context && !context.isGlobal
+      ? context.name
+      : null
+    : [category?.name ?? ru.panel.uncategorized, context?.name].filter(Boolean).join(' · ')
 
   return (
     <div
@@ -84,7 +95,8 @@ export function ActionRow({
       data-action-id={action.id}
       data-picked={picked || undefined}
       className={cn(
-        'grid gap-1.5 rounded-md px-2 py-1.5 hover:bg-muted/60',
+        'grid gap-1.5 rounded-md px-2 hover:bg-muted/60',
+        compact ? 'py-1' : 'py-1.5',
         picked && 'bg-muted ring-1 ring-sky-500/50',
       )}
       onMouseEnter={
@@ -105,11 +117,13 @@ export function ActionRow({
       }}
     >
       <div className="flex items-center gap-2">
-        <span
-          className="size-2.5 shrink-0 rounded-full bg-muted-foreground/40"
-          style={category ? { background: category.color } : undefined}
-          aria-hidden="true"
-        />
+        {!compact && (
+          <span
+            className="size-2.5 shrink-0 rounded-full bg-muted-foreground/40"
+            style={category ? { background: category.color } : undefined}
+            aria-hidden="true"
+          />
+        )}
         <div className="grid min-w-0 flex-1">
           <span
             className="truncate text-sm"
@@ -117,9 +131,7 @@ export function ActionRow({
           >
             {action.name}
           </span>
-          <span className="truncate text-xs text-muted-foreground">
-            {[category?.name ?? ru.panel.uncategorized, context?.name].filter(Boolean).join(' · ')}
-          </span>
+          {meta && <span className="truncate text-xs text-muted-foreground">{meta}</span>}
         </div>
         <div className="flex shrink-0 gap-1">
           {slots.map((slot) => (

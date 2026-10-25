@@ -1,9 +1,9 @@
 import { RotateCcw, Settings2 } from 'lucide-react'
 import { useId, useState } from 'react'
-import { Segmented } from '@/components/common/segmented'
 import { Button } from '@/components/ui/button'
 import { Input, NativeSelect } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
+import { columnLayout } from '@/domain/layout'
 import { LIMITS } from '@/domain/names'
 import { fitSliderValue, isDefaultValue, settingValueOf } from '@/domain/setting-values'
 import { settingSections, type ValueSettingDef } from '@/domain/settings-template'
@@ -20,7 +20,7 @@ type SliderDef = Extract<SettingDef, { type: 'slider' }>
 function shown(def: ValueSettingDef, value: SettingValue): string {
   switch (def.type) {
     case 'slider':
-      return `${formatDecimal(value as number)}${def.unit ? ` ${def.unit}` : ''}`
+      return `${formatStep(value as number, def.step)}${def.unit ? ` ${def.unit}` : ''}`
     case 'toggle':
       return value ? t.on : t.off
     case 'select':
@@ -42,7 +42,7 @@ function SliderValue({ def, value, labelId }: { def: SliderDef; value: number; l
   const [typed, setTyped] = useState<string | null>(null)
   const [hint, setHint] = useState<string | null>(null)
   const current = dragging ?? value
-  const text = typed ?? formatDecimal(current)
+  const text = typed ?? formatStep(current, def.step)
 
   function commitText() {
     if (typed === null) return
@@ -123,6 +123,12 @@ function TextValue({ def, value, labelId }: { def: SettingDef; value: string; la
   )
 }
 
+/** Число с точностью шага: 0,60 при шаге 0,01 — как в меню игры */
+function formatStep(value: number, step: number): string {
+  const digits = String(step).split('.')[1]?.length ?? 0
+  return value.toFixed(digits).replace('.', ',')
+}
+
 /** Пояснение на месте картинки из меню игры */
 function InfoBlock({ def }: { def: Extract<SettingDef, { type: 'info' }> }) {
   return (
@@ -143,9 +149,25 @@ function SettingRow({ def, profile }: { def: ValueSettingDef; profile: Profile }
   return (
     <div className="grid gap-1.5 px-2 py-1.5" data-setting-id={def.id}>
       <div className="flex items-center gap-2">
-        <span id={labelId} className="min-w-0 flex-1 truncate text-sm" title={def.name}>
-          {def.name}
-        </span>
+        {def.type === 'toggle' ? (
+          <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              className="size-4 shrink-0 accent-sky-500"
+              checked={value === true}
+              onChange={(e) => {
+                setSettingValueCmd(def.id, e.target.checked)
+              }}
+            />
+            <span id={labelId} className="truncate" title={def.name}>
+              {def.name}
+            </span>
+          </label>
+        ) : (
+          <span id={labelId} className="min-w-0 flex-1 truncate text-sm" title={def.name}>
+            {def.name}
+          </span>
+        )}
         {custom && (
           <Button
             variant="ghost"
@@ -164,20 +186,25 @@ function SettingRow({ def, profile }: { def: ValueSettingDef; profile: Profile }
       {def.type === 'slider' && (
         <SliderValue key={profile.id} def={def} value={value as number} labelId={labelId} />
       )}
-      {def.type === 'toggle' && (
-        <Segmented
-          label={def.name}
-          value={value ? 'on' : 'off'}
-          options={[
-            { value: 'on', label: t.on },
-            { value: 'off', label: t.off },
-          ]}
-          onChange={(v) => {
-            setSettingValueCmd(def.id, v === 'on')
-          }}
-        />
+      {def.type === 'select' && def.display === 'radio' && (
+        <div role="radiogroup" aria-labelledby={labelId} className="grid gap-1 pl-1">
+          {def.options.map((o) => (
+            <label key={o.id} className="flex cursor-pointer items-center gap-2 text-sm">
+              <input
+                type="radio"
+                className="size-4 accent-sky-500"
+                name={`${labelId}-radio`}
+                checked={value === o.id}
+                onChange={() => {
+                  setSettingValueCmd(def.id, o.id)
+                }}
+              />
+              {o.name}
+            </label>
+          ))}
+        </div>
       )}
-      {def.type === 'select' && (
+      {def.type === 'select' && def.display !== 'radio' && (
         <NativeSelect
           aria-labelledby={labelId}
           className="h-8"
@@ -221,19 +248,40 @@ export function ValuesTab({ game, profile }: { game: Game; profile: Profile }) {
     )
   }
   return (
-    <div className="grid gap-3">
+    <div className="grid gap-4">
       {sections.map((s) => (
-        <section key={s.group} aria-label={s.group}>
-          <h3 className="mb-1 px-2 text-xs font-semibold text-muted-foreground uppercase">
+        <section
+          key={s.group}
+          id={`settings-${s.group}`}
+          aria-label={s.group}
+          className="grid scroll-mt-2 gap-1"
+        >
+          <h3 className="px-2 text-sm font-semibold tracking-wider text-muted-foreground uppercase">
             {s.group}
           </h3>
-          {s.settings.map((def) =>
-            def.type === 'info' ? (
-              <InfoBlock key={def.id} def={def} />
-            ) : (
-              <SettingRow key={def.id} def={def} profile={profile} />
-            ),
-          )}
+          {/* Подразделы и две колонки на широкой панели, как в меню игры */}
+          {columnLayout(s.settings).map((block) => (
+            <div key={block.subgroup ?? ''} className="grid gap-1">
+              {block.subgroup && (
+                <h4 className="px-2 pt-1 text-xs font-semibold tracking-wide uppercase">
+                  {block.subgroup}
+                </h4>
+              )}
+              <div className="grid gap-x-3 @min-[620px]:grid-cols-2">
+                {[block.left, block.right].map((column, i) => (
+                  <div key={i} className="grid content-start">
+                    {column.map((def) =>
+                      def.type === 'info' ? (
+                        <InfoBlock key={def.id} def={def} />
+                      ) : (
+                        <SettingRow key={def.id} def={def} profile={profile} />
+                      ),
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
         </section>
       ))}
     </div>

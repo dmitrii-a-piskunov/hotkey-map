@@ -1,14 +1,16 @@
 import { ListPlus, Search } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { actionSections, searchSections } from '@/domain/actions'
-import type { Game, Profile } from '@/domain/types'
+import { actionSections, searchSections, type ActionSection } from '@/domain/actions'
+import { columnLayout } from '@/domain/layout'
+import type { Action, Game, Profile } from '@/domain/types'
 import { openEditor } from '@/features/games/ui-store'
 import { ru } from '@/i18n/ru'
 import { clearHoverHighlightCmd, highlightActionCmd } from '../commands'
 import { setHighlight, useBindingsUi } from '../ui-store'
 import { ActionRow } from './action-row'
+import { SlotsBlock } from './slots-block'
 
 /** «В игре пока нет действий» и кнопка «Добавить действие» (раздел 8.2) */
 export function NoActions({ game }: { game: Game }) {
@@ -69,39 +71,97 @@ export function ActionList({ game, profile }: { game: Game; profile: Profile }) 
       {searching && sections.length === 0 && (
         <p className="px-2 text-sm text-muted-foreground">{ru.panel.noResults}</p>
       )}
-      <div data-testid="panel-actions" className="grid gap-3">
+      <div data-testid="panel-actions" className="grid gap-4">
         {sections.map((s) => (
-          <section
+          <CategorySection
             key={s.category?.id ?? 'none'}
-            aria-label={s.category?.name ?? ru.panel.uncategorized}
-          >
-            <h3 className="mb-1 flex items-center gap-2 px-2 text-xs font-semibold text-muted-foreground uppercase">
-              {s.category?.name ?? ru.panel.uncategorized}
-            </h3>
-            <div className="grid">
-              {s.actions.map((a) => (
-                <ActionRow
-                  key={a.id}
-                  game={game}
-                  profile={profile}
-                  action={a}
-                  picked={pinned === a.id}
-                  onHover={(hovered) => {
-                    if (pinned) return
-                    if (hovered) highlightActionCmd(a.id, false)
-                    else clearHoverHighlightCmd()
-                  }}
-                  onPick={() => {
-                    if (pinned === a.id) setHighlight(null)
-                    else highlightActionCmd(a.id, true)
-                  }}
-                />
-              ))}
-            </div>
-          </section>
+            game={game}
+            profile={profile}
+            section={s}
+            searching={searching}
+            renderRow={(a) => (
+              <ActionRow
+                key={a.id}
+                game={game}
+                profile={profile}
+                action={a}
+                compact
+                picked={pinned === a.id}
+                onHover={(hovered) => {
+                  if (pinned) return
+                  if (hovered) highlightActionCmd(a.id, false)
+                  else clearHoverHighlightCmd()
+                }}
+                onPick={() => {
+                  if (pinned === a.id) setHighlight(null)
+                  else highlightActionCmd(a.id, true)
+                }}
+              />
+            )}
+          />
         ))}
       </div>
     </div>
+  )
+}
+
+/**
+ * Раздел категории как в меню игры: заголовок, пояснение, подразделы и две
+ * колонки на широкой панели. «Способности и предметы» — ячейками. При
+ * поиске — просто найденные строки.
+ */
+function CategorySection({
+  game,
+  profile,
+  section,
+  searching,
+  renderRow,
+}: {
+  game: Game
+  profile: Profile
+  section: ActionSection
+  searching: boolean
+  renderRow: (a: Action) => ReactNode
+}) {
+  const { category } = section
+  const title = category?.name ?? ru.panel.uncategorized
+  let body: ReactNode
+  if (category?.display === 'slots' && !searching) {
+    body = <SlotsBlock game={game} profile={profile} actions={section.actions} />
+  } else {
+    body = columnLayout(section.actions).map((block) => (
+      <div key={block.subgroup ?? ''} className="grid gap-1">
+        {block.subgroup && (
+          <h4 className="px-2 pt-1 text-xs font-semibold tracking-wide uppercase">
+            {block.subgroup}
+          </h4>
+        )}
+        <div className="grid gap-x-3 @min-[620px]:grid-cols-2">
+          <div className="grid content-start">{block.left.map(renderRow)}</div>
+          <div className="grid content-start">{block.right.map(renderRow)}</div>
+        </div>
+      </div>
+    ))
+  }
+  return (
+    <section
+      id={category ? `section-${category.id}` : 'section-none'}
+      aria-label={title}
+      className="grid scroll-mt-2 gap-1.5"
+    >
+      <h3 className="flex items-center gap-2 px-2 text-sm font-semibold tracking-wider text-muted-foreground uppercase">
+        <span
+          className="size-2.5 rounded-full bg-muted-foreground/40"
+          style={category ? { background: category.color } : undefined}
+          aria-hidden="true"
+        />
+        {title}
+      </h3>
+      {category?.note && !searching && (
+        <p className="px-2 text-xs text-muted-foreground">{category.note}</p>
+      )}
+      {body}
+    </section>
   )
 }
 

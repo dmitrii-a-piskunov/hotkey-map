@@ -13,7 +13,7 @@ import { ValuesTab } from './values-tab'
 
 /** Ширина панели (FR-13, раздел 8.4) */
 const MIN_WIDTH = 320
-const MAX_WIDTH = 480
+const MAX_WIDTH = 900
 const WIDTH_KEY = 'hotkey-map:panel-width'
 
 const TABS: readonly PanelTab[] = ['actions', 'unbound', 'groups', 'settings', 'notes']
@@ -126,7 +126,7 @@ export function SidePanel() {
             </TabsTrigger>
           ))}
         </TabsList>
-        <div className="min-h-0 flex-1 overflow-y-auto p-2">
+        <div className="@container min-h-0 flex-1 overflow-y-auto p-2">
           <TabsContent value="actions">
             {hasSelection ? (
               <SelectionView game={game} profile={profile} />
