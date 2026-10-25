@@ -17,6 +17,8 @@ export const MIGRATIONS: Migrations = {
    * и мыши. Старые данные подходят без изменений
    */
   1: (data) => data,
+  /** 2 → 3: расцветка клавиатуры в appSettings, по умолчанию «Стандартная» */
+  2: (data) => data,
 }
 
 export type MigrationResult =

@@ -4,7 +4,7 @@ import { parseAppData } from '@/domain/app-data'
 import { assignBinding, commonParam, makeInput, setParamForActions } from '@/domain/bindings'
 import { conflictsForInput } from '@/domain/conflicts'
 import { columnLayout, singleColumn } from '@/domain/layout'
-import { appDataSchema, CURRENT_SCHEMA_VERSION } from '@/domain/schema'
+import { appDataSchema } from '@/domain/schema'
 import {
   coerceSettingValue,
   emptySettingDraft,
@@ -25,7 +25,6 @@ describe('schema v2', () => {
   it('migrates v1 data without changes except the version', () => {
     const v1 = { ...sampleData(), schemaVersion: 1 }
     const result = parseAppData(JSON.stringify(v1))
-    expect(CURRENT_SCHEMA_VERSION).toBe(2)
     expect(result).toMatchObject({ kind: 'ok', migratedFrom: 1 })
     if (result.kind === 'ok') {
       expect(result.data.games).toEqual(sampleData().games)

@@ -10,7 +10,7 @@
 import { z } from 'zod'
 import { ru } from '@/i18n/ru'
 
-export const CURRENT_SCHEMA_VERSION = 2
+export const CURRENT_SCHEMA_VERSION = 3
 
 const id = z.uuid()
 const isoDate = z.iso.datetime({ offset: true })
@@ -320,6 +320,8 @@ export const appSettingsSchema = z.object({
   /** Показывать клавиатуру и мышь (шапка): скрытое не мешает настраивать другое */
   showKeyboard: z.boolean().default(true),
   showMouse: z.boolean().default(true),
+  /** FR-01: расцветка клавиатуры (шапка) */
+  keyboardColor: z.enum(['standard', 'black']).default('standard'),
   lastGameId: id.optional(),
   lastProfileId: id.optional(),
   /** FR-23: дата последнего экспорта, для напоминания в режиме Firefox */

@@ -33,7 +33,7 @@ describe('appDataSchema', () => {
 
   it('fills appSettings defaults for partial or missing settings (appendix B)', () => {
     const parsed = appDataSchema.parse({
-      schemaVersion: 2,
+      schemaVersion: CURRENT_SCHEMA_VERSION,
       games: [],
       appSettings: { theme: 'dark', labelLang: 'en', view: '3d', showLabels: true },
     })
@@ -44,9 +44,9 @@ describe('appDataSchema', () => {
       colorMode: 'category',
       inputMode: 'check',
     })
-    expect(appDataSchema.parse({ schemaVersion: 2, games: [] }).appSettings).toEqual(
-      appSettingsSchema.parse({}),
-    )
+    expect(
+      appDataSchema.parse({ schemaVersion: CURRENT_SCHEMA_VERSION, games: [] }).appSettings,
+    ).toEqual(appSettingsSchema.parse({}))
   })
 
   it('defaults blockedKeys and keyGroups', () => {
