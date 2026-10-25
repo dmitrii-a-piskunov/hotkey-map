@@ -1,12 +1,7 @@
 import type { CSSProperties } from 'react'
 import type { KeyDef } from '@/layouts/aula-f75'
 import { shade } from '@/lib/color'
-import {
-  deviceTheme,
-  type CapPalette,
-  type CapStyle,
-  type KeyboardColor,
-} from '@/styles/device-theme'
+import { deviceTheme, type CapStyle, type KeyboardColor } from '@/styles/device-theme'
 
 const { palettes, view3d } = deviceTheme
 const PALETTES = Object.keys(palettes) as KeyboardColor[]
@@ -32,11 +27,10 @@ export interface CapColors3d {
 
 export { KNOB_CODE } from '@/layouts/aula-f75'
 
-/** Свет сверху в 3D: множители света расцветки к цвету верха клавиши */
+/** Свет сверху в 3D: множители keyLighting к цвету верха клавиши */
 export const CAP_COLORS_3D = byPalette<CapColors3d>((color, style) => {
-  const palette: CapPalette = palettes[color]
-  const top = palette.caps[style].top
-  const l = palette.lighting ?? view3d.keyLighting
+  const top = palettes[color].caps[style].top
+  const l = view3d.keyLighting
   return {
     topFar: shade(top, l.topFar),
     topNear: shade(top, l.topNear),

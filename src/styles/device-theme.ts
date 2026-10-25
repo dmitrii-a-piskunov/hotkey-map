@@ -16,19 +16,8 @@ export type CapStyle = 'alpha' | 'mod' | 'accent'
 /** Расцветка клавиатуры (FR-01), выбирается в шапке */
 export type KeyboardColor = AppSettings['keyboardColor']
 
-/** Множители яркости цвета верха клавиши для граней в 3D */
-export interface KeyLighting {
-  topFar: number
-  topNear: number
-  frontTop: number
-  frontBottom: number
-  sides: number
-}
-
 export interface CapPalette {
   caps: Record<CapStyle, CapColors>
-  /** Свой свет в 3D; без него — view3d.keyLighting */
-  lighting?: KeyLighting
 }
 
 export interface CapColors {
@@ -42,11 +31,16 @@ export interface CapColors {
   legendRu: string
 }
 
+/** Серо-чёрные модификаторы стандартной расцветки */
+const MOD_TOP = '#2b2c2f'
+const MOD_SIDE = '#1e1f21'
+
+/** Клавиша чёрной расцветки: цвет модификаторов, светлые надписи */
 const BLACK_CAP: CapColors = {
-  top: '#1d1e20',
-  side: '#131415',
-  legend: '#f2a93b',
-  legendRu: '#a8762e',
+  top: MOD_TOP,
+  side: MOD_SIDE,
+  legend: '#e4e5e7',
+  legendRu: '#8b8e94',
 }
 
 export const deviceTheme = {
@@ -75,14 +69,13 @@ export const deviceTheme = {
     standard: {
       caps: {
         alpha: { top: '#2c3446', side: '#202736', legend: '#f2a93b', legendRu: '#959ca8' },
-        mod: { top: '#2b2c2f', side: '#1e1f21', legend: '#f2a93b', legendRu: '#959ca8' },
+        mod: { top: MOD_TOP, side: MOD_SIDE, legend: '#f2a93b', legendRu: '#959ca8' },
         accent: { top: '#f1bd5f', side: '#d4a148', legend: '#232325', legendRu: '#5b4a2a' },
       },
     },
     /**
-     * Все клавиши чёрные, надписи оранжевые; русская приглушена, чтобы
-     * активный язык оставался ярче (FR-04). У почти чёрного цвета обычный
-     * свет почти не даёт перепада — грани в 3D светлее, чтобы не сливались.
+     * Все клавиши цвета модификаторов стандартной, надписи светло-серые;
+     * русская темнее, чтобы активный язык оставался ярче (FR-04)
      */
     black: {
       caps: {
@@ -90,7 +83,6 @@ export const deviceTheme = {
         mod: BLACK_CAP,
         accent: BLACK_CAP,
       },
-      lighting: { topFar: 1.12, topNear: 0.98, frontTop: 1.45, frontBottom: 1.1, sides: 1.3 },
     },
   } satisfies Record<KeyboardColor, CapPalette>,
 
