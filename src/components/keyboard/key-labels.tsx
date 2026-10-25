@@ -103,7 +103,7 @@ function RealisticLabels({ keyDef }: { keyDef: KeyDef }) {
 
 const { paint } = deviceTheme
 /** Средняя ширина знака подписи в долях кегля — для подбора размера под клавишу */
-const CHAR_WIDTH = 0.58
+const CHAR_WIDTH = 0.68
 /** Поля подписи действия от краёв верхней грани, в юнитах */
 const ACTION_INSET = 0.04
 

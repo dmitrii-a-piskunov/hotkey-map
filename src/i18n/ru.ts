@@ -211,6 +211,8 @@ export const ru = {
       editTitle: 'Действие',
       name: 'Название',
       nameEn: 'Оригинальное название (EN)',
+      short: 'Подпись на клавише',
+      shortHint: 'До {max} символов. Пусто — сокращение названия',
       context: 'Контекст',
       category: 'Категория',
       description: 'Описание',

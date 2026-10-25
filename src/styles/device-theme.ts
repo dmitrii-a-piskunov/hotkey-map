@@ -125,8 +125,8 @@ export const deviceTheme = {
     /** Русская подпись и «+N» — та же, но прозрачнее */
     secondaryOpacity: 0.7,
     /** Подпись действия на клавише, в юнитах: обычный и наименьший кегль */
-    labelSize: 0.16,
-    minLabelSize: 0.12,
+    labelSize: 0.26,
+    minLabelSize: 0.16,
     /** Значок конфликта в углу верхней грани, в юнитах */
     badgeSize: 0.2,
   },

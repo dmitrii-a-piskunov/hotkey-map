@@ -6,10 +6,8 @@
 
 import type { ProfileIssues } from './conflicts'
 import { layerOf } from './layers'
+import { shortLabelOf } from './short-label'
 import type { Action, Binding, ColorMode, Game, Profile } from './types'
-
-/** Подпись на клавише — до 10 символов, остальное многоточием */
-export const LABEL_MAX = 10
 
 export interface InputPaint {
   /**
@@ -17,7 +15,7 @@ export interface InputPaint {
    * (null — действие без категории), по группам — цвет группы.
    */
   colors: (string | null)[]
-  /** Короткое название первого действия */
+  /** Короткая подпись первого действия: своя или сокращение («СП1») */
   label?: string
   /** Полное название первого действия — для подсказки */
   title?: string
@@ -26,11 +24,6 @@ export interface InputPaint {
   /** На входе есть бинды в этом слое */
   bound: boolean
   conflict: boolean
-}
-
-export function shortLabel(name: string): string {
-  const text = name.trim()
-  return text.length > LABEL_MAX ? `${text.slice(0, LABEL_MAX - 1).trimEnd()}…` : text
 }
 
 export interface PaintOptions {
@@ -78,7 +71,7 @@ export function paintInputs({
         : []
     result.set(code, {
       colors,
-      label: first ? shortLabel(first.name) : undefined,
+      label: first ? shortLabelOf(first) : undefined,
       title: first?.name,
       extra: Math.max(0, own.length - 1),
       bound: true,

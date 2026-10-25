@@ -22,6 +22,7 @@ import {
 } from '@/domain/actions'
 import { globalContext, sortedContexts } from '@/domain/contexts'
 import { LIMITS } from '@/domain/names'
+import { abbreviate } from '@/domain/short-label'
 import { bindingsOfAction } from '@/domain/bindings'
 import { currentProfile } from '@/domain/current'
 import type { Action, Game } from '@/domain/types'
@@ -57,6 +58,7 @@ function ActionDialog({
   const nameError = show(nameErrorText(errors.name, LIMITS.action))
   const nameEnError = show(nameErrorText(errors.nameEn, LIMITS.actionEn))
   const descriptionError = show(nameErrorText(errors.description, LIMITS.description))
+  const shortError = show(nameErrorText(errors.short, LIMITS.short))
 
   function update(patch: Partial<ActionDraft>) {
     setDraft((d) => ({ ...d, ...patch }))
@@ -104,6 +106,23 @@ function ActionDialog({
                 update({ nameEn: e.target.value })
               }}
               {...invalidProps('action-name-en', nameEnError)}
+            />
+          </Field>
+          <Field
+            label={t.short}
+            htmlFor="action-short"
+            error={shortError}
+            hint={fill(t.shortHint, { max: LIMITS.short })}
+          >
+            <Input
+              id="action-short"
+              className="w-28 uppercase"
+              placeholder={abbreviate(draft.name)}
+              value={draft.short ?? ''}
+              onChange={(e) => {
+                update({ short: e.target.value.toLocaleUpperCase('ru') })
+              }}
+              {...invalidProps('action-short', shortError)}
             />
           </Field>
           <div className="grid grid-cols-2 gap-4">

@@ -163,7 +163,7 @@ describe('keys on the stage (FR-14, FR-15, FR-26, FR-30)', () => {
   it('a bound key is painted with its category and shows the action label', async () => {
     await renderApp()
     expect(input('Space').style.getPropertyValue('--cap-top')).toBe('#3B82F6')
-    expect(input('Space')).toHaveTextContent('Прыжок')
+    expect(input('Space')).toHaveTextContent('ПРЫ')
     expect(input('Space')).toHaveAttribute('title', 'Прыжок')
     expect(input('KeyQ').style.getPropertyValue('--cap-top')).not.toBe('#3B82F6')
   })
@@ -172,7 +172,7 @@ describe('keys on the stage (FR-14, FR-15, FR-26, FR-30)', () => {
     await renderApp()
     fireEvent.click(screen.getByRole('button', { name: ru.bindings.showLabelsShort }))
     expect(useDataStore.getState().data.appSettings.showLabels).toBe(false)
-    expect(input('Space')).not.toHaveTextContent('Прыжок')
+    expect(input('Space')).not.toHaveTextContent('ПРЫ')
   })
 
   it('TC-05: in the Ctrl layer Ctrl+1 is lit and free keys are dimmed', async () => {
@@ -180,11 +180,11 @@ describe('keys on the stage (FR-14, FR-15, FR-26, FR-30)', () => {
     startCapture(SLOT)
     keyDown('Digit1', { ctrlKey: true })
     confirmCaptureCmd()
-    expect(input('Digit1')).not.toHaveTextContent('Прыжок')
+    expect(input('Digit1')).not.toHaveTextContent('ПРЫ')
     expect(input('Digit1')).not.toHaveAttribute('data-dimmed')
     fireEvent.click(screen.getByRole('radio', { name: /^Ctrl/ }))
     expect(ui().layer).toBe('ctrl')
-    expect(input('Digit1')).toHaveTextContent('Прыжок')
+    expect(input('Digit1')).toHaveTextContent('ПРЫ')
     expect(input('Digit1')).not.toHaveAttribute('data-dimmed')
     expect(input('KeyQ')).toHaveAttribute('data-dimmed')
   })

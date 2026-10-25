@@ -55,9 +55,9 @@ test('bindings, a conflict and the Ctrl layer survive a reload (FR-12, FR-14, FR
   await page.keyboard.press('Control+Digit1')
   await dialog(page).getByRole('button', { name: 'Подтвердить' }).click()
   await expect(slot(page, 'Бинт')).toHaveText('Ctrl+1')
-  await expect(key(page, 'Digit1')).not.toContainText('Бинт')
+  await expect(key(page, 'Digit1')).not.toContainText('БИН')
   await page.getByRole('radio', { name: /^Ctrl/ }).click()
-  await expect(key(page, 'Digit1')).toContainText('Бинт')
+  await expect(key(page, 'Digit1')).toContainText('БИН')
   await expect(key(page, 'KeyQ')).toHaveAttribute('data-dimmed', 'true')
 
   // Перезагрузка: всё на месте
@@ -65,9 +65,9 @@ test('bindings, a conflict and the Ctrl layer survive a reload (FR-12, FR-14, FR
   await page.reload()
   await expect(page.getByTestId('issues-button')).toHaveAccessibleName('Конфликты: 1')
   await expect(key(page, 'KeyE')).toHaveAttribute('data-conflict', 'true')
-  await expect(key(page, 'KeyE')).toContainText('Взаимо')
+  await expect(key(page, 'KeyE')).toContainText('ВЗА')
   await page.getByRole('radio', { name: /^Ctrl/ }).click()
-  await expect(key(page, 'Digit1')).toContainText('Бинт')
+  await expect(key(page, 'Digit1')).toContainText('БИН')
 
   // Счётчик ведёт к клавише
   await page.getByTestId('issues-button').click()

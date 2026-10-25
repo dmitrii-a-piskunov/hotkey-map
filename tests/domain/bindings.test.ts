@@ -14,7 +14,7 @@ import {
   setPressType,
 } from '@/domain/bindings'
 import { conflictsWith, contextsOverlap, findIssues } from '@/domain/conflicts'
-import { paintInputs, shortLabel } from '@/domain/key-paint'
+import { paintInputs } from '@/domain/key-paint'
 import { actionHighlight, layerInputs, profileLayers } from '@/domain/layers'
 import type { Action, Binding, Game, Profile } from '@/domain/types'
 import { at, sampleGame, testClock } from '../fixtures'
@@ -310,7 +310,7 @@ describe('key paint (FR-26, FR-30)', () => {
     }).get('KeyQ')
     expect(paint).toMatchObject({
       colors: ['#EF4444', null, '#3B82F6'],
-      label: 'Взаимодей…',
+      label: 'ВЗА',
       title: 'Взаимодействие',
       extra: 2,
       bound: true,
@@ -345,11 +345,6 @@ describe('key paint (FR-26, FR-30)', () => {
     })
     expect(paint.get('KeyW')?.colors).toEqual(['#22C55E'])
     expect(paint.get('Space')?.colors).toEqual([])
-    expect(paint.get('Space')?.label).toBe('Прыжок')
-  })
-
-  it('cuts labels to 10 characters', () => {
-    expect(shortLabel('Прыжок')).toBe('Прыжок')
-    expect(shortLabel('Сесть в транспорт')).toBe('Сесть в т…')
+    expect(paint.get('Space')?.label).toBe('ПРЫ')
   })
 })

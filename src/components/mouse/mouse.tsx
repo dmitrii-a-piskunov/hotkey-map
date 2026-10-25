@@ -30,9 +30,10 @@ function centroid(points: readonly Vec[]): Vec {
   }
 }
 
-function caption(view: InputView): string | null {
-  if (!view.label) return null
-  return view.extra > 0 ? `${view.label} +${view.extra}` : view.label
+/** Подпись действия: на кнопке — короткая, у выноски хватает места на полное название */
+function caption(view: InputView, text = view.label): string | null {
+  if (!view.label || !text) return null
+  return view.extra > 0 ? `${text} +${view.extra}` : text
 }
 
 /** Мышь (FR-02): силуэт в SVG, в 3D — с перспективой и объёмом; поверх — зоны кнопок */
@@ -279,7 +280,7 @@ export function Mouse({ layout, unit, view, selected, pressed, views, onSelect }
         const q = at(c.to)
         const gap = unit * CALLOUT_GAP
         const v = viewOf(views, c.code)
-        const text = caption(v)
+        const text = caption(v, v.title)
         return (
           <span
             key={c.code}
