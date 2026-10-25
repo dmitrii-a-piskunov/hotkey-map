@@ -40,18 +40,20 @@ export function AppHeader() {
   const releaseAll = useDevicesStore((s) => s.releaseAll)
 
   return (
-    <header className="flex h-12 shrink-0 items-center gap-4 border-b bg-background px-4">
+    <header className="flex h-12 shrink-0 items-center gap-3 border-b bg-background px-4">
       <div className="flex items-center gap-2">
         <Keyboard className="size-5 text-muted-foreground" aria-hidden="true" />
-        <h1 className="text-base font-semibold tracking-tight whitespace-nowrap">{ru.app.title}</h1>
-        <span className="text-xs text-muted-foreground">{__APP_VERSION__}</span>
+        <h1 className="text-base font-semibold tracking-tight whitespace-nowrap max-2xl:sr-only">
+          {ru.app.title}
+        </h1>
+        <span className="text-xs text-muted-foreground max-2xl:hidden">{__APP_VERSION__}</span>
       </div>
       <div className="flex min-w-0 items-center gap-1 border-l pl-3">
         <GamePicker />
         <ProfilePicker />
         <IssuesButton />
       </div>
-      <div className="ml-auto flex shrink-0 items-center gap-3">
+      <div className="ml-auto flex shrink-0 items-center gap-2">
         <SaveStatusIndicator />
         <Segmented
           label={ru.header.inputMode}

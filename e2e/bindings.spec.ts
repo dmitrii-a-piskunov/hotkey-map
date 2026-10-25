@@ -79,3 +79,28 @@ test('bindings, a conflict and the Ctrl layer survive a reload (FR-12, FR-14, FR
   await expect(key(page, 'KeyE')).toHaveAttribute('data-selected', 'true')
   await expect(panel(page).getByRole('heading', { name: 'E' })).toBeVisible()
 })
+
+test('a mouse button is bound in the bind window; hidden devices give the settings window', async ({
+  page,
+}) => {
+  await page.goto(APP_URL)
+  await page.getByRole('button', { name: 'Из заготовок' }).click()
+  await page.getByRole('button', { name: 'Добавить Dota 2' }).click()
+  await page.keyboard.press('Escape')
+
+  // Боковая кнопка мыши над полем окна привязки (FR-12)
+  await search(page, 'Патрулировать')
+  await slot(page, 'Патрулировать').click()
+  await dialog(page).getByTestId('capture-box').click({ button: 'middle' })
+  await expect(dialog(page).getByTestId('capture-box')).toHaveText('Колесо')
+  await dialog(page).getByRole('button', { name: 'Подтвердить' }).click()
+  await expect(slot(page, 'Патрулировать')).toHaveText('Колесо')
+
+  // Клавиатура и мышь скрыты — панель становится окном с боковым меню
+  await page.getByRole('button', { name: 'Показать или скрыть клавиатуру' }).click()
+  await page.getByRole('button', { name: 'Показать или скрыть мышь' }).click()
+  await expect(page.getByTestId('device-stage')).toBeHidden()
+  const nav = page.getByRole('navigation', { name: 'Разделы' })
+  await nav.getByRole('button', { name: 'Мини-карта' }).click()
+  await expect(panel(page).getByText('Размер героев на мини-карте')).toBeInViewport()
+})
