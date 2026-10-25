@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type PointerEvent } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { BindDialog } from '@/features/bindings/bind-dialog'
 import { useDevicesStore } from '@/features/devices/store'
 import { useCurrentGame, useCurrentProfile } from '@/features/games/use-current'
 import { ru } from '@/i18n/ru'
@@ -101,6 +102,8 @@ export function SidePanel() {
       className="relative flex shrink-0 flex-col border-l bg-background"
       style={{ width }}
     >
+      {/* Окно привязки — слева от панели, поверх сцены: клавиатура остаётся видна */}
+      <BindDialog className="absolute top-14 right-full mr-3" />
       <ResizeHandle
         width={width}
         onChange={(w) => {

@@ -107,9 +107,8 @@ export function ActionList({ game, profile }: { game: Game; profile: Profile }) 
 
 /** «Без клавиши» (FR-17): действия без бинда в текущем профиле */
 export function UnboundList({ game, profile }: { game: Game; profile: Profile }) {
-  // Действие, которому только что назначили клавишу, остаётся в списке, пока под
-  // ним предупреждение о конфликте или ошибка
-  const kept = useBindingsUi((s) => s.feedback?.actionId)
+  // Действие остаётся в списке, пока открыто его окно привязки
+  const kept = useBindingsUi((s) => s.capture?.actionId)
   const bound = new Set(profile.bindings.map((b) => b.actionId))
   const sections = actionSections(game)
     .map((s) => ({ ...s, actions: s.actions.filter((a) => !bound.has(a.id) || a.id === kept) }))

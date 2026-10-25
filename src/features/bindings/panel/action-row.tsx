@@ -1,102 +1,17 @@
 import { ChevronDown } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { bindingInSlot, bindingsOfAction, hasCustomParam } from '@/domain/bindings'
-import { conflictsWith, violationsOf } from '@/domain/conflicts'
-import { BASE_LAYER } from '@/domain/layers'
+import { bindingsOfAction, hasCustomParam } from '@/domain/bindings'
+import { violationsOf } from '@/domain/conflicts'
 import type { Action, Binding, Game, Profile } from '@/domain/types'
 import { ru } from '@/i18n/ru'
-import { fill } from '@/lib/format'
 import { cn } from '@/lib/utils'
-import { unbindOthersCmd } from '../commands'
-import { comboName, layerName, modifierName, pressTypeName, violationText } from '../format'
-import { setFeedback, useBindingsUi, type SlotFeedback } from '../ui-store'
+import { comboName, pressTypeName, violationText } from '../format'
 import { useCurrentIssues } from '../use-bindings'
 import { BindingOptionsMenu, SlotButton } from './slot-button'
-
-const t = ru.bindings
 
 function slotsOf(game: Game, profile: Profile, actionId: string): (1 | 2)[] {
   // Бинд в лишнем слоте (правило сменилось с 2 на 1) тоже виден — как нарушение
   const extra = profile.bindings.some((b) => b.actionId === actionId && b.slot === 2)
   return game.rules.maxKeysPerAction === 2 || extra ? [1, 2] : [1]
-}
-
-function feedbackError(game: Game, fb: SlotFeedback): string | null {
-  if (fb.kind === 'noFreeSlot')
-    return fill(t.errors.noFreeSlot, { max: game.rules.maxKeysPerAction })
-  if (fb.kind !== 'error') return null
-  if (fb.error.kind === 'blockedKey') return fill(t.errors.blockedKey, { game: game.name })
-  return fill(t.errors.modifierNotAllowed, {
-    mods: fb.error.modifiers.map(modifierName).join(', '),
-  })
-}
-
-/** Предупреждение о конфликте под кнопкой: список и «Оставить» / «Снять» (FR-12, шаг 4) */
-function ConflictWarning({
-  game,
-  profile,
-  bindingId,
-}: {
-  game: Game
-  profile: Profile
-  bindingId: string
-}) {
-  const others = conflictsWith(game, profile, bindingId)
-  const names = new Map(game.actions.map((a) => [a.id, a.name]))
-  if (others.length === 0) return null
-  return (
-    <div
-      role="alert"
-      className="grid gap-1.5 rounded-md border border-destructive/40 bg-destructive/5 p-2 text-xs"
-    >
-      <p className="font-medium text-destructive">{t.conflictWith}</p>
-      <ul className="grid gap-0.5">
-        {others.map((b) => (
-          <li key={b.id}>
-            {names.get(b.actionId)} — {comboName(b.input)}
-          </li>
-        ))}
-      </ul>
-      <div className="flex gap-2">
-        <Button
-          size="sm"
-          variant="outline"
-          className="h-7"
-          onClick={() => {
-            setFeedback(null)
-          }}
-        >
-          {t.keep}
-        </Button>
-        <Button
-          size="sm"
-          variant="destructive"
-          className="h-7"
-          onClick={() => {
-            unbindOthersCmd(bindingId)
-          }}
-        >
-          {t.unbindOthers}
-        </Button>
-      </div>
-    </div>
-  )
-}
-
-/** Подсказка захвата: что назначит клик по экранной клавише в текущем слое */
-function CaptureHint() {
-  const layer = useBindingsUi((s) => s.layer)
-  return (
-    <p className="text-xs text-sky-700 dark:text-sky-400">
-      {t.captureHint}
-      {layer !== BASE_LAYER && (
-        <>
-          <br />
-          {fill(t.clickWill, { combo: `${layerName(layer)}+…` })}
-        </>
-      )}
-    </p>
-  )
 }
 
 /** Тип нажатия и параметр, отличные от умолчаний, — прямо в строке (FR-12) */
@@ -156,14 +71,11 @@ export function ActionRow({
   picked = false,
 }: ActionRowProps) {
   const issues = useCurrentIssues()
-  const capture = useBindingsUi((s) => (s.capture?.actionId === action.id ? s.capture : null))
-  const feedback = useBindingsUi((s) => (s.feedback?.actionId === action.id ? s.feedback : null))
   const category = game.categories.find((c) => c.id === action.categoryId)
   const context = game.contexts.find((c) => c.id === action.contextId)
   const slots = slotsOf(game, profile, action.id)
   const bindings = bindingsOfAction(profile, action.id)
   const violations = bindings.flatMap((b) => violationsOf(issues, b.id))
-  const error = feedback && feedbackError(game, feedback)
 
   return (
     <div
@@ -223,15 +135,6 @@ export function ActionRow({
         </div>
       </div>
       <CustomOptions game={game} bindings={bindings} />
-      {capture && <CaptureHint />}
-      {error && (
-        <p role="alert" className="text-xs text-destructive">
-          {error}
-        </p>
-      )}
-      {feedback?.kind === 'conflict' && bindingInSlot(profile, action.id, feedback.slot) && (
-        <ConflictWarning game={game} profile={profile} bindingId={feedback.bindingId} />
-      )}
       {violations.map((v) => (
         <p key={`${v.kind}-${v.binding.id}`} className="text-xs text-destructive">
           {comboName(v.binding.input)}: {violationText(v)}

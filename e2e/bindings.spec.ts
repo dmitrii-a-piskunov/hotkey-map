@@ -2,6 +2,7 @@ import { expect, test, type Page } from '@playwright/test'
 import { APP_URL } from './app-url.ts'
 
 const panel = (page: Page) => page.getByRole('complementary', { name: 'Панель профиля' })
+const dialog = (page: Page) => page.getByRole('dialog', { name: 'Привязка клавиши' })
 const key = (page: Page, code: string) => page.locator(`[data-input-code="${code}"]`)
 
 /** Кнопка клавиши 1 у действия в списке панели */
@@ -30,25 +31,29 @@ test('bindings, a conflict and the Ctrl layer survive a reload (FR-12, FR-14, FR
   // E на «Взаимодействие» (Везде) — нажатием настоящей клавиши
   await search(page, 'Взаимодействие')
   await slot(page, 'Взаимодействие').click()
-  await expect(slot(page, 'Взаимодействие')).toHaveText('Нажмите клавишу…')
+  await expect(dialog(page)).toContainText('Взаимодействие')
   await page.keyboard.press('KeyE')
+  await expect(dialog(page).getByTestId('capture-box')).toHaveText('E')
+  await dialog(page).getByRole('button', { name: 'Подтвердить' }).click()
   await expect(slot(page, 'Взаимодействие')).toHaveText('E')
 
   // E на «Сигнал» (В транспорте) — кликом по экранной клавише; конфликт
   await search(page, 'Сигнал')
   await slot(page, 'Сигнал').click()
   await key(page, 'KeyE').click()
+  await expect(dialog(page).getByRole('alert')).toContainText(
+    'Клавиша уже привязана к действию «Взаимодействие»',
+  )
+  await dialog(page).getByRole('button', { name: 'Всё равно привязать' }).click()
   await expect(slot(page, 'Сигнал')).toHaveText('E')
-  const warning = panel(page).getByRole('group', { name: 'Сигнал', exact: true }).getByRole('alert')
-  await expect(warning).toContainText('Взаимодействие — E')
   await expect(page.getByTestId('issues-button')).toHaveAccessibleName('Конфликты: 1')
   await expect(key(page, 'KeyE')).toHaveAttribute('data-conflict', 'true')
-  await warning.getByRole('button', { name: 'Оставить' }).click()
 
   // Ctrl+1 на «Бинт» — комбинацией на настоящей клавиатуре
   await search(page, 'Бинт')
   await slot(page, 'Бинт').click()
   await page.keyboard.press('Control+Digit1')
+  await dialog(page).getByRole('button', { name: 'Подтвердить' }).click()
   await expect(slot(page, 'Бинт')).toHaveText('Ctrl+1')
   await expect(key(page, 'Digit1')).not.toContainText('Бинт')
   await page.getByRole('radio', { name: /^Ctrl/ }).click()

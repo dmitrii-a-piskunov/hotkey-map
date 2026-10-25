@@ -36,6 +36,12 @@ function input(code: string): HTMLElement {
 }
 
 const panel = () => screen.getByRole('complementary', { name: ru.panel.label })
+const bindDialog = () => screen.getByRole('dialog', { name: ru.bindings.dialogTitle })
+
+async function openFireDialog(user: ReturnType<typeof userEvent.setup>) {
+  const fire = within(panel()).getByRole('group', { name: 'Огонь' })
+  await user.click(within(fire).getByRole('button', { name: /Клавиша 1 действия «Огонь»/ }))
+}
 const profile = () => at(at(useDataStore.getState().data.games, 0).profiles, 0)
 const bindingsOf = (actionId: string) =>
   profile()
@@ -54,6 +60,8 @@ describe('assigning from the panel (FR-12, FR-13, FR-17)', () => {
     await user.click(within(panel()).getByRole('button', { name: ru.panel.assignAction }))
     const picker = await screen.findByRole('dialog', { name: /Выбор действия для Q/ })
     await user.click(within(picker).getByRole('button', { name: /Прыжок/ }))
+    expect(within(bindDialog()).getByTestId('capture-box')).toHaveTextContent('Q')
+    await user.click(within(bindDialog()).getByRole('button', { name: ru.bindings.confirm }))
     expect(bindingsOf('44444444-4444-4444-8444-444444444441')).toEqual(['Space', 'KeyQ'])
     expect(input('KeyQ').style.getPropertyValue('--cap-top')).toBe('#3B82F6')
     expect(within(panel()).getByRole('group', { name: 'Прыжок' })).toBeInTheDocument()
@@ -72,52 +80,87 @@ describe('assigning from the panel (FR-12, FR-13, FR-17)', () => {
     expect(within(picker).getByRole('button', { name: /Огонь/ })).toBeEnabled()
   })
 
-  it('the key button captures a key and warns about a conflict', async () => {
+  it('the key button opens the bind window; a conflict is shown before saving', async () => {
     const user = userEvent.setup()
     await renderApp(data())
     const fire = within(panel()).getByRole('group', { name: 'Огонь' })
     await user.click(within(fire).getByRole('button', { name: /Клавиша 1 действия «Огонь»/ }))
-    expect(within(fire).getByText(ru.bindings.pressKey)).toBeInTheDocument()
+    const dialog = bindDialog()
+    expect(dialog).toHaveTextContent('Огонь')
     fireEvent.keyDown(window, { code: 'Space', key: ' ' })
-    expect(bindingsOf(FIRE)).toEqual(['Space'])
-
-    // «Огонь» (Везде) и «Прыжок» (Пешком) на пробеле — конфликт
-    const warning = within(fire).getByRole('alert')
-    expect(warning).toHaveTextContent('Прыжок — Space')
-    expect(input('Space')).toHaveAttribute('data-conflict')
-    await user.click(within(warning).getByRole('button', { name: ru.bindings.unbindOthers }))
-    expect(bindingsOf('44444444-4444-4444-8444-444444444441')).toEqual([])
-    expect(input('Space')).not.toHaveAttribute('data-conflict')
-  })
-
-  it('«Оставить» keeps both bindings and hides the warning', async () => {
-    const user = userEvent.setup()
-    await renderApp(data())
-    const fire = within(panel()).getByRole('group', { name: 'Огонь' })
-    await user.click(within(fire).getByRole('button', { name: /Клавиша 1 действия «Огонь»/ }))
-    fireEvent.keyDown(window, { code: 'Space', key: ' ' })
-    await user.click(within(fire).getByRole('button', { name: ru.bindings.keep }))
-    expect(within(fire).queryByRole('alert')).not.toBeInTheDocument()
-    expect(input('Space')).toHaveAttribute('data-conflict')
-  })
-
-  it('a blocked key is refused with a message under the button', async () => {
-    const user = userEvent.setup()
-    await renderApp(data())
-    const fire = within(panel()).getByRole('group', { name: 'Огонь' })
-    await user.click(within(fire).getByRole('button', { name: /Клавиша 1 действия «Огонь»/ }))
-    fireEvent.pointerDown(input('Fn'), { button: 0, pointerId: 1 })
-    expect(within(fire).getByRole('alert')).toHaveTextContent('Эта клавиша не передаётся в PUBG')
+    expect(within(dialog).getByTestId('capture-box')).toHaveTextContent('Space')
     expect(bindingsOf(FIRE)).toEqual([])
+
+    // «Огонь» (Везде) и «Прыжок» (Пешком) на пробеле — конфликт, видно до сохранения
+    expect(within(dialog).getByRole('alert')).toHaveTextContent(
+      'Клавиша уже привязана к действию «Прыжок»',
+    )
+    await user.click(within(dialog).getByRole('button', { name: ru.bindings.confirmReplace }))
+    expect(bindingsOf(FIRE)).toEqual(['Space'])
+    expect(bindingsOf('44444444-4444-4444-8444-444444444441')).toEqual([])
+    expect(screen.queryByRole('dialog', { name: ru.bindings.dialogTitle })).not.toBeInTheDocument()
+  })
+
+  it('«Всё равно привязать» keeps both bindings as a conflict', async () => {
+    const user = userEvent.setup()
+    await renderApp(data())
+    await openFireDialog(user)
+    fireEvent.keyDown(window, { code: 'Space', key: ' ' })
+    await user.click(within(bindDialog()).getByRole('button', { name: ru.bindings.confirmAnyway }))
+    expect(bindingsOf(FIRE)).toEqual(['Space'])
+    expect(input('Space')).toHaveAttribute('data-conflict')
+  })
+
+  it('mouse buttons and the wheel are captured over the box', async () => {
+    const user = userEvent.setup()
+    await renderApp(data())
+    await openFireDialog(user)
+    const box = within(bindDialog()).getByTestId('capture-box')
+    fireEvent.pointerDown(box, { button: 2, pointerId: 1 })
+    expect(box).toHaveTextContent('ПКМ')
+    fireEvent.pointerDown(box, { button: 0, pointerId: 1 })
+    expect(box).toHaveTextContent('ЛКМ')
+    fireEvent.pointerDown(box, { button: 3, pointerId: 1, altKey: true })
+    expect(box).toHaveTextContent('Alt+Mouse 4')
+    fireEvent.wheel(box, { deltaY: 30 })
+    expect(box).toHaveTextContent('Колесо вниз')
+    await user.click(within(bindDialog()).getByRole('button', { name: ru.bindings.confirm }))
+    expect(bindingsOf(FIRE)).toEqual(['WheelDown'])
+  })
+
+  it('a blocked key cannot be confirmed; Esc closes without saving', async () => {
+    const user = userEvent.setup()
+    await renderApp(data())
+    await openFireDialog(user)
+    fireEvent.pointerDown(input('Fn'), { button: 0, pointerId: 1 })
+    expect(within(bindDialog()).getByRole('alert')).toHaveTextContent(
+      'Эта клавиша не передаётся в PUBG',
+    )
+    expect(within(bindDialog()).getByRole('button', { name: ru.bindings.confirm })).toBeDisabled()
+    fireEvent.keyDown(window, { code: 'Escape', key: 'Escape' })
+    expect(screen.queryByRole('dialog', { name: ru.bindings.dialogTitle })).not.toBeInTheDocument()
+    expect(bindingsOf(FIRE)).toEqual([])
+  })
+
+  it('«Очистить» and confirm remove the binding', async () => {
+    const user = userEvent.setup()
+    await renderApp(data())
+    const jump = within(panel()).getByRole('group', { name: 'Прыжок' })
+    await user.click(within(jump).getByRole('button', { name: /Клавиша 1 действия «Прыжок»/ }))
+    await user.click(within(bindDialog()).getByRole('button', { name: ru.bindings.clear }))
+    expect(within(bindDialog()).getByTestId('capture-box')).toHaveTextContent('—')
+    await user.click(within(bindDialog()).getByRole('button', { name: ru.bindings.confirm }))
+    expect(bindingsOf('44444444-4444-4444-8444-444444444441')).toEqual([])
   })
 
   it('the hint tells which combination a click assigns in the Ctrl layer', async () => {
     const user = userEvent.setup()
     await renderApp(data())
     await user.click(screen.getByRole('radio', { name: /^Ctrl/ }))
-    const fire = within(panel()).getByRole('group', { name: 'Огонь' })
-    await user.click(within(fire).getByRole('button', { name: /Клавиша 1 действия «Огонь»/ }))
-    expect(fire).toHaveTextContent('Клик по экранной клавише назначит Ctrl+…')
+    await openFireDialog(user)
+    expect(bindDialog()).toHaveTextContent('Клик по экранной клавише назначит Ctrl+…')
+    fireEvent.pointerDown(input('KeyW'), { button: 0, pointerId: 1 })
+    expect(within(bindDialog()).getByTestId('capture-box')).toHaveTextContent('Ctrl+W')
   })
 
   it('press type is chosen in the menu and shown in the row', async () => {
@@ -259,6 +302,7 @@ describe('conflict counter in the header (FR-15)', () => {
     const fire = within(panel()).getByRole('group', { name: 'Огонь' })
     await user.click(within(fire).getByRole('button', { name: /Клавиша 1 действия «Огонь»/ }))
     fireEvent.keyDown(window, { code: 'Space', key: ' ' })
+    await user.click(within(bindDialog()).getByRole('button', { name: ru.bindings.confirmAnyway }))
     expect(screen.getByTestId('issues-button')).toHaveAccessibleName('Конфликты: 1')
 
     await user.click(screen.getByTestId('issues-button'))

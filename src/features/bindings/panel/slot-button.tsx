@@ -127,9 +127,9 @@ export function SlotButton({ game, profile, action, slot, emptyLabel }: SlotButt
           else startCapture(ref)
         }}
       >
-        {capturing ? t.pressKey : (combo ?? emptyLabel ?? t.notAssigned)}
+        {combo ?? emptyLabel ?? t.notAssigned}
       </button>
-      {binding && !capturing && (
+      {binding && (
         <>
           <BindingOptionsMenu game={game} binding={binding}>
             <button

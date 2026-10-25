@@ -5,6 +5,7 @@
 
 import {
   assignBinding,
+  bindingInSlot,
   captureError,
   freeSlot,
   layerModifiers,
@@ -14,7 +15,7 @@ import {
   setPressType,
 } from '@/domain/bindings'
 import { systemClock } from '@/domain/clock'
-import { conflictsWith } from '@/domain/conflicts'
+import { conflictsForInput } from '@/domain/conflicts'
 import { currentGame, currentProfile } from '@/domain/current'
 import { updateGame } from '@/domain/games'
 import {
@@ -33,9 +34,10 @@ import type { Game, Modifier, PressType, Profile, SettingValue } from '@/domain/
 import { useDataStore } from '@/features/data/store'
 import {
   cancelCapture,
-  setFeedback,
   setHighlight,
   setLayer,
+  setPending,
+  startCapture,
   useBindingsUi,
   type SlotRef,
 } from './ui-store'
@@ -58,37 +60,10 @@ function onGame(gameId: string, fn: (game: Game) => Game): void {
   useDataStore.getState().apply((d) => updateGame(d, gameId, fn, clock.now()))
 }
 
-/**
- * Назначение входа в слот (FR-12): правила игры, затем сохранение и
- * проверка конфликтов. Ошибка правил — сообщение под кнопкой, бинд не
- * сохраняется; конфликт — предупреждение, бинд сохранён.
- */
-function assignToSlot(ref: SlotRef, code: string, modifiers: readonly Modifier[]): void {
-  const cur = current()
-  if (!cur) return
-  const input = makeInput(code, modifiers)
-  const error = captureError(cur.game, input)
-  if (error) {
-    setFeedback({ ...ref, kind: 'error', error })
-    return
-  }
-  onGame(cur.game.id, (g) => assignBinding(g, { profileId: cur.profile.id, ...ref }, input, clock))
-  const after = current()
-  const binding = after?.profile.bindings.find(
-    (b) => b.actionId === ref.actionId && b.slot === ref.slot,
-  )
-  const clashes = after && binding ? conflictsWith(after.game, after.profile, binding.id) : []
-  setFeedback(
-    binding && clashes.length > 0 ? { ...ref, kind: 'conflict', bindingId: binding.id } : null,
-  )
-}
-
-/** Вход, пойманный в режиме захвата: клавиша, комбинация, кнопка мыши или клик */
+/** Вход, пойманный в окне привязки: клавиша, комбинация, кнопка мыши или клик (FR-12) */
 export function captureInputCmd(code: string, modifiers: readonly Modifier[]): void {
-  const ref = useBindingsUi.getState().capture
-  if (!ref) return
-  cancelCapture()
-  assignToSlot(ref, code, modifiers)
+  if (!useBindingsUi.getState().capture) return
+  setPending(makeInput(code, modifiers))
 }
 
 /**
@@ -101,41 +76,56 @@ export function clickModifiers(held: readonly Modifier[]): Modifier[] {
 }
 
 /**
- * «Назначить действие» на выделенную клавишу (TC-01, TC-02): в первый
- * свободный слот, с модификаторами текущего слоя.
+ * «Подтвердить» в окне привязки. keep — «Всё равно привязать», бинды других
+ * действий остаются конфликтом; unbindOthers — снять клавишу с них.
+ * Пустая клавиша («Очистить») снимает бинд слота. Ошибка правил не сохраняется.
+ */
+export function confirmCaptureCmd(mode: 'keep' | 'unbindOthers' = 'keep'): void {
+  const capture = useBindingsUi.getState().capture
+  const cur = current()
+  if (!capture || !cur) return
+  const ref = { actionId: capture.actionId, slot: capture.slot }
+  const { pending } = capture
+  if (pending === null) {
+    unassignCmd(ref)
+  } else if (pending !== undefined) {
+    if (captureError(cur.game, pending)) return
+    const own = bindingInSlot(cur.profile, ref.actionId, ref.slot)
+    const others = conflictsForInput(cur.game, cur.profile, ref, pending, own?.pressType ?? 'press')
+    onGame(cur.game.id, (g) => {
+      const assigned = assignBinding(g, { profileId: cur.profile.id, ...ref }, pending, clock)
+      return mode === 'unbindOthers' && others.length > 0
+        ? removeBindings(
+            assigned,
+            cur.profile.id,
+            others.map((b) => b.id),
+            clock.now(),
+          )
+        : assigned
+    })
+  }
+  cancelCapture()
+}
+
+/**
+ * «Назначить действие» на выделенную клавишу (TC-01, TC-02): окно привязки
+ * для первого свободного слота с клавишей и модификаторами текущего слоя.
  */
 export function assignActionToInputCmd(actionId: string, code: string): void {
   const cur = current()
   if (!cur) return
   const slot = freeSlot(cur.game, cur.profile, actionId)
-  if (slot === null) {
-    setFeedback({ actionId, slot: 1, kind: 'noFreeSlot' })
-    return
-  }
-  assignToSlot({ actionId, slot }, code, layerModifiers(useBindingsUi.getState().layer))
+  if (slot === null) return
+  startCapture({ actionId, slot })
+  setPending(makeInput(code, layerModifiers(useBindingsUi.getState().layer)))
 }
 
 export function unassignCmd(ref: SlotRef): void {
   const cur = current()
   if (!cur) return
-  const binding = cur.profile.bindings.find(
-    (b) => b.actionId === ref.actionId && b.slot === ref.slot,
-  )
+  const binding = bindingInSlot(cur.profile, ref.actionId, ref.slot)
   if (!binding) return
   onGame(cur.game.id, (g) => removeBindings(g, cur.profile.id, [binding.id], clock.now()))
-  const fb = useBindingsUi.getState().feedback
-  if (fb?.actionId === ref.actionId && fb.slot === ref.slot) setFeedback(null)
-}
-
-/** «Снять с других действий» (FR-12, шаг 4) */
-export function unbindOthersCmd(bindingId: string): void {
-  const cur = current()
-  if (!cur) return
-  const others = conflictsWith(cur.game, cur.profile, bindingId).map((b) => b.id)
-  if (others.length > 0) {
-    onGame(cur.game.id, (g) => removeBindings(g, cur.profile.id, others, clock.now()))
-  }
-  setFeedback(null)
 }
 
 export function setPressTypeCmd(bindingId: string, pressType: PressType): void {

@@ -16,7 +16,6 @@ export function resetAppStores(): void {
   useBindingsUi.setState({
     layer: '',
     capture: null,
-    feedback: null,
     highlight: null,
     tab: 'actions',
   })

@@ -4,8 +4,8 @@
  */
 
 import { create } from 'zustand'
-import type { CaptureError } from '@/domain/bindings'
 import { BASE_LAYER } from '@/domain/layers'
+import type { BindingInput } from '@/domain/types'
 
 /** Кнопка клавиши: слот действия */
 export interface SlotRef {
@@ -13,11 +13,13 @@ export interface SlotRef {
   slot: 1 | 2
 }
 
-/** Что показать под кнопкой после захвата (FR-12, шаги 3 и 4) */
-export type SlotFeedback =
-  | (SlotRef & { kind: 'error'; error: CaptureError })
-  | (SlotRef & { kind: 'conflict'; bindingId: string })
-  | (SlotRef & { kind: 'noFreeSlot' })
+/**
+ * Окно «Привязка клавиши» (FR-12): слот и новая клавиша. pending не задан —
+ * клавишу ещё не нажали; null — «Очистить»
+ */
+export interface Capture extends SlotRef {
+  pending?: BindingInput | null
+}
 
 export type PanelTab = 'actions' | 'unbound' | 'groups' | 'settings' | 'notes'
 
@@ -32,9 +34,8 @@ export interface Highlight {
 interface BindingsUi {
   /** Слой модификаторов над клавиатурой (FR-14) */
   layer: string
-  /** Кнопка в режиме «Нажмите клавишу…» */
-  capture: SlotRef | null
-  feedback: SlotFeedback | null
+  /** Открытое окно привязки */
+  capture: Capture | null
   highlight: Highlight | null
   tab: PanelTab
 }
@@ -42,7 +43,6 @@ interface BindingsUi {
 export const useBindingsUi = create<BindingsUi>()(() => ({
   layer: BASE_LAYER,
   capture: null,
-  feedback: null,
   highlight: null,
   tab: 'actions',
 }))
@@ -52,7 +52,11 @@ export function setLayer(layer: string): void {
 }
 
 export function startCapture(ref: SlotRef): void {
-  useBindingsUi.setState({ capture: ref, feedback: null })
+  useBindingsUi.setState({ capture: { actionId: ref.actionId, slot: ref.slot } })
+}
+
+export function setPending(pending: BindingInput | null): void {
+  useBindingsUi.setState((s) => (s.capture ? { capture: { ...s.capture, pending } } : s))
 }
 
 export function cancelCapture(): void {
@@ -61,10 +65,6 @@ export function cancelCapture(): void {
 
 export function isCapturing(): boolean {
   return useBindingsUi.getState().capture !== null
-}
-
-export function setFeedback(feedback: SlotFeedback | null): void {
-  useBindingsUi.setState({ feedback })
 }
 
 export function setHighlight(highlight: Highlight | null): void {
@@ -77,5 +77,5 @@ export function setPanelTab(tab: PanelTab): void {
 
 /** Сброс при смене игры или профиля: захват и отклик относятся к старым действиям */
 export function resetBindingsUi(): void {
-  useBindingsUi.setState({ capture: null, feedback: null, highlight: null })
+  useBindingsUi.setState({ capture: null, highlight: null })
 }

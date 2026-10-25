@@ -1,6 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { setLayer, startCapture, useBindingsUi, type SlotRef } from '@/features/bindings/ui-store'
+import { confirmCaptureCmd } from '@/features/bindings/commands'
 import { useDataStore } from '@/features/data/store'
 import { ru } from '@/i18n/ru'
 import { at, sampleData } from './fixtures'
@@ -37,6 +38,7 @@ function jumpInputs() {
 }
 
 const ui = () => useBindingsUi.getState()
+const pending = () => ui().capture?.pending
 
 beforeEach(resetAppStores)
 afterEach(disposeApp)
@@ -82,6 +84,10 @@ describe('key capture (FR-12)', () => {
     startCapture(SLOT)
     keyDown('ControlLeft', { ctrlKey: true })
     keyDown('Digit1', { ctrlKey: true })
+    expect(pending()).toEqual({ device: 'keyboard', code: 'Digit1', modifiers: ['ctrl'] })
+    // Сохраняет только «Подтвердить»
+    expect(jumpInputs()).toEqual([{ device: 'keyboard', code: 'Space', modifiers: [] }])
+    confirmCaptureCmd()
     expect(jumpInputs()).toEqual([{ device: 'keyboard', code: 'Digit1', modifiers: ['ctrl'] }])
     expect(ui().capture).toBeNull()
     // Клавиша в захвате не выделяется и слой не меняет
@@ -94,7 +100,7 @@ describe('key capture (FR-12)', () => {
     startCapture(SLOT)
     keyDown('ShiftLeft', { shiftKey: true })
     keyUp('ShiftLeft')
-    expect(jumpInputs()).toEqual([{ device: 'keyboard', code: 'ShiftLeft', modifiers: [] }])
+    expect(pending()).toEqual({ device: 'keyboard', code: 'ShiftLeft', modifiers: [] })
   })
 
   it('Esc cancels capture and keeps the binding', async () => {
@@ -110,7 +116,7 @@ describe('key capture (FR-12)', () => {
     setLayer('ctrl')
     startCapture(SLOT)
     fireEvent.pointerDown(input('KeyW'), { button: 0, pointerId: 1 })
-    expect(jumpInputs()).toEqual([{ device: 'keyboard', code: 'KeyW', modifiers: ['ctrl'] }])
+    expect(pending()).toEqual({ device: 'keyboard', code: 'KeyW', modifiers: ['ctrl'] })
     expect(selectedCodes()).toEqual([])
   })
 
@@ -119,14 +125,15 @@ describe('key capture (FR-12)', () => {
     setLayer('ctrl')
     startCapture(SLOT)
     fireEvent.pointerDown(input('Escape'), { button: 0, pointerId: 1, altKey: true })
-    expect(jumpInputs()).toEqual([{ device: 'keyboard', code: 'Escape', modifiers: ['alt'] }])
+    expect(pending()).toEqual({ device: 'keyboard', code: 'Escape', modifiers: ['alt'] })
   })
 
-  it('Fn and blocked keys are refused with a message', async () => {
+  it('Fn and blocked keys cannot be confirmed', async () => {
     await renderApp()
     startCapture(SLOT)
     fireEvent.pointerDown(input('MetaLeft'), { button: 0, pointerId: 1 })
-    expect(ui().feedback).toEqual({ ...SLOT, kind: 'error', error: { kind: 'blockedKey' } })
+    confirmCaptureCmd()
+    expect(ui().capture).not.toBeNull()
     expect(jumpInputs()).toEqual([{ device: 'keyboard', code: 'Space', modifiers: [] }])
   })
 
@@ -135,13 +142,13 @@ describe('key capture (FR-12)', () => {
     const mouse = screen.getByRole('group', { name: ru.devices.mouse })
     startCapture(SLOT)
     fireEvent.pointerDown(mouse, { button: 1, pointerId: 1 })
-    expect(jumpInputs()).toEqual([{ device: 'mouse', code: 'MouseMiddle', modifiers: [] }])
+    expect(pending()).toEqual({ device: 'mouse', code: 'MouseMiddle', modifiers: [] })
     startCapture(SLOT)
     fireEvent.wheel(mouse, { deltaY: -40 })
-    expect(jumpInputs()).toEqual([{ device: 'mouse', code: 'WheelUp', modifiers: [] }])
+    expect(pending()).toEqual({ device: 'mouse', code: 'WheelUp', modifiers: [] })
     startCapture(SLOT)
     fireEvent.pointerDown(input('Mouse4'), { button: 0, pointerId: 1 })
-    expect(jumpInputs()).toEqual([{ device: 'mouse', code: 'Mouse4', modifiers: [] }])
+    expect(pending()).toEqual({ device: 'mouse', code: 'Mouse4', modifiers: [] })
   })
 
   it('a click outside the stage cancels capture', async () => {
@@ -172,6 +179,7 @@ describe('keys on the stage (FR-14, FR-15, FR-26, FR-30)', () => {
     await renderApp()
     startCapture(SLOT)
     keyDown('Digit1', { ctrlKey: true })
+    confirmCaptureCmd()
     expect(input('Digit1')).not.toHaveTextContent('Прыжок')
     expect(input('Digit1')).not.toHaveAttribute('data-dimmed')
     fireEvent.click(screen.getByRole('radio', { name: /^Ctrl/ }))

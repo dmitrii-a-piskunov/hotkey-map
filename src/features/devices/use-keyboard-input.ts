@@ -27,10 +27,14 @@ import { useDevicesStore } from './store'
  */
 const TRACKED_BUTTONS = new Set([1, 3, 4])
 
+function isTextField(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false
+  return target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)
+}
+
 function isEditableTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false
-  if (target.isContentEditable) return true
-  if (['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)) return true
+  if (isTextField(target)) return true
   // Диалоги и меню (редактор игры, профили) работают с клавиатуры сами (8.5)
   return target.closest('[role="dialog"], [role="alertdialog"], [role="menu"]') !== null
 }
@@ -39,7 +43,7 @@ function isEditableTarget(target: EventTarget | null): boolean {
 function isCaptureZone(target: EventTarget | null): boolean {
   return (
     target instanceof Element &&
-    target.closest('[data-testid="device-stage"], [data-capture-slot]') !== null
+    target.closest('[data-testid="device-stage"], [data-capture-slot], [data-bind-dialog]') !== null
   )
 }
 
@@ -72,6 +76,11 @@ export function useKeyboardInput(): void {
     }
 
     function onKeyDown(e: KeyboardEvent) {
+      // Окно привязки ловит клавиши и тогда, когда фокус на его кнопках
+      if (isCapturing() && !isTextField(e.target)) {
+        onCaptureKeyDown(e)
+        return
+      }
       if (isEditableTarget(e.target)) return
       const store = useDevicesStore.getState()
       const settings = useDataStore.getState().data.appSettings
@@ -81,11 +90,6 @@ export function useKeyboardInput(): void {
       const lang = detectLabelLang(e.key)
       if (lang && settings.autoLang && settings.labelLang !== 'enru' && lang !== settings.labelLang)
         useDataStore.getState().updateSettings({ labelLang: lang })
-
-      if (isCapturing()) {
-        onCaptureKeyDown(e)
-        return
-      }
 
       if (isReservedCombo(e)) return
       e.preventDefault()
@@ -127,7 +131,7 @@ export function useKeyboardInput(): void {
       }
       if (lonelyModifier !== e.code) return
       lonelyModifier = null
-      if (isEditableTarget(e.target)) return
+      if (isCapturing() ? isTextField(e.target) : isEditableTarget(e.target)) return
       // Alt в Firefox при отпускании открывает меню окна
       e.preventDefault()
       if (isCapturing()) {

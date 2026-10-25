@@ -24,7 +24,7 @@ import {
   type SelectionState,
 } from '@/domain/selection'
 import { captureInputCmd, clickModifiers } from '@/features/bindings/commands'
-import { cancelCapture, isCapturing, useBindingsUi } from '@/features/bindings/ui-store'
+import { isCapturing, useBindingsUi } from '@/features/bindings/ui-store'
 import { useSettings } from '@/features/data/store'
 import { keyboardLayout, mouseLayout } from '@/features/devices/devices'
 import { useDevicesStore } from '@/features/devices/store'
@@ -105,7 +105,6 @@ function captureFromPointer(e: PointerEvent<HTMLDivElement>): void {
   const hit = inputAt(e.target)
   if (e.button === 0) {
     if (hit) captureInputCmd(hit.code, mods)
-    else cancelCapture()
     return
   }
   const code = isOverMouse(e.target) ? mouseCodeForButton(mouseLayout, e.button) : null
