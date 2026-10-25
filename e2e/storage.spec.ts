@@ -18,6 +18,25 @@ test('TC-11: settings survive a reload (FR-19)', async ({ page }) => {
   await expect(page.getByTestId('device-stage')).toHaveAttribute('data-view', '2d')
 })
 
+test('TC-21: the black keyboard color survives a reload (FR-01)', async ({ page }) => {
+  await page.goto(APP_URL)
+  await expect(saveStatus(page)).toHaveText('Сохранено')
+  const escTop = () =>
+    page
+      .locator('[data-input-code="Escape"]')
+      .evaluate((el) => (el as HTMLElement).style.getPropertyValue('--cap-top'))
+  const standardTop = await escTop()
+
+  await page.getByRole('radio', { name: 'Чёрная' }).click()
+  await expect.poll(escTop).not.toBe(standardTop)
+  const blackTop = await escTop()
+  await expect(saveStatus(page)).toHaveText('Сохранено')
+
+  await page.reload()
+  await expect(page.getByRole('radio', { name: 'Чёрная' })).toBeChecked()
+  expect(await escTop()).toBe(blackTop)
+})
+
 test('fallback storage shows the banner (FR-23)', async ({ page }) => {
   await page.goto(APP_URL)
   await expect(
