@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react'
+import { memo, type CSSProperties } from 'react'
 import { ConflictBadge, InputCap } from '@/components/devices/input-cap'
 import { keyAriaLabel, viewOf, type InputView } from '@/components/devices/input-views'
 import { keyboardWidth, keyWells } from '@/components/devices/device-geometry'
@@ -9,7 +9,7 @@ import type { LabelMode } from '@/domain/input'
 import type { ClickModifiers, InputCode } from '@/domain/selection'
 import type { ViewMode } from '@/domain/types'
 import { useBlockedKeys } from '@/features/devices/blocked-keys'
-import type { KeyboardLayout } from '@/layouts/aula-f75'
+import type { KeyboardLayout, KeyDef } from '@/layouts/aula-f75'
 import { ru } from '@/i18n/ru'
 import { capStyleOf, deviceTheme } from '@/styles/device-theme'
 
@@ -51,6 +51,74 @@ export interface KeyboardProps {
 export function Keyboard(props: KeyboardProps) {
   return props.view === '3d' ? <Keyboard3D {...props} /> : <Keyboard2D {...props} />
 }
+
+interface Key2DProps {
+  keyDef: KeyDef
+  left: number
+  top: number
+  width: number
+  height: number
+  labelLang: LabelMode
+  selected: boolean
+  pressed: boolean
+  off: boolean
+  view: InputView
+  onSelect: (code: InputCode, mods: ClickModifiers) => void
+}
+
+/** Клавиша в 2D. Под memo: смена выделения перерисовывает только изменившиеся клавиши */
+const Key2D = memo(function Key2D({
+  keyDef: k,
+  left,
+  top,
+  width,
+  height,
+  labelLang,
+  selected,
+  pressed,
+  off,
+  view,
+  onSelect,
+}: Key2DProps) {
+  return (
+    <InputCap
+      code={k.code}
+      kind="key"
+      left={left}
+      top={top}
+      width={width}
+      height={height}
+      ariaLabel={keyAriaLabel(k.label.en, off, view)}
+      selected={selected}
+      pressed={pressed}
+      disabled={off}
+      conflict={view.conflict}
+      dimmed={view.dimmed}
+      title={view.title}
+      className="key"
+      hintPlacement={hintPlacementOf(k)}
+      style={view.style ?? CAP_VARS[capStyleOf(k.code)]}
+      onSelect={onSelect}
+    >
+      <div className="key-top" style={TOP_STYLE}>
+        <KeyLabels
+          keyDef={k}
+          labelLang={labelLang}
+          action={
+            view.label
+              ? {
+                  label: view.label,
+                  extra: view.extra,
+                  faceWidth: k.w - cap.gap - 2 * cap.topInset.side,
+                }
+              : undefined
+          }
+        />
+        {view.conflict && <ConflictBadge />}
+      </div>
+    </InputCap>
+  )
+})
 
 function Keyboard2D({
   layout,
@@ -132,49 +200,22 @@ function Keyboard2D({
           <div className="knob-top" style={KNOB_TOP_STYLE} />
         </InputCap>
       )}
-      {layout.keys.map((k) => {
-        const off = !k.assignable || blockedKeys.includes(k.code)
-        const view = viewOf(views, k.code)
-        return (
-          <InputCap
-            key={k.code}
-            code={k.code}
-            kind="key"
-            left={toX(k.x) + gap / 2}
-            top={toY(k.y) + gap / 2}
-            width={k.w * unit - gap}
-            height={k.h * unit - gap}
-            ariaLabel={keyAriaLabel(k.label.en, off, view)}
-            selected={selected.has(k.code)}
-            pressed={pressed.has(k.code)}
-            disabled={off}
-            conflict={view.conflict}
-            dimmed={view.dimmed}
-            title={view.title}
-            className="key"
-            hintPlacement={hintPlacementOf(k)}
-            style={view.style ?? CAP_VARS[capStyleOf(k.code)]}
-            onSelect={onSelect}
-          >
-            <div className="key-top" style={TOP_STYLE}>
-              <KeyLabels
-                keyDef={k}
-                labelLang={labelLang}
-                action={
-                  view.label
-                    ? {
-                        label: view.label,
-                        extra: view.extra,
-                        faceWidth: k.w - cap.gap - 2 * cap.topInset.side,
-                      }
-                    : undefined
-                }
-              />
-              {view.conflict && <ConflictBadge />}
-            </div>
-          </InputCap>
-        )
-      })}
+      {layout.keys.map((k) => (
+        <Key2D
+          key={k.code}
+          keyDef={k}
+          left={toX(k.x) + gap / 2}
+          top={toY(k.y) + gap / 2}
+          width={k.w * unit - gap}
+          height={k.h * unit - gap}
+          labelLang={labelLang}
+          selected={selected.has(k.code)}
+          pressed={pressed.has(k.code)}
+          off={!k.assignable || blockedKeys.includes(k.code)}
+          view={viewOf(views, k.code)}
+          onSelect={onSelect}
+        />
+      ))}
     </div>
   )
 }
