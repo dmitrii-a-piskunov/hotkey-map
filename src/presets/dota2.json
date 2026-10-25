@@ -21,34 +21,40 @@
           "order": 0
         },
         {
+          "id": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
+          "name": "Общий",
+          "isGlobal": false,
+          "order": 1
+        },
+        {
           "id": "2debc068-161f-594d-86ed-c6f3d336d98b",
           "name": "Герой",
           "isGlobal": false,
-          "order": 1
+          "order": 2
         },
         {
           "id": "ec814013-0609-5103-bd3c-b1973bf68083",
           "name": "Курьер",
           "isGlobal": false,
-          "order": 2
+          "order": 3
         },
         {
           "id": "6e340630-3f88-5690-a4dc-785b808a7169",
           "name": "Существа",
           "isGlobal": false,
-          "order": 3
+          "order": 4
         },
         {
           "id": "c726abb0-0f54-56f7-8dff-0f6e950420f6",
           "name": "Выбор таланта",
           "isGlobal": false,
-          "order": 4
+          "order": 5
         },
         {
           "id": "ff6c64c3-85ee-5a51-9d2e-54c975d4ecdc",
           "name": "Выбор нейтрального предмета",
           "isGlobal": false,
-          "order": 5
+          "order": 6
         }
       ],
       "categories": [
@@ -254,71 +260,79 @@
         {
           "id": "a3dce0e4-7bca-56b2-ae50-3ac6cf078fa0",
           "name": "Предмет 1",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
           "order": 18,
-          "short": "П1"
+          "short": "П1",
+          "subgroup": "Предметы"
         },
         {
           "id": "bf2038aa-8507-5028-b201-89a201760d93",
           "name": "Предмет 2",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
           "order": 19,
-          "short": "П2"
+          "short": "П2",
+          "subgroup": "Предметы"
         },
         {
           "id": "9b051aaa-bf10-5563-bedc-8643559d6175",
           "name": "Предмет 3",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
           "order": 20,
-          "short": "П3"
+          "short": "П3",
+          "subgroup": "Предметы"
         },
         {
           "id": "b19d2a57-d995-551d-9819-5fe8c60a01ec",
           "name": "Предмет 4",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
           "order": 21,
-          "short": "П4"
+          "short": "П4",
+          "subgroup": "Предметы"
         },
         {
           "id": "c5523dfc-2dae-5261-a026-34c9663396a7",
           "name": "Предмет 5",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
           "order": 22,
-          "short": "П5"
+          "short": "П5",
+          "subgroup": "Предметы"
         },
         {
           "id": "aba88f7c-ec18-5998-9fdd-55e23c58e817",
           "name": "Предмет 6",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
           "order": 23,
-          "short": "П6"
+          "short": "П6",
+          "subgroup": "Предметы"
         },
         {
           "id": "5d283cac-a2bc-578f-9734-a4b8b222887a",
           "name": "Нейтральный предмет",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
           "order": 24,
-          "short": "НП"
+          "short": "НП",
+          "subgroup": "Предметы"
         },
         {
           "id": "44ab4919-209f-5ef9-ac17-21f8a03ce3e7",
           "name": "Свиток телепортации",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "4f0af011-1e2f-5df9-a167-15844d0cfbcf",
           "order": 25,
-          "short": "ТП"
+          "short": "ТП",
+          "subgroup": "Предметы"
         },
         {
           "id": "e2ce61bb-f71a-5f6a-987f-17011888be7d",
           "name": "Выбрать героя",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
           "order": 26,
           "column": 1
@@ -326,7 +340,7 @@
         {
           "id": "001b4185-f3d0-539c-be62-0c22357139c9",
           "name": "Выбрать всех своих существ",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
           "order": 27,
           "column": 1
@@ -334,7 +348,7 @@
         {
           "id": "df40ec8f-f246-5ab6-ad45-1016bc7823ab",
           "name": "Атаковать",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
           "order": 28,
           "column": 1
@@ -342,7 +356,7 @@
         {
           "id": "db9aa136-28b5-5325-8c46-bdd5eeef9914",
           "name": "Удерживать позицию",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
           "order": 29,
           "column": 1
@@ -350,7 +364,7 @@
         {
           "id": "d0b52fd7-01a1-5c2d-b753-04fb60177274",
           "name": "Изучить способность",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
           "order": 30,
           "column": 1
@@ -358,7 +372,7 @@
         {
           "id": "34d29264-1063-595c-a295-136ba0608543",
           "name": "Выбрать талант",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
           "order": 31,
           "column": 1
@@ -406,7 +420,7 @@
         {
           "id": "69461abf-c7c6-5ac2-bf7b-9a91b23f255d",
           "name": "Идти",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
           "order": 37,
           "column": 2
@@ -414,7 +428,7 @@
         {
           "id": "24a96b34-24b4-5bf4-b5af-3c67baf7fc0e",
           "name": "Идти в направлении",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
           "order": 38,
           "column": 2
@@ -422,7 +436,7 @@
         {
           "id": "0e0b61af-5e73-529d-aad2-3ebb83b90b9c",
           "name": "Патрулировать",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
           "order": 39,
           "column": 2
@@ -430,7 +444,7 @@
         {
           "id": "35309ead-b763-539d-9b83-64a32f62f199",
           "name": "Отменить текущее действие",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
           "order": 40,
           "column": 2
@@ -438,7 +452,7 @@
         {
           "id": "1ead27dc-8b04-5fd5-b2b4-1d0a4b528f05",
           "name": "Выбрать всех прочих существ",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
           "order": 41,
           "column": 2
@@ -446,7 +460,7 @@
         {
           "id": "1ecc4d55-445e-5443-a800-1a76835a3dc2",
           "name": "Укрепить постройки",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
           "order": 42,
           "column": 2
@@ -454,7 +468,7 @@
         {
           "id": "852477a0-768f-518a-a0c0-8b058dd9ac8c",
           "name": "Сканировать территорию",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
           "order": 43,
           "column": 2
@@ -462,7 +476,7 @@
         {
           "id": "00c65e40-8589-5ed6-a41c-625ecf39ca76",
           "name": "Использовать насмешку",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
           "order": 44,
           "column": 2
@@ -470,7 +484,7 @@
         {
           "id": "a2830e87-1a13-5be8-931e-819dc70e3523",
           "name": "Включить/выключить автоатаку",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "7b445e66-2e7a-575e-b9ea-a91850ffdfe3",
           "order": 45,
           "column": 2
@@ -558,7 +572,7 @@
         {
           "id": "8bb33666-ce4b-57f1-8a29-73d601e40707",
           "name": "Замена клавише альт. применения",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "ca470c20-610c-5d6e-af38-45e5524f3445",
           "order": 56,
           "column": 2
@@ -566,7 +580,7 @@
         {
           "id": "61c1d993-059b-5007-9eb3-158c4e48d967",
           "name": "Выбрать курьера",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "e7aab8be-7110-5228-8c89-432be66619d9",
           "order": 57,
           "column": 1
@@ -574,7 +588,7 @@
         {
           "id": "7b6310a6-3d4b-5f62-954e-18b01e10a37b",
           "name": "Доставить предметы",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "e7aab8be-7110-5228-8c89-432be66619d9",
           "order": 58,
           "column": 1
@@ -582,7 +596,7 @@
         {
           "id": "7a6a97cb-afa9-5ccd-b60f-9c614db7884d",
           "name": "Курьер — ускорение",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "e7aab8be-7110-5228-8c89-432be66619d9",
           "order": 59,
           "column": 2
@@ -590,7 +604,7 @@
         {
           "id": "1697f81a-3e36-5881-af8f-8ed63a79d144",
           "name": "Курьер — щит",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "e7aab8be-7110-5228-8c89-432be66619d9",
           "order": 60,
           "column": 2
@@ -598,7 +612,7 @@
         {
           "id": "cd58033b-463b-5b1d-a7c8-71eccb822611",
           "name": "Быстрая покупка",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "3d09aad4-dccd-5c3c-91e7-49a95609c8fd",
           "order": 61,
           "column": 1
@@ -606,7 +620,7 @@
         {
           "id": "0402fd42-dfe5-5f95-8211-0697c1278943",
           "name": "Купить закреплённый предмет",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "3d09aad4-dccd-5c3c-91e7-49a95609c8fd",
           "order": 62,
           "column": 1
@@ -614,7 +628,7 @@
         {
           "id": "1db7de89-c6e0-555a-9de4-f6793a5fad93",
           "name": "Забрать предметы из тайника",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "3d09aad4-dccd-5c3c-91e7-49a95609c8fd",
           "order": 63,
           "column": 2
@@ -622,7 +636,7 @@
         {
           "id": "d732da9a-0e00-5786-8b3c-f7d3350ab02d",
           "name": "Открыть лавку",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "3d09aad4-dccd-5c3c-91e7-49a95609c8fd",
           "order": 64,
           "column": 2
@@ -630,7 +644,7 @@
         {
           "id": "9401158b-275c-51a5-8621-b3aa46c4d8fb",
           "name": "Вкл./выкл. защиту выкупа",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "3d09aad4-dccd-5c3c-91e7-49a95609c8fd",
           "order": 65,
           "column": 2
@@ -638,7 +652,7 @@
         {
           "id": "3c8c0b9c-9590-5e75-8ed0-50d70f325b0c",
           "name": "Следующее существо",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
           "order": 66,
           "column": 1
@@ -646,7 +660,7 @@
         {
           "id": "9d6ac485-56b3-5847-9703-e465f65eb510",
           "name": "Предыдущее существо",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
           "order": 67,
           "column": 2
@@ -654,7 +668,7 @@
         {
           "id": "5570dd1b-6569-50ef-a704-216abc270d8c",
           "name": "1-я группа",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
           "order": 68,
           "column": 1
@@ -662,7 +676,7 @@
         {
           "id": "edb34f56-bb4e-5a91-ac7b-c21f326e55e1",
           "name": "2-я группа",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
           "order": 69,
           "column": 2
@@ -670,7 +684,7 @@
         {
           "id": "13fa36e5-0ffb-58fc-9460-de2edf66f673",
           "name": "3-я группа",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
           "order": 70,
           "column": 1
@@ -678,7 +692,7 @@
         {
           "id": "ccc07a29-d5ba-5a78-b56d-ab7b348a7a26",
           "name": "4-я группа",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
           "order": 71,
           "column": 2
@@ -686,7 +700,7 @@
         {
           "id": "f99a3add-c9ce-53dd-9295-bd0c6f9deac4",
           "name": "5-я группа",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
           "order": 72,
           "column": 1
@@ -694,7 +708,7 @@
         {
           "id": "9e529148-e564-5517-8f28-653f42f56635",
           "name": "6-я группа",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
           "order": 73,
           "column": 2
@@ -702,7 +716,7 @@
         {
           "id": "cfb85503-3158-5b1d-a19c-383cde8b442e",
           "name": "7-я группа",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
           "order": 74,
           "column": 1
@@ -710,7 +724,7 @@
         {
           "id": "30cdc886-8ae0-5192-a8f6-deaecdc55add",
           "name": "8-я группа",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
           "order": 75,
           "column": 2
@@ -718,7 +732,7 @@
         {
           "id": "53101807-e29d-5883-b10a-64006ae9e8c4",
           "name": "9-я группа",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
           "order": 76,
           "column": 1
@@ -726,7 +740,7 @@
         {
           "id": "42c27705-93ed-5d07-a8c2-6a792e2a2b75",
           "name": "10-я группа",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
           "order": 77,
           "column": 2
@@ -734,7 +748,7 @@
         {
           "id": "0ad0a24f-27e6-565a-ac7f-4077fceb19a8",
           "name": "1-й союзник",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
           "order": 78,
           "column": 1,
@@ -743,7 +757,7 @@
         {
           "id": "c8c078ff-7a95-54ee-905b-2c7b8d2e3945",
           "name": "2-й союзник",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
           "order": 79,
           "column": 2,
@@ -752,7 +766,7 @@
         {
           "id": "d4197e30-5c58-5309-bffb-6520b0668e91",
           "name": "3-й союзник",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
           "order": 80,
           "column": 1,
@@ -761,7 +775,7 @@
         {
           "id": "da45e0e9-9556-59b5-a99b-5c5f10ac32a1",
           "name": "4-й союзник",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
           "order": 81,
           "column": 2,
@@ -770,7 +784,7 @@
         {
           "id": "f4bffd11-f65c-5b41-8449-a178270b8006",
           "name": "5-й союзник",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "37d76782-0a2e-5124-88d7-69796eb39041",
           "order": 82,
           "column": 1,
@@ -779,7 +793,7 @@
         {
           "id": "02366bad-6cdd-59e2-83b6-19f368f70e9c",
           "name": "Сдвинуть камеру вверх",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
           "order": 83,
           "column": 1,
@@ -788,7 +802,7 @@
         {
           "id": "e871f2cc-3071-58bd-a10a-61c27e8feac1",
           "name": "Сдвинуть камеру вниз",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
           "order": 84,
           "column": 1,
@@ -797,7 +811,7 @@
         {
           "id": "44af50e2-9869-5f33-be3b-f4a1ab6de896",
           "name": "Сдвинуть камеру влево",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
           "order": 85,
           "column": 1,
@@ -806,7 +820,7 @@
         {
           "id": "ad6cd237-3ab4-5263-89d2-3907e37320d2",
           "name": "Сдвинуть камеру вправо",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
           "order": 86,
           "column": 1,
@@ -815,7 +829,7 @@
         {
           "id": "8ce07e2c-3a6e-5efe-9f73-8cdc0ca9e403",
           "name": "Показать недавнее событие",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
           "order": 87,
           "column": 1,
@@ -824,7 +838,7 @@
         {
           "id": "8ade7ca3-d896-5ee3-b826-19d5be07cb35",
           "name": "Приблизить камеру",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
           "order": 88,
           "column": 2,
@@ -833,7 +847,7 @@
         {
           "id": "9a94c703-b117-5619-9ba4-0813a225c7a5",
           "name": "Отдалить камеру",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
           "order": 89,
           "column": 2,
@@ -842,7 +856,7 @@
         {
           "id": "55e833bd-72a7-5c47-866f-95f740856fc9",
           "name": "Подробный просмотр",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
           "order": 90,
           "column": 2,
@@ -851,7 +865,7 @@
         {
           "id": "d2f4facc-9fce-52c3-92cc-6ba8118f891d",
           "name": "Захват камеры",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
           "order": 91,
           "column": 2,
@@ -860,7 +874,7 @@
         {
           "id": "9de46338-6c1d-5e92-ba39-95037a4419aa",
           "name": "1-я позиция камеры",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
           "order": 92,
           "short": "ПК1",
@@ -870,7 +884,7 @@
         {
           "id": "94d5f505-478e-53fa-8a98-354d0a77dd14",
           "name": "2-я позиция камеры",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
           "order": 93,
           "short": "ПК2",
@@ -880,7 +894,7 @@
         {
           "id": "4f8b2602-3d2e-5fd5-94a5-2057ba7e99d6",
           "name": "3-я позиция камеры",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
           "order": 94,
           "short": "ПК3",
@@ -890,7 +904,7 @@
         {
           "id": "57645402-1191-56ef-8dce-71c038b265c2",
           "name": "4-я позиция камеры",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
           "order": 95,
           "short": "ПК4",
@@ -900,7 +914,7 @@
         {
           "id": "a924eeb6-8630-5704-8c4d-504ab92caaf6",
           "name": "5-я позиция камеры",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
           "order": 96,
           "short": "ПК5",
@@ -910,7 +924,7 @@
         {
           "id": "39fd224f-d8a8-5d77-baa8-bb7126074a87",
           "name": "6-я позиция камеры",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
           "order": 97,
           "short": "ПК6",
@@ -920,7 +934,7 @@
         {
           "id": "160006c3-3bb7-5780-be5e-51a10b7c2f44",
           "name": "7-я позиция камеры",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
           "order": 98,
           "short": "ПК7",
@@ -930,7 +944,7 @@
         {
           "id": "9223b442-228f-5a4d-943f-59023632d988",
           "name": "8-я позиция камеры",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
           "order": 99,
           "short": "ПК8",
@@ -940,7 +954,7 @@
         {
           "id": "324c8a6c-9d50-5b32-8539-5e25f645643b",
           "name": "9-я позиция камеры",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
           "order": 100,
           "short": "ПК9",
@@ -950,7 +964,7 @@
         {
           "id": "803d3bf9-fe59-5dd8-9f3e-82c106f9c600",
           "name": "10-я позиция камеры",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "cd3cf5bf-4089-5185-b532-2ba8c4ae9f12",
           "order": 101,
           "short": "ПК10",
@@ -1016,7 +1030,7 @@
         {
           "id": "7c2285d7-380f-5eb6-ae6d-487b0aa5cf91",
           "name": "Только вражеские существа",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "a5f495bf-9c24-56cc-800b-90ebff604ace",
           "order": 109,
           "column": 1
@@ -1024,7 +1038,7 @@
         {
           "id": "43110255-68c3-56ad-a897-22e0d67fe104",
           "name": "Только союзные существа",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "a5f495bf-9c24-56cc-800b-90ebff604ace",
           "order": 110,
           "column": 1
@@ -1032,7 +1046,7 @@
         {
           "id": "edfdf6f4-e4d0-55cc-a0cb-ba41e18b179a",
           "name": "Только герои",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "a5f495bf-9c24-56cc-800b-90ebff604ace",
           "order": 111,
           "column": 1
@@ -1040,7 +1054,7 @@
         {
           "id": "ba25c1fa-20f1-5550-9003-d112305e938c",
           "name": "Все существа, кроме героев",
-          "contextId": "2a3e1e13-dc0a-5f16-a674-b98562dcaf62",
+          "contextId": "7e33cb81-2e70-5949-b992-f6c6df3fe8f6",
           "categoryId": "a5f495bf-9c24-56cc-800b-90ebff604ace",
           "order": 112,
           "column": 1

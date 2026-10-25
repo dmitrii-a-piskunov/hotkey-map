@@ -90,7 +90,7 @@ function CastMode({
 /**
  * «Способности и предметы» (категория с display: 'slots'), как в Dota 2:
  * вкладки по контекстам, ячейки способностей и предметов, режим каста.
- * Действия контекста «Везде» — предметы, общие для всех вкладок.
+ * Действия с подразделом — предметы, общие для всех вкладок.
  */
 export function SlotsBlock({
   game,
@@ -102,12 +102,14 @@ export function SlotsBlock({
   actions: Action[]
 }) {
   const sorted = byOrder(actions)
-  const globalId = game.contexts.find((c) => c.isGlobal)?.id
-  const items = sorted.filter((a) => a.contextId === globalId)
-  const tabs = game.contexts.filter((c) => !c.isGlobal && sorted.some((a) => a.contextId === c.id))
+  // Действия с подразделом («Предметы») общие для всех вкладок; вкладки — по
+  // контекстам остальных действий (Герой, Курьер, Существа)
+  const items = sorted.filter((a) => a.subgroup !== undefined)
+  const own = sorted.filter((a) => a.subgroup === undefined)
+  const tabs = game.contexts.filter((c) => own.some((a) => a.contextId === c.id))
   const [tabId, setTabId] = useState(tabs[0]?.id)
   const tab = tabs.find((c) => c.id === tabId) ?? tabs[0]
-  const abilities = tab ? sorted.filter((a) => a.contextId === tab.id) : []
+  const abilities = tab ? own.filter((a) => a.contextId === tab.id) : []
 
   return (
     <div data-testid="slots-block" className="grid gap-2 rounded-md border bg-muted/20 p-2">
@@ -171,7 +173,7 @@ export function SlotsBlock({
               game={game}
               profile={profile}
               actions={items}
-              label={`${game.bindParam?.name ?? ''}: ${ru.panel.items}`}
+              label={`${game.bindParam?.name ?? ''}: ${items[0]?.subgroup ?? ''}`}
             />
           </div>
         )}

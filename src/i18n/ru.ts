@@ -359,6 +359,10 @@ export const ru = {
     },
     search: 'Поиск действия',
     searchPlaceholder: 'Поиск по названию',
+    resetBindings: 'Сбросить настройки',
+    resetBindingsTitle: 'Сбросить настройки управления?',
+    resetBindingsText:
+      'Все бинды профиля «{profile}» будут сняты: {count}. Значения настроек и группы клавиш не изменятся.',
     noResults: 'Ничего не найдено',
     noGame: 'Выберите или создайте игру',
     noActions: 'В игре пока нет действий',
@@ -373,7 +377,6 @@ export const ru = {
     allBound: 'У всех действий есть клавиша',
     assignKey: 'Назначить клавишу',
     uncategorized: 'Без категории',
-    items: 'Предметы',
     notAssignable: 'На эту клавишу нельзя назначить действие: {reason}',
   },
   /** Группы клавиш (FR-29) */

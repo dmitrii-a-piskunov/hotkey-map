@@ -350,6 +350,8 @@ describe('Dota 2 preset in the panel', () => {
         lastProfileId: at(dota.profiles, 1).id,
       },
     })
+    // «Тестовый» без конфликтов: основной контекст — «Общий», «Везде» — служебные действия
+    expect(screen.getByTestId('issues-button')).toHaveAccessibleName(ru.bindings.noIssues)
     const extra = screen.getByTestId('extra-items')
     expect(
       within(extra)
@@ -365,5 +367,18 @@ describe('Dota 2 preset in the panel', () => {
       }),
     )
     expect(profile().settingValues).toEqual({})
+  })
+})
+
+describe('reset control settings', () => {
+  it('removes all bindings of the profile after a confirmation', async () => {
+    const user = userEvent.setup()
+    await renderApp(data())
+    await user.click(within(panel()).getByRole('button', { name: ru.panel.resetBindings }))
+    const ask = screen.getByRole('alertdialog', { name: ru.panel.resetBindingsTitle })
+    expect(ask).toHaveTextContent('будут сняты: 1')
+    await user.click(within(ask).getByRole('button', { name: ru.values.resetAllConfirm }))
+    expect(profile().bindings).toEqual([])
+    expect(within(panel()).getByRole('button', { name: ru.panel.resetBindings })).toBeDisabled()
   })
 })

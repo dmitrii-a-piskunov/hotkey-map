@@ -253,3 +253,10 @@ export function bindingsOnInput(profile: Profile, code: string, layer: string): 
     ...own.filter((b) => layerKey(b.input.modifiers) !== layer),
   ]
 }
+
+/** Снять все бинды профиля — «Сбросить настройки управления» */
+export function removeAllBindings(game: Game, profileId: string, now: string): Game {
+  return updateProfile(game, profileId, now, (p) =>
+    p.bindings.length === 0 ? p : { ...p, bindings: [] },
+  )
+}

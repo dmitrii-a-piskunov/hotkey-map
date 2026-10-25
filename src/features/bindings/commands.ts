@@ -10,6 +10,7 @@ import {
   freeSlot,
   layerModifiers,
   makeInput,
+  removeAllBindings,
   removeBindings,
   setBindingParam,
   setParamForActions,
@@ -119,6 +120,13 @@ export function assignActionToInputCmd(actionId: string, code: string): void {
   if (slot === null) return
   startCapture({ actionId, slot })
   setPending(makeInput(code, layerModifiers(useBindingsUi.getState().layer)))
+}
+
+export function removeAllBindingsCmd(): void {
+  const cur = current()
+  if (!cur) return
+  cancelCapture()
+  onGame(cur.game.id, (g) => removeAllBindings(g, cur.profile.id, clock.now()))
 }
 
 export function unassignCmd(ref: SlotRef): void {

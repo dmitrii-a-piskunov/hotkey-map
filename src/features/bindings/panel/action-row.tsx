@@ -44,6 +44,22 @@ function CustomOptions({ game, bindings }: { game: Game; bindings: Binding[] }) 
   )
 }
 
+const mainContexts = new WeakMap<Game, string | undefined>()
+
+/**
+ * Основной контекст игры — тот, где больше всего действий («Везде» или
+ * «Общий» в Dota 2). В строках раздела его не пишем, чтобы не шуметь
+ */
+function mainContextId(game: Game): string | undefined {
+  if (!mainContexts.has(game)) {
+    const counts = new Map<string, number>()
+    for (const a of game.actions) counts.set(a.contextId, (counts.get(a.contextId) ?? 0) + 1)
+    const [top] = [...counts].sort((x, y) => y[1] - x[1])
+    mainContexts.set(game, top?.[0])
+  }
+  return mainContexts.get(game)
+}
+
 interface ActionRowProps {
   game: Game
   profile: Profile
@@ -56,7 +72,7 @@ interface ActionRowProps {
   picked?: boolean
   /**
    * Строка в разделе категории, как в меню игры: без метки категории,
-   * контекст — только если не «Везде»
+   * контекст — только если не основной для игры
    */
   compact?: boolean
 }
@@ -83,7 +99,7 @@ export function ActionRow({
   const bindings = bindingsOfAction(profile, action.id)
   const violations = bindings.flatMap((b) => violationsOf(issues, b.id))
   const meta = compact
-    ? context && !context.isGlobal
+    ? context && context.id !== mainContextId(game)
       ? context.name
       : null
     : [category?.name ?? ru.panel.uncategorized, context?.name].filter(Boolean).join(' · ')

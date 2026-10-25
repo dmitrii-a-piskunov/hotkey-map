@@ -1,5 +1,6 @@
-import { ListPlus, Search } from 'lucide-react'
+import { ListPlus, RotateCcw, Search } from 'lucide-react'
 import { useEffect, useState, type ReactNode } from 'react'
+import { ConfirmDialog } from '@/components/common/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { actionSections, searchSections, type ActionSection } from '@/domain/actions'
@@ -7,7 +8,8 @@ import { columnLayout } from '@/domain/layout'
 import type { Action, Game, Profile } from '@/domain/types'
 import { openEditor } from '@/features/games/ui-store'
 import { ru } from '@/i18n/ru'
-import { clearHoverHighlightCmd, highlightActionCmd } from '../commands'
+import { fill } from '@/lib/format'
+import { clearHoverHighlightCmd, highlightActionCmd, removeAllBindingsCmd } from '../commands'
 import { setHighlight, useBindingsUi } from '../ui-store'
 import { ActionRow } from './action-row'
 import { SlotsBlock } from './slots-block'
@@ -27,6 +29,41 @@ export function NoActions({ game }: { game: Game }) {
         {ru.panel.addAction}
       </Button>
     </div>
+  )
+}
+
+/** «Сбросить настройки управления»: снять все бинды профиля после подтверждения */
+function ResetBindings({ profile }: { profile: Profile }) {
+  const [asking, setAsking] = useState(false)
+  return (
+    <>
+      <Button
+        size="sm"
+        variant="outline"
+        className="h-9 shrink-0"
+        disabled={profile.bindings.length === 0}
+        onClick={() => {
+          setAsking(true)
+        }}
+      >
+        <RotateCcw />
+        {ru.panel.resetBindings}
+      </Button>
+      <ConfirmDialog
+        open={asking}
+        onOpenChange={setAsking}
+        title={ru.panel.resetBindingsTitle}
+        description={fill(ru.panel.resetBindingsText, {
+          profile: profile.name,
+          count: profile.bindings.length,
+        })}
+        confirmLabel={ru.values.resetAllConfirm}
+        onConfirm={() => {
+          removeAllBindingsCmd()
+          setAsking(false)
+        }}
+      />
+    </>
   )
 }
 
@@ -54,19 +91,22 @@ export function ActionList({ game, profile }: { game: Game; profile: Profile }) 
 
   return (
     <div className="grid gap-2">
-      <div className="relative">
-        <Search className="absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          type="search"
-          aria-label={ru.panel.search}
-          placeholder={ru.panel.searchPlaceholder}
-          className="pl-8"
-          value={query}
-          onChange={(e) => {
-            setQuery(e.target.value)
-            setHighlight(null)
-          }}
-        />
+      <div className="flex items-center gap-2">
+        <div className="relative min-w-0 flex-1">
+          <Search className="absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            type="search"
+            aria-label={ru.panel.search}
+            placeholder={ru.panel.searchPlaceholder}
+            className="pl-8"
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value)
+              setHighlight(null)
+            }}
+          />
+        </div>
+        <ResetBindings profile={profile} />
       </div>
       {searching && sections.length === 0 && (
         <p className="px-2 text-sm text-muted-foreground">{ru.panel.noResults}</p>
