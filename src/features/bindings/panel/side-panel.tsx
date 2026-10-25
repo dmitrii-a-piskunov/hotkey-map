@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState, type PointerEvent } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { settingSections } from '@/domain/settings-template'
+import type { Game } from '@/domain/types'
+import { cn } from '@/lib/utils'
 import { BindDialog } from '@/features/bindings/bind-dialog'
 import { useDevicesStore } from '@/features/devices/store'
 import { useCurrentGame, useCurrentProfile } from '@/features/games/use-current'
@@ -70,11 +73,90 @@ function ResizeHandle({ width, onChange }: { width: number; onChange: (w: number
   )
 }
 
+/** Показать раздел: вкладка, затем прокрутка к нему, когда он отрисован */
+function goToSection(tab: PanelTab, elementId: string | null): void {
+  useDevicesStore.getState().clearSelection()
+  setPanelTab(tab)
+  if (!elementId) return
+  requestAnimationFrame(() => {
+    document.getElementById(elementId)?.scrollIntoView({ block: 'start' })
+  })
+}
+
+/**
+ * Боковое меню окна настроек, как в Dota 2: «Управление» — категории
+ * действий, «Игра» — группы настроек, затем остальные вкладки.
+ */
+function PanelNav({ game, tab }: { game: Game; tab: PanelTab }) {
+  const groups = settingSections(game).map((s) => s.group)
+  const item = (label: string, active: boolean, onClick: () => void, key: string) => (
+    <li key={key}>
+      <button
+        type="button"
+        aria-current={active || undefined}
+        className={cn(
+          'w-full truncate rounded-md px-3 py-1 text-left text-sm text-muted-foreground hover:bg-muted hover:text-foreground',
+          active && 'bg-muted text-foreground',
+        )}
+        onClick={onClick}
+      >
+        {label}
+      </button>
+    </li>
+  )
+  const heading = (label: string) => (
+    <p className="px-3 pt-3 pb-1 text-xs font-semibold tracking-wider uppercase">{label}</p>
+  )
+  return (
+    <nav aria-label={ru.panel.nav} className="w-56 shrink-0 overflow-y-auto border-r p-2">
+      {heading(ru.panel.navControls)}
+      <ul>
+        {game.categories.map((c) =>
+          item(
+            c.name,
+            false,
+            () => {
+              goToSection('actions', `section-${c.id}`)
+            },
+            c.id,
+          ),
+        )}
+      </ul>
+      {groups.length > 0 && heading(ru.panel.navGame)}
+      <ul>
+        {groups.map((g) =>
+          item(
+            g,
+            false,
+            () => {
+              goToSection('settings', `settings-${g}`)
+            },
+            g,
+          ),
+        )}
+      </ul>
+      <ul className="mt-3 border-t pt-2">
+        {(['unbound', 'groups', 'notes'] as const).map((t) =>
+          item(
+            ru.panel.tabs[t],
+            tab === t,
+            () => {
+              goToSection(t, null)
+            },
+            t,
+          ),
+        )}
+      </ul>
+    </nav>
+  )
+}
+
 /**
  * Панель справа (раздел 8.1): «Действия» — выделенные клавиши или список
  * действий с поиском; «Без клавиши», «Группы», «Настройки», «Заметки».
+ * wide — клавиатура и мышь скрыты: панель — окно по центру с боковым меню.
  */
-export function SidePanel() {
+export function SidePanel({ wide = false }: { wide?: boolean }) {
   const game = useCurrentGame()
   const profile = useCurrentProfile()
   const tab = useBindingsUi((s) => s.tab)
@@ -99,18 +181,32 @@ export function SidePanel() {
     <aside
       aria-label={ru.panel.label}
       data-testid="side-panel"
-      className="relative flex shrink-0 flex-col border-l bg-background"
-      style={{ width }}
+      data-wide={wide || undefined}
+      className={cn(
+        'relative flex bg-background',
+        wide
+          ? 'mx-auto my-4 w-full max-w-[1100px] overflow-hidden rounded-lg border shadow-sm'
+          : 'shrink-0 flex-col border-l',
+      )}
+      style={wide ? undefined : { width }}
     >
       {/* Окно привязки — слева от панели, поверх сцены: клавиатура остаётся видна */}
-      <BindDialog className="absolute top-14 right-full mr-3" />
-      <ResizeHandle
-        width={width}
-        onChange={(w) => {
-          setWidth(w)
-          saveWidth(w)
-        }}
+      <BindDialog
+        className={
+          wide ? 'fixed top-24 left-1/2 -translate-x-1/2' : 'absolute top-14 right-full mr-3'
+        }
       />
+      {wide ? (
+        <PanelNav game={game} tab={tab} />
+      ) : (
+        <ResizeHandle
+          width={width}
+          onChange={(w) => {
+            setWidth(w)
+            saveWidth(w)
+          }}
+        />
+      )}
       <Tabs
         value={tab}
         onValueChange={(v) => {
@@ -119,7 +215,12 @@ export function SidePanel() {
         }}
         className="min-h-0 flex-1 flex-col gap-0"
       >
-        <TabsList className="m-2 mb-0 grid h-auto grid-cols-[repeat(5,auto)] justify-stretch">
+        <TabsList
+          className={cn(
+            'm-2 mb-0 grid h-auto grid-cols-[repeat(5,auto)] justify-stretch',
+            wide && 'hidden',
+          )}
+        >
           {TABS.map((t) => (
             <TabsTrigger key={t} value={t} className="justify-center px-1 py-1 text-xs">
               {ru.panel.tabs[t]}

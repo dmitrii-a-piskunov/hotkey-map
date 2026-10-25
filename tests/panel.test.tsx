@@ -314,3 +314,22 @@ describe('conflict counter in the header (FR-15)', () => {
     expect(within(panel()).getByRole('heading', { name: 'Space' })).toBeInTheDocument()
   })
 })
+
+describe('hiding the keyboard and the mouse (header)', () => {
+  it('one device stays centred; with both hidden the panel becomes a window with a menu', async () => {
+    const user = userEvent.setup()
+    await renderApp(data())
+    await user.click(screen.getByRole('button', { name: ru.header.showMouse }))
+    expect(document.querySelector('[data-device="mouse"]')).toBeNull()
+    expect(document.querySelector('[data-input-code="KeyQ"]')).not.toBeNull()
+
+    await user.click(screen.getByRole('button', { name: ru.header.showKeyboard }))
+    expect(screen.queryByTestId('device-stage')).not.toBeInTheDocument()
+    expect(panel()).toHaveAttribute('data-wide')
+    const nav = screen.getByRole('navigation', { name: ru.panel.nav })
+    await user.click(within(nav).getByRole('button', { name: ru.panel.tabs.notes }))
+    expect(within(panel()).getByRole('textbox', { name: ru.profiles.notes })).toBeInTheDocument()
+    await user.click(within(nav).getByRole('button', { name: 'Мышь' }))
+    expect(within(panel()).getByRole('textbox', { name: 'Чувствительность' })).toBeInTheDocument()
+  })
+})

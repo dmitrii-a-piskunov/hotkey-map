@@ -52,7 +52,6 @@ const MOUSE_SLOT = Math.max(
   mouseScene(mouseLayout, '2d').box.w,
   mouseScene(mouseLayout, '3d').box.w,
 )
-const TOTAL_UNITS = KEYBOARD_SLOT + DEVICE_GAP + MOUSE_SLOT
 
 const { scene, state } = deviceTheme
 
@@ -152,7 +151,14 @@ export function DeviceStage() {
   const pressed = useMemo(() => new Set(pressedList), [pressedList])
 
   const width = useElementWidth(containerRef)
-  const unit = Math.min(MAX_UNIT, Math.max(MIN_UNIT, (width * FIT) / TOTAL_UNITS))
+  const showKeyboard = useSettings((s) => s.showKeyboard)
+  const showMouse = useSettings((s) => s.showMouse)
+  // Скрытое устройство не занимает места: видимое встаёт по центру и крупнее
+  const totalUnits =
+    (showKeyboard ? KEYBOARD_SLOT : 0) +
+    (showKeyboard && showMouse ? DEVICE_GAP : 0) +
+    (showMouse ? MOUSE_SLOT : 0)
+  const unit = Math.min(MAX_UNIT, Math.max(MIN_UNIT, (width * FIT) / totalUnits))
 
   const onSelect = useCallback(
     (code: InputCode, mods: ClickModifiers) => {
@@ -281,29 +287,33 @@ export function DeviceStage() {
       }}
     >
       <div className="flex items-center" style={{ gap: DEVICE_GAP * unit }}>
-        <div className="flex justify-center" style={{ width: KEYBOARD_SLOT * unit }}>
-          <Keyboard
-            layout={keyboardLayout}
-            unit={unit}
-            labelLang={labelLang}
-            view={view}
-            selected={selected}
-            pressed={pressed}
-            views={views}
-            onSelect={onSelect}
-          />
-        </div>
-        <div className="flex justify-center" style={{ width: MOUSE_SLOT * unit }}>
-          <Mouse
-            layout={mouseLayout}
-            unit={unit}
-            view={view}
-            selected={selected}
-            pressed={pressed}
-            views={views}
-            onSelect={onSelect}
-          />
-        </div>
+        {showKeyboard && (
+          <div className="flex justify-center" style={{ width: KEYBOARD_SLOT * unit }}>
+            <Keyboard
+              layout={keyboardLayout}
+              unit={unit}
+              labelLang={labelLang}
+              view={view}
+              selected={selected}
+              pressed={pressed}
+              views={views}
+              onSelect={onSelect}
+            />
+          </div>
+        )}
+        {showMouse && (
+          <div className="flex justify-center" style={{ width: MOUSE_SLOT * unit }}>
+            <Mouse
+              layout={mouseLayout}
+              unit={unit}
+              view={view}
+              selected={selected}
+              pressed={pressed}
+              views={views}
+              onSelect={onSelect}
+            />
+          </div>
+        )}
       </div>
       {marquee && (
         <div

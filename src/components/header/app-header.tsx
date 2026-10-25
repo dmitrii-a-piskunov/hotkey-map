@@ -1,4 +1,4 @@
-import { Keyboard } from 'lucide-react'
+import { Keyboard, Mouse } from 'lucide-react'
 import { Segmented } from '@/components/common/segmented'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import type { LabelMode } from '@/domain/input'
@@ -34,6 +34,8 @@ export function AppHeader() {
   const labelLang = useSettings((s) => s.labelLang)
   const autoLang = useSettings((s) => s.autoLang)
   const view = useSettings((s) => s.view)
+  const showKeyboard = useSettings((s) => s.showKeyboard)
+  const showMouse = useSettings((s) => s.showMouse)
   const updateSettings = useDataStore((s) => s.updateSettings)
   const releaseAll = useDevicesStore((s) => s.releaseAll)
 
@@ -83,6 +85,25 @@ export function AppHeader() {
             </ToggleGroupItem>
           </ToggleGroup>
         </div>
+        {/* Показать или скрыть клавиатуру и мышь: скрыто всё — панель на весь экран */}
+        <ToggleGroup
+          type="multiple"
+          aria-label={ru.header.devices}
+          value={[showKeyboard && 'keyboard', showMouse && 'mouse'].filter((v) => v !== false)}
+          onValueChange={(next) => {
+            updateSettings({
+              showKeyboard: next.includes('keyboard'),
+              showMouse: next.includes('mouse'),
+            })
+          }}
+        >
+          <ToggleGroupItem value="keyboard" title={ru.header.showKeyboard}>
+            <Keyboard />
+          </ToggleGroupItem>
+          <ToggleGroupItem value="mouse" title={ru.header.showMouse}>
+            <Mouse />
+          </ToggleGroupItem>
+        </ToggleGroup>
         <Segmented
           label={ru.header.view}
           value={view}

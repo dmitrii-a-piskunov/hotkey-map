@@ -3,7 +3,7 @@ import { AppHeader } from '@/components/header/app-header'
 import { DeviceStage } from '@/components/devices/device-stage'
 import { StageToolbar } from '@/components/devices/stage-toolbar'
 import { SidePanel } from '@/features/bindings/panel/side-panel'
-import { useDataStore } from '@/features/data/store'
+import { useDataStore, useSettings } from '@/features/data/store'
 import { useKeyboardInput } from '@/features/devices/use-keyboard-input'
 import { EmptyGames } from '@/features/games/empty-games'
 import { GamesDialogs } from '@/features/games/games-dialogs'
@@ -12,6 +12,10 @@ import { GamesDialogs } from '@/features/games/games-dialogs'
 export function Workspace({ banners }: { banners?: ReactNode }) {
   useKeyboardInput()
   const hasGames = useDataStore((s) => s.data.games.length > 0)
+  const showKeyboard = useSettings((s) => s.showKeyboard)
+  const showMouse = useSettings((s) => s.showMouse)
+  // Клавиатура и мышь скрыты — панель становится окном настроек по центру
+  const wide = hasGames && !showKeyboard && !showMouse
 
   return (
     <div className="flex h-screen min-w-[1280px] flex-col bg-background text-foreground">
@@ -19,11 +23,13 @@ export function Workspace({ banners }: { banners?: ReactNode }) {
       {banners}
       <main className="flex min-h-0 flex-1">
         {!hasGames && <EmptyGames />}
-        <div className="flex min-w-0 flex-1 flex-col">
-          {hasGames && <StageToolbar />}
-          <DeviceStage />
-        </div>
-        {hasGames && <SidePanel />}
+        {!wide && (
+          <div className="flex min-w-0 flex-1 flex-col">
+            {hasGames && <StageToolbar />}
+            <DeviceStage />
+          </div>
+        )}
+        {hasGames && <SidePanel wide={wide} />}
       </main>
       <GamesDialogs />
     </div>
