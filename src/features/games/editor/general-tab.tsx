@@ -1,5 +1,5 @@
 import { Check, Trash2 } from 'lucide-react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { ConfirmDialog } from '@/components/common/confirm-dialog'
 import { Field } from '@/components/common/field'
 import { invalidProps, nameErrorText } from '@/components/common/field-errors'
@@ -21,6 +21,7 @@ import { keyboardLayout } from '@/features/devices/devices'
 import { ru } from '@/i18n/ru'
 import { KNOB_CODE, type KeyDef } from '@/layouts/aula-f75'
 import { fill } from '@/lib/format'
+import { useElementWidth } from '@/lib/use-element-width'
 import { cn } from '@/lib/utils'
 import { removeGameCmd, setGeneralCmd } from '../commands'
 import { closeEditor } from '../ui-store'
@@ -28,20 +29,37 @@ import { IconField } from './icon-field'
 
 const t = ru.editor.general
 
-const ROWS: KeyDef['profileRow'][] = ['F', 'R1', 'R2', 'R3', 'R4', 'R5']
-
 const keyName = (k: KeyDef) => k.label.game?.en ?? (k.label.en || k.code)
 
-/** Клавиши по рядам раскладки; регулятор — в ряду F (FR-01) */
-const KEY_ROWS = ROWS.map((row) => {
-  const keys = keyboardLayout.keys
-    .filter((k) => k.profileRow === row)
-    .sort((a, b) => a.x - b.x)
-    .map((k) => ({ code: k.code, name: keyName(k) }))
-  return row === 'F' && keyboardLayout.knob
-    ? [...keys, { code: KNOB_CODE, name: ru.devices.knob }]
-    : keys
-})
+/** Клавиши на своих местах, как на клавиатуре; регулятор — круглый, справа сверху (FR-01) */
+const KEYS = [
+  ...keyboardLayout.keys.map((k) => ({
+    code: k.code,
+    name: keyName(k),
+    x: k.x,
+    y: k.y,
+    w: k.w,
+    h: k.h,
+    round: false,
+  })),
+  ...(keyboardLayout.knob
+    ? [
+        {
+          code: KNOB_CODE,
+          name: ru.devices.knob,
+          x: keyboardLayout.knob.cx - keyboardLayout.knob.d / 2,
+          y: keyboardLayout.knob.cy - keyboardLayout.knob.d / 2,
+          w: keyboardLayout.knob.d,
+          h: keyboardLayout.knob.d,
+          round: true,
+        },
+      ]
+    : []),
+]
+const WIDTH_U = Math.max(...KEYS.map((k) => k.x + k.w))
+const HEIGHT_U = Math.max(...KEYS.map((k) => k.y + k.h))
+/** Зазор между клавишами, в юнитах */
+const GAP_U = 0.08
 
 function BlockedKeysField({
   value,
@@ -50,38 +68,51 @@ function BlockedKeysField({
   value: readonly string[]
   onChange: (codes: string[]) => void
 }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const unit = useElementWidth(ref) / WIDTH_U
   const blocked = new Set(value)
   return (
-    <div className="grid gap-1" role="group" aria-label={t.blockedKeys}>
-      {KEY_ROWS.map((row, i) => (
-        <div key={ROWS[i]} className="flex flex-wrap gap-1">
-          {row.map((k) => {
-            const locked = DEFAULT_BLOCKED_KEYS.includes(k.code)
-            const on = blocked.has(k.code)
-            return (
-              <button
-                key={k.code}
-                type="button"
-                role="checkbox"
-                aria-checked={on}
-                aria-disabled={locked || undefined}
-                title={k.code}
-                className={cn(
-                  'min-w-8 rounded border px-1.5 py-0.5 text-xs',
-                  on ? 'border-destructive bg-destructive/10 text-destructive' : 'hover:bg-accent',
-                  locked && 'cursor-not-allowed opacity-70',
-                )}
-                onClick={() => {
-                  if (locked) return
-                  onChange(on ? value.filter((c) => c !== k.code) : [...value, k.code])
-                }}
-              >
-                {k.name}
-              </button>
-            )
-          })}
-        </div>
-      ))}
+    <div
+      ref={ref}
+      role="group"
+      aria-label={t.blockedKeys}
+      className="relative w-full"
+      style={{ height: HEIGHT_U * unit }}
+    >
+      {unit > 0 &&
+        KEYS.map((k) => {
+          const locked = DEFAULT_BLOCKED_KEYS.includes(k.code)
+          const on = blocked.has(k.code)
+          return (
+            <button
+              key={k.code}
+              type="button"
+              role="checkbox"
+              aria-checked={on}
+              aria-disabled={locked || undefined}
+              aria-label={k.name}
+              title={k.name}
+              className={cn(
+                'absolute flex items-center justify-center overflow-hidden rounded border px-0.5 text-[10px] leading-none',
+                k.round && 'rounded-full',
+                on ? 'border-destructive bg-destructive/10 text-destructive' : 'hover:bg-accent',
+                locked && 'cursor-not-allowed opacity-70',
+              )}
+              style={{
+                left: (k.x + GAP_U / 2) * unit,
+                top: (k.y + GAP_U / 2) * unit,
+                width: (k.w - GAP_U) * unit,
+                height: (k.h - GAP_U) * unit,
+              }}
+              onClick={() => {
+                if (locked) return
+                onChange(on ? value.filter((c) => c !== k.code) : [...value, k.code])
+              }}
+            >
+              <span className="truncate">{k.round ? '◯' : k.name}</span>
+            </button>
+          )
+        })}
     </div>
   )
 }
