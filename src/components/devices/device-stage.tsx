@@ -158,6 +158,7 @@ export function DeviceStage() {
   const inputMode = useSettings((s) => s.inputMode)
   const labelLang = useSettings((s) => s.labelLang)
   const view = useSettings((s) => s.view)
+  const keyboardColor = useSettings((s) => s.keyboardColor)
   const click = useDevicesStore((s) => s.click)
   const capturing = useBindingsUi((s) => s.capture !== null)
   const views = useInputViews()
@@ -327,6 +328,7 @@ export function DeviceStage() {
               unit={unit}
               labelLang={labelLang}
               view={view}
+              keyboardColor={keyboardColor}
               selected={selected}
               pressed={pressed}
               views={views}

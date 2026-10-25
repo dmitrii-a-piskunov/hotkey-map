@@ -1,9 +1,23 @@
 import type { CSSProperties } from 'react'
 import type { KeyDef } from '@/layouts/aula-f75'
 import { shade } from '@/lib/color'
-import { deviceTheme, type CapStyle } from '@/styles/device-theme'
+import {
+  deviceTheme,
+  type CapPalette,
+  type CapStyle,
+  type KeyboardColor,
+} from '@/styles/device-theme'
 
-const { caps, view3d } = deviceTheme
+const { palettes, view3d } = deviceTheme
+const PALETTES = Object.keys(palettes) as KeyboardColor[]
+const STYLES: CapStyle[] = ['alpha', 'mod', 'accent']
+
+/** Объект по каждой расцветке и стилю — строится один раз при загрузке модуля */
+function byPalette<T>(make: (color: KeyboardColor, style: CapStyle) => T) {
+  return Object.fromEntries(
+    PALETTES.map((p) => [p, Object.fromEntries(STYLES.map((s) => [s, make(p, s)]))]),
+  ) as Record<KeyboardColor, Record<CapStyle, T>>
+}
 
 export interface CapColors3d {
   topFar: string
@@ -18,44 +32,38 @@ export interface CapColors3d {
 
 export { KNOB_CODE } from '@/layouts/aula-f75'
 
-/** Свет сверху в 3D: множители keyLighting к цвету верха клавиши */
-export const CAP_COLORS_3D = Object.fromEntries(
-  (Object.keys(caps) as CapStyle[]).map((name) => {
-    const top = caps[name].top
-    const l = view3d.keyLighting
-    return [
-      name,
-      {
-        topFar: shade(top, l.topFar),
-        topNear: shade(top, l.topNear),
-        frontTop: shade(top, l.frontTop),
-        frontBottom: shade(top, l.frontBottom),
-        side: shade(top, l.sides),
-        sideDark: shade(top, l.sides * l.topNear),
-      },
-    ]
-  }),
-) as Record<CapStyle, CapColors3d>
+/** Свет сверху в 3D: множители света расцветки к цвету верха клавиши */
+export const CAP_COLORS_3D = byPalette<CapColors3d>((color, style) => {
+  const palette: CapPalette = palettes[color]
+  const top = palette.caps[style].top
+  const l = palette.lighting ?? view3d.keyLighting
+  return {
+    topFar: shade(top, l.topFar),
+    topNear: shade(top, l.topNear),
+    frontTop: shade(top, l.frontTop),
+    frontBottom: shade(top, l.frontBottom),
+    side: shade(top, l.sides),
+    sideDark: shade(top, l.sides * l.topNear),
+  }
+})
 
-/** CSS-переменные клавиши одного стиля — постоянные объекты, чтобы не ломать memo */
-export const CAP_VARS = Object.fromEntries(
-  (Object.keys(caps) as CapStyle[]).map((name) => {
-    const c = caps[name]
-    const c3 = CAP_COLORS_3D[name]
-    return [
-      name,
-      {
-        '--cap-top': c.top,
-        '--cap-side': c.side,
-        '--cap-top-3d': `linear-gradient(${c3.topFar}, ${c3.topNear})`,
-        '--cap-side-3d': c3.side,
-        '--cap-side-dark-3d': c3.sideDark,
-        '--legend': c.legend,
-        '--legend-ru': c.legendRu,
-      } as CSSProperties,
-    ]
-  }),
-) as Record<CapStyle, CSSProperties>
+/**
+ * CSS-переменные родной клавиши по расцветке и стилю — постоянные объекты,
+ * чтобы не ломать memo у Key2D и Key3D
+ */
+export const CAP_VARS = byPalette<CSSProperties>((color, style) => {
+  const c = palettes[color].caps[style]
+  const c3 = CAP_COLORS_3D[color][style]
+  return {
+    '--cap-top': c.top,
+    '--cap-side': c.side,
+    '--cap-top-3d': `linear-gradient(${c3.topFar}, ${c3.topNear})`,
+    '--cap-side-3d': c3.side,
+    '--cap-side-dark-3d': c3.sideDark,
+    '--legend': c.legend,
+    '--legend-ru': c.legendRu,
+  } as CSSProperties
+})
 
 /**
  * Диагональная штриховка для клика по неназначаемой клавише: так отказ не

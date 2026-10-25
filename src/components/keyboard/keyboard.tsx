@@ -11,7 +11,7 @@ import type { ViewMode } from '@/domain/types'
 import { useBlockedKeys } from '@/features/devices/blocked-keys'
 import type { KeyboardLayout, KeyDef } from '@/layouts/aula-f75'
 import { ru } from '@/i18n/ru'
-import { capStyleOf, deviceTheme } from '@/styles/device-theme'
+import { capStyleOf, deviceTheme, type KeyboardColor } from '@/styles/device-theme'
 
 const { case: caseTheme, cap, legend, knob: knobTheme, state } = deviceTheme
 
@@ -40,6 +40,8 @@ export interface KeyboardProps {
   unit: number
   labelLang: LabelMode
   view: ViewMode
+  /** Расцветка родных клавиш (FR-01) */
+  keyboardColor: KeyboardColor
   selected: ReadonlySet<InputCode>
   pressed: ReadonlySet<InputCode>
   /** Цвет, подпись действия, конфликт и приглушение каждого входа */
@@ -59,6 +61,7 @@ interface Key2DProps {
   width: number
   height: number
   labelLang: LabelMode
+  palette: KeyboardColor
   selected: boolean
   pressed: boolean
   off: boolean
@@ -74,6 +77,7 @@ const Key2D = memo(function Key2D({
   width,
   height,
   labelLang,
+  palette,
   selected,
   pressed,
   off,
@@ -97,7 +101,7 @@ const Key2D = memo(function Key2D({
       title={view.title}
       className="key"
       hintPlacement={hintPlacementOf(k)}
-      style={view.style ?? CAP_VARS[capStyleOf(k.code)]}
+      style={view.style ?? CAP_VARS[palette][capStyleOf(k.code)]}
       onSelect={onSelect}
     >
       <div className="key-top" style={TOP_STYLE}>
@@ -124,6 +128,7 @@ function Keyboard2D({
   layout,
   unit,
   labelLang,
+  keyboardColor,
   selected,
   pressed,
   views,
@@ -209,6 +214,7 @@ function Keyboard2D({
           width={k.w * unit - gap}
           height={k.h * unit - gap}
           labelLang={labelLang}
+          palette={keyboardColor}
           selected={selected.has(k.code)}
           pressed={pressed.has(k.code)}
           off={!k.assignable || blockedKeys.includes(k.code)}

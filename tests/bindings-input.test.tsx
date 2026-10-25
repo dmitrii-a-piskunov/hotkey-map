@@ -4,6 +4,7 @@ import { setLayer, startCapture, useBindingsUi, type SlotRef } from '@/features/
 import { confirmCaptureCmd } from '@/features/bindings/commands'
 import { useDataStore } from '@/features/data/store'
 import { ru } from '@/i18n/ru'
+import { deviceTheme } from '@/styles/device-theme'
 import { at, sampleData } from './fixtures'
 import { disposeApp, renderApp as renderWithData, resetAppStores } from './mocks/render-app'
 
@@ -160,6 +161,31 @@ describe('key capture (FR-12)', () => {
 })
 
 describe('keys on the stage (FR-14, FR-15, FR-26, FR-30)', () => {
+  it('the keyboard color switch changes native keys only (FR-01, TC-21)', async () => {
+    await renderApp()
+    const { standard, black } = deviceTheme.palettes
+    const top = (code: string) => input(code).style.getPropertyValue('--cap-top')
+    const legend = (code: string) => input(code).style.getPropertyValue('--legend')
+    expect(top('KeyQ')).toBe(standard.caps.alpha.top)
+    expect(top('Escape')).toBe(standard.caps.accent.top)
+
+    fireEvent.click(screen.getByRole('radio', { name: ru.header.keyboardColorBlack }))
+    expect(useDataStore.getState().data.appSettings.keyboardColor).toBe('black')
+    for (const code of ['KeyQ', 'Escape', 'ShiftLeft', 'ArrowUp']) {
+      expect(top(code)).toBe(black.caps.alpha.top)
+      expect(legend(code)).toBe(black.caps.alpha.legend)
+    }
+    // Занятая клавиша — по-прежнему цвета категории
+    expect(top('Space')).toBe('#3B82F6')
+
+    fireEvent.click(screen.getByRole('radio', { name: '2D' }))
+    expect(top('Escape')).toBe(black.caps.accent.top)
+    expect(top('Space')).toBe('#3B82F6')
+
+    fireEvent.click(screen.getByRole('radio', { name: ru.header.keyboardColorStandard }))
+    expect(top('Escape')).toBe(standard.caps.accent.top)
+  })
+
   it('a bound key is painted with its category and shows the action label', async () => {
     await renderApp()
     expect(input('Space').style.getPropertyValue('--cap-top')).toBe('#3B82F6')

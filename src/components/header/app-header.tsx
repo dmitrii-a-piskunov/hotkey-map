@@ -1,4 +1,5 @@
 import { Keyboard, Mouse } from 'lucide-react'
+import type { ReactNode } from 'react'
 import { Segmented } from '@/components/common/segmented'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import type { LabelMode } from '@/domain/input'
@@ -10,6 +11,7 @@ import { GamePicker } from '@/features/games/game-picker'
 import { ProfilePicker } from '@/features/profiles/profile-picker'
 import { SaveStatusIndicator } from '@/features/persistence/storage-banners'
 import { ru } from '@/i18n/ru'
+import { deviceTheme, type KeyboardColor } from '@/styles/device-theme'
 
 const INPUT_MODES = [
   { value: 'check', label: ru.header.modeCheck },
@@ -29,11 +31,42 @@ const VIEWS = [
   { value: '2d', label: '2D' },
 ] as const satisfies readonly { value: ViewMode; label: string }[]
 
+/** Образец расцветки: буквенная клавиша с оранжевой «A»; название — для экранного диктора */
+function ColorSwatch({ color, name }: { color: KeyboardColor; name: string }) {
+  const { top, legend } = deviceTheme.palettes[color].caps.alpha
+  return (
+    <>
+      <span
+        aria-hidden="true"
+        className="grid size-5 place-items-center rounded-[3px] text-[11px] leading-none font-bold"
+        style={{ background: top, color: legend }}
+      >
+        A
+      </span>
+      <span className="sr-only">{name}</span>
+    </>
+  )
+}
+
+const KEYBOARD_COLORS = [
+  {
+    value: 'standard',
+    label: <ColorSwatch color="standard" name={ru.header.keyboardColorStandard} />,
+    title: ru.header.keyboardColorStandard,
+  },
+  {
+    value: 'black',
+    label: <ColorSwatch color="black" name={ru.header.keyboardColorBlack} />,
+    title: ru.header.keyboardColorBlack,
+  },
+] as const satisfies readonly { value: KeyboardColor; label: ReactNode; title: string }[]
+
 export function AppHeader() {
   const inputMode = useSettings((s) => s.inputMode)
   const labelLang = useSettings((s) => s.labelLang)
   const autoLang = useSettings((s) => s.autoLang)
   const view = useSettings((s) => s.view)
+  const keyboardColor = useSettings((s) => s.keyboardColor)
   const showKeyboard = useSettings((s) => s.showKeyboard)
   const showMouse = useSettings((s) => s.showMouse)
   const updateSettings = useDataStore((s) => s.updateSettings)
@@ -106,6 +139,14 @@ export function AppHeader() {
             <Mouse />
           </ToggleGroupItem>
         </ToggleGroup>
+        <Segmented
+          label={ru.header.keyboardColor}
+          value={keyboardColor}
+          options={KEYBOARD_COLORS}
+          onChange={(color) => {
+            updateSettings({ keyboardColor: color })
+          }}
+        />
         <Segmented
           label={ru.header.view}
           value={view}

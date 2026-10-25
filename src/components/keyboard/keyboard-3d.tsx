@@ -27,10 +27,10 @@ import { useBlockedKeys } from '@/features/devices/blocked-keys'
 import type { ClickModifiers, InputCode } from '@/domain/selection'
 import type { KeyDef } from '@/layouts/aula-f75'
 import { ru } from '@/i18n/ru'
-import { capStyleOf, deviceTheme, type CapStyle } from '@/styles/device-theme'
+import { capStyleOf, deviceTheme, type CapStyle, type KeyboardColor } from '@/styles/device-theme'
 
 const { case: caseTheme, legend, knob: knobTheme, state } = deviceTheme
-const STYLES = Object.keys(CAP_COLORS_3D) as CapStyle[]
+const STYLES = Object.keys(CAP_COLORS_3D.standard) as CapStyle[]
 
 interface Key3DProps {
   keyDef: KeyDef
@@ -41,6 +41,7 @@ interface Key3DProps {
   /** Префикс id градиентов из общего <defs> */
   gradId: string
   labelLang: LabelMode
+  palette: KeyboardColor
   selected: boolean
   pressed: boolean
   view: InputView
@@ -55,6 +56,7 @@ const Key3D = memo(function Key3D({
   unit,
   gradId,
   labelLang,
+  palette,
   selected,
   pressed,
   view,
@@ -98,7 +100,7 @@ const Key3D = memo(function Key3D({
       title={view.title}
       className="cap3d"
       hintPlacement={hintPlacementOf(k)}
-      style={view.style ?? CAP_VARS[style]}
+      style={view.style ?? CAP_VARS[palette][style]}
       onSelect={onSelect}
     >
       <svg aria-hidden="true" className="cap3d-faces" width={box.w * unit} height={box.h * unit}>
@@ -130,6 +132,7 @@ export function Keyboard3D({
   layout,
   unit,
   labelLang,
+  keyboardColor,
   selected,
   pressed,
   views,
@@ -181,8 +184,8 @@ export function Keyboard3D({
           {STYLES.map((s) => (
             <g key={s}>
               <linearGradient id={`${id}-front-${s}`} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stopColor={CAP_COLORS_3D[s].frontTop} />
-                <stop offset="1" stopColor={CAP_COLORS_3D[s].frontBottom} />
+                <stop offset="0" stopColor={CAP_COLORS_3D[keyboardColor][s].frontTop} />
+                <stop offset="1" stopColor={CAP_COLORS_3D[keyboardColor][s].frontBottom} />
               </linearGradient>
             </g>
           ))}
@@ -222,6 +225,7 @@ export function Keyboard3D({
             unit={unit}
             gradId={id}
             labelLang={labelLang}
+            palette={keyboardColor}
             selected={selected.has(key.code)}
             pressed={isPressed}
             view={viewOf(views, key.code)}
