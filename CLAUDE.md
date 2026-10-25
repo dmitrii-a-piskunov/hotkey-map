@@ -30,6 +30,7 @@ npm run lint       # ESLint
 npm run typecheck  # tsc --noEmit
 npm test           # Vitest
 npm run e2e        # Playwright
+npm run perf       # замер скорости выделения (docs/perf-selection.md)
 ```
 
 ## Структура
