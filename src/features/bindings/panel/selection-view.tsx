@@ -1,5 +1,5 @@
 import { Plus, Search, X } from 'lucide-react'
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -150,6 +150,36 @@ function SingleInput({ game, profile, code }: { game: Game; profile: Profile; co
 }
 
 /**
+ * Раздел одной клавиши при выделении нескольких. Под memo: рамка меняет
+ * выделение на каждом движении, и перерисовываются только новые разделы
+ */
+const KeySection = memo(function KeySection({
+  game,
+  profile,
+  code,
+  layer,
+}: {
+  game: Game
+  profile: Profile
+  code: string
+  layer: string
+}) {
+  const actions = actionsOnInput(game, profile, code, layer)
+  return (
+    <section aria-label={inputName(code)} className="grid gap-0.5">
+      <h3 className="px-2 text-xs font-semibold text-muted-foreground uppercase">
+        {inputName(code)}
+      </h3>
+      {actions.length === 0 ? (
+        <p className="px-2 text-sm text-muted-foreground">{ru.panel.nothingOnKey}</p>
+      ) : (
+        actions.map((a) => <ActionRow key={a.id} game={game} profile={profile} action={a} />)
+      )}
+    </section>
+  )
+})
+
+/**
  * Панель выделенных клавиш (FR-13): одна — её действия; несколько —
  * действия каждой клавиши и «Создать группу» (FR-29).
  */
@@ -183,23 +213,9 @@ export function SelectionView({ game, profile }: { game: Game; profile: Profile 
           <div className="px-2">
             <CreateGroupButton profile={profile} codes={selected} />
           </div>
-          {selected.map((code) => {
-            const actions = actionsOnInput(game, profile, code, layer)
-            return (
-              <section key={code} aria-label={inputName(code)} className="grid gap-0.5">
-                <h3 className="px-2 text-xs font-semibold text-muted-foreground uppercase">
-                  {inputName(code)}
-                </h3>
-                {actions.length === 0 ? (
-                  <p className="px-2 text-sm text-muted-foreground">{ru.panel.nothingOnKey}</p>
-                ) : (
-                  actions.map((a) => (
-                    <ActionRow key={a.id} game={game} profile={profile} action={a} />
-                  ))
-                )}
-              </section>
-            )
-          })}
+          {selected.map((code) => (
+            <KeySection key={code} game={game} profile={profile} code={code} layer={layer} />
+          ))}
         </>
       )}
     </div>

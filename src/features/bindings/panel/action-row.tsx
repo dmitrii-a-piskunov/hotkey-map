@@ -1,4 +1,5 @@
 import { ChevronDown } from 'lucide-react'
+import { memo } from 'react'
 import { bindingsOfAction, hasCustomParam } from '@/domain/bindings'
 import { violationsOf } from '@/domain/conflicts'
 import type { Action, Binding, Game, Profile } from '@/domain/types'
@@ -80,9 +81,10 @@ interface ActionRowProps {
 /**
  * Строка действия (FR-12): название, метка категории, контекст, кнопки
  * клавиш, тип нажатия и параметр; под кнопками — захват, ошибка правил,
- * конфликт и нарушения.
+ * конфликт и нарушения. Под memo: панель перерисовывается при каждом
+ * изменении выделения, а строки с теми же данными — нет.
  */
-export function ActionRow({
+export const ActionRow = memo(function ActionRow({
   game,
   profile,
   action,
@@ -170,4 +172,4 @@ export function ActionRow({
       ))}
     </div>
   )
-}
+})
