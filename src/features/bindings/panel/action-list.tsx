@@ -79,10 +79,11 @@ export function ActionList({ game, profile }: { game: Game; profile: Profile }) 
     (s) => s.actions.length > 0,
   )
 
-  // Уход из списка снимает подсветку поиска
+  // Уход из списка (и когда его прячет выделение) снимает подсветку и поиск
   useEffect(
     () => () => {
       setHighlight(null)
+      setQuery('')
     },
     [],
   )

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type PointerEvent } from 'react'
+import { Activity, useEffect, useRef, useState, type PointerEvent } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { settingSections } from '@/domain/settings-template'
 import type { Game } from '@/domain/types'
@@ -229,11 +229,12 @@ export function SidePanel({ wide = false }: { wide?: boolean }) {
         </TabsList>
         <div className="@container min-h-0 flex-1 overflow-y-auto p-2">
           <TabsContent value="actions">
-            {hasSelection ? (
-              <SelectionView game={game} profile={profile} />
-            ) : (
+            {hasSelection && <SelectionView game={game} profile={profile} />}
+            {/* Список действий при выделении только прячется: снятие выделения
+                показывает готовый список, а не строит сотни строк заново (NFR-02) */}
+            <Activity mode={hasSelection ? 'hidden' : 'visible'}>
               <ActionList key={profile.id} game={game} profile={profile} />
-            )}
+            </Activity>
           </TabsContent>
           <TabsContent value="unbound">
             <UnboundList game={game} profile={profile} />

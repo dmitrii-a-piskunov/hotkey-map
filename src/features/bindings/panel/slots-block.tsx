@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { bindingInSlot, commonParam } from '@/domain/bindings'
 import { byOrder } from '@/domain/order'
 import { shortLabelOf } from '@/domain/short-label'
@@ -108,6 +108,13 @@ export function SlotsBlock({
   const own = sorted.filter((a) => a.subgroup === undefined)
   const tabs = game.contexts.filter((c) => own.some((a) => a.contextId === c.id))
   const [tabId, setTabId] = useState(tabs[0]?.id)
+  // Спрятанный выделением список возвращается с первой вкладкой, как новый
+  useEffect(
+    () => () => {
+      setTabId(undefined)
+    },
+    [],
+  )
   const tab = tabs.find((c) => c.id === tabId) ?? tabs[0]
   const abilities = tab ? own.filter((a) => a.contextId === tab.id) : []
 
