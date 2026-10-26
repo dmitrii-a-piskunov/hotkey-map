@@ -31,6 +31,11 @@ class NoResizeObserver {
 }
 if (!('ResizeObserver' in globalThis)) globalThis.ResizeObserver = NoResizeObserver
 
+// jsdom has no scrollIntoView; the panel menu scrolls to a section in the next frame
+Element.prototype.scrollIntoView = function () {
+  // Прокрутки в jsdom нет
+}
+
 afterEach(() => {
   cleanup()
 })
