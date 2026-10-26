@@ -1,5 +1,5 @@
 import { ListPlus, RotateCcw, Search } from 'lucide-react'
-import { useEffect, useState, type ReactNode } from 'react'
+import { memo, useEffect, useState, type ReactNode } from 'react'
 import { ConfirmDialog } from '@/components/common/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -70,8 +70,16 @@ function ResetBindings({ profile }: { profile: Profile }) {
 /**
  * Список действий игры с поиском (FR-13, FR-16): разделы по категориям, как
  * в меню игры. Наведение подсвечивает клавиши действия, клик закрепляет.
+ * Под memo: панель перерисовывается при каждом изменении выделения, а
+ * спрятанный список с сотнями строк — нет.
  */
-export function ActionList({ game, profile }: { game: Game; profile: Profile }) {
+export const ActionList = memo(function ActionList({
+  game,
+  profile,
+}: {
+  game: Game
+  profile: Profile
+}) {
   const [query, setQuery] = useState('')
   const pinned = useBindingsUi((s) => (s.highlight?.pinned ? s.highlight.actionId : null))
   const searching = query.trim() !== ''
@@ -144,7 +152,7 @@ export function ActionList({ game, profile }: { game: Game; profile: Profile }) 
       </div>
     </div>
   )
-}
+})
 
 /**
  * Раздел категории как в меню игры: заголовок, пояснение, подразделы и две
