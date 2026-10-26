@@ -16,6 +16,7 @@ import type { FolderAccess } from '@/storage/folder-access'
 import type { TabGuard } from './tab-guard'
 import {
   BACKUPS_TO_KEEP,
+  type BackupInfo,
   toStorageError,
   type StorageAdapter,
   type StorageError,
@@ -31,6 +32,17 @@ export const MAX_RETRIES = 3
 export interface FolderStorage extends StorageAdapter {
   readonly folderName: string
 }
+
+/** FR-19: итог выбора новой папки в настройках */
+export type FolderChange =
+  /** Окно закрыли или сменить нельзя */
+  | 'cancelled'
+  /** Выбрана та же папка */
+  | 'same'
+  /** Папка была пустой: данные и иконки перенесены */
+  | 'moved'
+  /** В папке уже есть data.json: спросить, открыть его или заменить */
+  | 'has-data'
 
 export interface BrowserStorage extends StorageAdapter {
   /** Когда данные впервые легли в браузер, для напоминания об экспорте */
@@ -62,6 +74,12 @@ export class PersistenceSession {
   #folderChosen = false
   /** FR-27: приложение открыто в другой вкладке — эта ничего не записывает */
   #readOnly = false
+  /** FR-19: выбранная папка с данными, пока пользователь решает, что с ней делать */
+  #pendingFolder: {
+    handle: FileSystemDirectoryHandle
+    storage: FolderStorage
+    text: string
+  } | null = null
   /** Текст повреждённого data.json, пока пользователь выбирает, что делать */
   #damagedText: string | null = null
   #saveTimer: Timer | null = null
@@ -202,6 +220,105 @@ export class PersistenceSession {
     if (!storage) throw new Error('Storage is not open')
     if (this.#readOnly) throw new Error('Read-only tab (FR-27)')
     await storage.writeIcon(name, data)
+  }
+
+  /** FR-20: копии для окна «Настройки», новые первыми */
+  async listBackups(): Promise<BackupInfo[]> {
+    return this.#storage ? this.#storage.listBackups() : []
+  }
+
+  /**
+   * FR-20: «Восстановить» в настройках. Текущее состояние сначала ложится в
+   * копию; история отмены очищается. false — копию не удалось прочитать.
+   */
+  async restoreFromSettings(name: string): Promise<boolean> {
+    const storage = this.#storage
+    if (!storage || this.#readOnly) return false
+    const result = parseAppData(await storage.readBackup(name))
+    if (result.kind !== 'ok') return false
+    await this.flush()
+    await storage.createBackup(serializeAppData(useDataStore.getState().data), this.#env.now())
+    await storage.pruneBackups(BACKUPS_TO_KEEP)
+    await storage.writeData(serializeAppData(result.data))
+    this.#launchText = null
+    this.#backupDone = true
+    useDataStore.getState().replaceData(result.data)
+    return true
+  }
+
+  /** FR-19: «Сменить папку» в настройках; в режиме Firefox папок нет */
+  async changeFolder(): Promise<FolderChange> {
+    if (this.#readOnly || this.#browser || !this.#storage) return 'cancelled'
+    const handle = await this.#env.folders.pick()
+    if (!handle) return 'cancelled'
+    if (this.#handle && (await handle.isSameEntry(this.#handle))) return 'same'
+    const storage = await this.#env.openFolder(handle)
+    const text = await storage.readData()
+    if (text === null) {
+      await this.#moveTo(handle, storage, null)
+      return 'moved'
+    }
+    this.#pendingFolder = { handle, storage, text }
+    return 'has-data'
+  }
+
+  /**
+   * FR-19: в новой папке уже есть данные. open — открыть их, replace —
+   * перенести текущие (данные папки сначала ложатся в её копию).
+   * Итог: ok, или данные папки повреждены, или созданы более новой версией.
+   */
+  async finishFolderChange(
+    mode: 'open' | 'replace' | 'cancel',
+  ): Promise<'ok' | 'corrupted' | 'newer'> {
+    const pending = this.#pendingFolder
+    this.#pendingFolder = null
+    if (!pending || mode === 'cancel') return 'ok'
+    if (mode === 'replace') {
+      await this.#moveTo(pending.handle, pending.storage, pending.text)
+      return 'ok'
+    }
+    const result = parseAppData(pending.text)
+    if (result.kind === 'newer') return 'newer'
+    if (result.kind === 'corrupted') return 'corrupted'
+    await this.flush()
+    await this.#switchFolder(pending.handle, pending.storage)
+    this.#launchText = pending.text
+    this.#backupDone = false
+    if (result.migratedFrom !== null) await this.#backup(pending.storage)
+    await this.#ready(result.data, result.migratedFrom !== null)
+    return 'ok'
+  }
+
+  async #switchFolder(handle: FileSystemDirectoryHandle, storage: FolderStorage): Promise<void> {
+    await this.#env.folders.save(handle)
+    this.#handle = handle
+    this.#storage = storage
+    this.#set({ folderName: storage.folderName })
+  }
+
+  /** Текущие данные и их иконки — в новую папку; она становится папкой данных */
+  async #moveTo(
+    handle: FileSystemDirectoryHandle,
+    storage: FolderStorage,
+    replacedText: string | null,
+  ): Promise<void> {
+    const old = this.#storage
+    await this.flush()
+    const data = useDataStore.getState().data
+    for (const name of new Set(data.games.flatMap((g) => (g.icon ? [g.icon] : [])))) {
+      const blob = await old?.readIcon(name)
+      if (blob) await storage.writeIcon(name, blob)
+    }
+    if (replacedText !== null) {
+      await storage.createBackup(replacedText, this.#env.now())
+      await storage.pruneBackups(BACKUPS_TO_KEEP)
+    }
+    await storage.writeData(serializeAppData(data))
+    await this.#switchFolder(handle, storage)
+    this.#launchText = null
+    this.#backupDone = true
+    // В истории — ссылки на иконки старой папки
+    useDataStore.temporal.getState().clear()
   }
 
   dismissExportReminder(): void {

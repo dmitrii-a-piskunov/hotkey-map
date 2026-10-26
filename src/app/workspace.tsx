@@ -9,6 +9,7 @@ import { useKeyboardInput } from '@/features/devices/use-keyboard-input'
 import { EmptyGames } from '@/features/games/empty-games'
 import { GamesDialogs } from '@/features/games/games-dialogs'
 import { UndoToast } from '@/features/history/undo-toast'
+import { SettingsDialog } from '@/features/settings/settings-dialog'
 import { ImportDialog } from '@/features/transfer/import-dialog'
 import { useImportDrop } from '@/features/transfer/use-import-drop'
 
@@ -39,6 +40,7 @@ export function Workspace({ banners }: { banners?: ReactNode }) {
       </main>
       <GamesDialogs />
       <ImportDialog />
+      <SettingsDialog />
       <UndoToast />
     </div>
   )

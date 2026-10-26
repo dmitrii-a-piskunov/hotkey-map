@@ -1,4 +1,4 @@
-import { Download, Menu, Upload } from 'lucide-react'
+import { Download, Menu, Settings, Upload } from 'lucide-react'
 import { useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import {
@@ -13,12 +13,13 @@ import type { ExportTarget } from '@/domain/export'
 import { useCurrentGame, useCurrentProfile } from '@/features/games/use-current'
 import { usePersistence } from '@/features/persistence/persistence-context'
 import { ru } from '@/i18n/ru'
+import { openSettings } from '@/features/settings/settings-ui'
 import { exportToFile } from './export'
 import { openImportFile } from './import'
 
 const t = ru.transfer
 
-/** Меню в шапке (раздел 8.2): импорт и экспорт; настройки — следующим шагом этапа 5 */
+/** Меню в шапке (раздел 8.2): импорт, экспорт и «Настройки» */
 export function AppMenu() {
   const session = usePersistence()
   const game = useCurrentGame()
@@ -86,6 +87,11 @@ export function AppMenu() {
           >
             <Download />
             {t.exportProfile}
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onSelect={openSettings}>
+            <Settings />
+            {ru.settings.menuItem}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

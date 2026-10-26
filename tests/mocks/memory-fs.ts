@@ -129,6 +129,10 @@ export class MemoryDirHandle {
     return Promise.resolve(this.control.permission)
   }
 
+  isSameEntry(other: unknown) {
+    return Promise.resolve(other === this)
+  }
+
   requestPermission() {
     if (this.control.grantOnRequest) this.control.permission = 'granted'
     return Promise.resolve(this.control.permission)

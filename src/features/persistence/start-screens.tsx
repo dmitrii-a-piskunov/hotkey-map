@@ -4,7 +4,8 @@
  */
 
 import { Check, FolderOpen, Keyboard, Loader2, ShieldAlert } from 'lucide-react'
-import { useState, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
+import { ActionButton, ConfirmRow } from '@/components/common/action-buttons'
 import { Button } from '@/components/ui/button'
 import { ru } from '@/i18n/ru'
 import { fill, formatDateTime } from '@/lib/format'
@@ -48,32 +49,6 @@ function Text({ children }: { children: ReactNode }) {
 }
 
 /** Кнопка, которая блокируется, пока идёт действие (двойной клик — одно действие) */
-function ActionButton({
-  onClick,
-  children,
-  variant,
-}: {
-  onClick: () => Promise<void>
-  children: ReactNode
-  variant?: 'default' | 'outline'
-}) {
-  const [busy, setBusy] = useState(false)
-  return (
-    <Button
-      variant={variant}
-      disabled={busy}
-      onClick={() => {
-        setBusy(true)
-        void onClick().finally(() => {
-          setBusy(false)
-        })
-      }}
-    >
-      {children}
-    </Button>
-  )
-}
-
 function FirstRun() {
   const session = usePersistence()
   return (
@@ -120,53 +95,6 @@ function FolderMissing() {
         </ActionButton>
       </div>
     </Screen>
-  )
-}
-
-/** Строка с действием и подтверждением на месте: «Восстановить» → «Да / Отмена» */
-function ConfirmRow({
-  label,
-  question,
-  action,
-  onConfirm,
-}: {
-  label: ReactNode
-  question: string
-  action: string
-  onConfirm: () => Promise<void>
-}) {
-  const [asking, setAsking] = useState(false)
-  if (!asking) {
-    return (
-      <div className="flex items-center justify-between gap-3">
-        {label}
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={() => {
-            setAsking(true)
-          }}
-        >
-          {action}
-        </Button>
-      </div>
-    )
-  }
-  return (
-    <div className="flex items-center justify-between gap-3">
-      <span className="text-sm">{question}</span>
-      <div className="flex gap-2">
-        <ActionButton onClick={onConfirm}>{t.confirm}</ActionButton>
-        <Button
-          variant="outline"
-          onClick={() => {
-            setAsking(false)
-          }}
-        >
-          {t.cancel}
-        </Button>
-      </div>
-    </div>
   )
 }
 
