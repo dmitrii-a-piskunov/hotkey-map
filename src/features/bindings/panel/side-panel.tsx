@@ -1,4 +1,4 @@
-import { Activity, useEffect, useRef, useState, type PointerEvent } from 'react'
+import { Activity, useDeferredValue, useEffect, useRef, useState, type PointerEvent } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { settingSections } from '@/domain/settings-template'
 import type { Game } from '@/domain/types'
@@ -160,7 +160,10 @@ export function SidePanel({ wide = false }: { wide?: boolean }) {
   const game = useCurrentGame()
   const profile = useCurrentProfile()
   const tab = useBindingsUi((s) => s.tab)
-  const hasSelection = useDevicesStore((s) => s.selection.selected.length > 0)
+  // Панель отстаёт от клавиатуры: клавиши подсвечиваются в том же кадре, а
+  // панель дорисовывается следом в прерываемом рендере (FR-13, NFR-02)
+  const selected = useDeferredValue(useDevicesStore((s) => s.selection.selected))
+  const hasSelection = selected.length > 0
   const [width, setWidth] = useState(savedWidth)
 
   // Захват, отклик и подсветка относятся к действиям прежней игры или профиля
@@ -229,7 +232,7 @@ export function SidePanel({ wide = false }: { wide?: boolean }) {
         </TabsList>
         <div className="@container min-h-0 flex-1 overflow-y-auto p-2">
           <TabsContent value="actions">
-            {hasSelection && <SelectionView game={game} profile={profile} />}
+            {hasSelection && <SelectionView game={game} profile={profile} selected={selected} />}
             {/* Список действий при выделении только прячется: снятие выделения
                 показывает готовый список, а не строит сотни строк заново (NFR-02) */}
             <Activity mode={hasSelection ? 'hidden' : 'visible'}>

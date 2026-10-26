@@ -183,8 +183,16 @@ const KeySection = memo(function KeySection({
  * Панель выделенных клавиш (FR-13): одна — её действия; несколько —
  * действия каждой клавиши и «Создать группу» (FR-29).
  */
-export function SelectionView({ game, profile }: { game: Game; profile: Profile }) {
-  const selected = useDevicesStore((s) => s.selection.selected)
+export function SelectionView({
+  game,
+  profile,
+  selected,
+}: {
+  game: Game
+  profile: Profile
+  /** Выделенные входы; панель получает их с задержкой (useDeferredValue) */
+  selected: readonly string[]
+}) {
   const clearSelection = useDevicesStore((s) => s.clearSelection)
   const layer = useBindingsUi((s) => s.layer)
   const single = selected.length === 1 ? selected[0] : undefined
