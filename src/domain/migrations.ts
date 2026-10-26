@@ -19,6 +19,11 @@ export const MIGRATIONS: Migrations = {
   1: (data) => data,
   /** 2 → 3: расцветка клавиатуры в appSettings, по умолчанию «Стандартная» */
   2: (data) => data,
+  /**
+   * 3 → 4: файл экспорта получил объём «один профиль» и иконки в Base64
+   * (FR-21). data.json не меняется
+   */
+  3: (data) => data,
 }
 
 export type MigrationResult =

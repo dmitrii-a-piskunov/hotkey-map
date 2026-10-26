@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { serializeAppData } from '@/domain/app-data'
+import { CURRENT_SCHEMA_VERSION } from '@/domain/schema'
 import { useDataStore } from '@/features/data/store'
 import {
   MAX_RETRIES,
@@ -72,7 +73,7 @@ describe('first launch (scenario 1, FR-19)', () => {
     await session.chooseFolder()
     expect(phase()).toBe('ready')
     expect(t.folder.fileNames()).toEqual(['backups', 'data.json', 'icons'])
-    expect(await dataJson(t)).toMatchObject({ schemaVersion: 3, games: [] })
+    expect(await dataJson(t)).toMatchObject({ schemaVersion: CURRENT_SCHEMA_VERSION, games: [] })
     expect(t.saved).not.toBeNull()
     expect(status()).toMatchObject({ mode: 'folder', folderName: 'hotkey-map-test' })
   })

@@ -437,5 +437,7 @@ export const ru = {
     unknownOption: 'Ссылка на несуществующий вариант',
     inputInTwoGroups: 'Клавиша входит в две группы профиля',
     duplicateGameName: 'Игра с таким названием уже есть',
+    oneGameInFile: 'В файле игры или профиля должна быть ровно одна игра',
+    oneProfileInFile: 'В файле профиля должен быть ровно один профиль',
   },
 } as const

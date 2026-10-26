@@ -10,10 +10,10 @@ describe('schema v3', () => {
     delete settingsV2.keyboardColor
     const v2 = { ...data, schemaVersion: 2, appSettings: settingsV2 }
     const result = parseAppData(JSON.stringify(v2))
-    expect(CURRENT_SCHEMA_VERSION).toBe(3)
+
     expect(result).toMatchObject({ kind: 'ok', migratedFrom: 2 })
     if (result.kind === 'ok') {
-      expect(result.data.schemaVersion).toBe(3)
+      expect(result.data.schemaVersion).toBe(CURRENT_SCHEMA_VERSION)
       expect(result.data.games).toEqual(data.games)
       expect(result.data.appSettings.keyboardColor).toBe('standard')
     }

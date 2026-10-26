@@ -10,7 +10,7 @@
 import { z } from 'zod'
 import { ru } from '@/i18n/ru'
 
-export const CURRENT_SCHEMA_VERSION = 3
+export const CURRENT_SCHEMA_VERSION = 4
 
 const id = z.uuid()
 const isoDate = z.iso.datetime({ offset: true })
@@ -335,16 +335,36 @@ export const appDataSchema = z.object({
   appSettings: appSettingsSchema.prefault({}),
 })
 
+/** Иконка внутри файла экспорта: PNG в Base64, как её хранит папка icons/ */
+const iconDataUrl = z.string().regex(/^data:image\/png;base64,[A-Za-z0-9+/]+={0,2}$/)
+
+export const exportScopeSchema = z.enum(['all', 'game', 'profile'])
+
 /**
- * Файл экспорта и заготовки (FR-21, FR-22). Объём «один профиль» и иконки
- * внутри файла добавятся вместе с импортом и экспортом на этапе 5.
+ * Файл экспорта и заготовки (FR-21, FR-22, раздел 9.4). Профиль
+ * выгружается вместе со своей игрой и её справочниками: в файле одна игра
+ * с одним профилем. Иконки — по имени файла из game.icon.
  */
-export const exportFileSchema = z.object({
-  schemaVersion: z.literal(CURRENT_SCHEMA_VERSION),
-  scope: z.enum(['all', 'game']),
-  exportedAt: isoDate,
-  /** Заготовка из src/presets, а не экспорт пользователя */
-  preset: z.boolean().optional(),
-  games: z.array(gameSchema).superRefine(checkGames),
-  appSettings: appSettingsSchema.optional(),
-})
+export const exportFileSchema = z
+  .object({
+    schemaVersion: z.literal(CURRENT_SCHEMA_VERSION),
+    scope: exportScopeSchema,
+    exportedAt: isoDate,
+    /** Заготовка из src/presets, а не экспорт пользователя */
+    preset: z.boolean().optional(),
+    games: z.array(gameSchema).superRefine(checkGames),
+    appSettings: appSettingsSchema.optional(),
+    icons: z.record(z.string().min(1).max(120), iconDataUrl).optional(),
+  })
+  .superRefine((file, ctx) => {
+    if (file.scope === 'all') return
+    if (file.games.length !== 1) {
+      ctx.addIssue({ code: 'custom', message: ru.dataErrors.oneGameInFile, path: ['games'] })
+    } else if (file.scope === 'profile' && file.games[0]?.profiles.length !== 1) {
+      ctx.addIssue({
+        code: 'custom',
+        message: ru.dataErrors.oneProfileInFile,
+        path: ['games', 0, 'profiles'],
+      })
+    }
+  })
