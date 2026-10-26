@@ -10,6 +10,9 @@
 import { z } from 'zod'
 import { ru } from '@/i18n/ru'
 
+// Сообщения Zod по-русски: их видит пользователь в списке ошибок импорта и на экране повреждённых данных
+z.config(z.locales.ru())
+
 export const CURRENT_SCHEMA_VERSION = 4
 
 const id = z.uuid()

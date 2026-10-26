@@ -95,6 +95,26 @@ export const ru = {
     exportGame: 'Текущая игра',
     exportProfile: 'Текущий профиль',
   },
+  /** Импорт (FR-21, TC-10) */
+  import: {
+    notJson: 'Файл повреждён или это не JSON',
+    notObject: 'В файле нет данных Hotkey Map',
+    noVersion: 'В файле нет версии схемы (schemaVersion)',
+    noStep: 'Версия файла не поддерживается',
+    /** Названия частей файла в месте ошибки: «Игра «Dota 2» → действие 12» */
+    segments: {
+      games: 'игра',
+      contexts: 'контекст',
+      categories: 'категория',
+      actions: 'действие',
+      settingsTemplate: 'настройка шаблона',
+      profiles: 'профиль',
+      bindings: 'бинд',
+      keyGroups: 'группа клавиш',
+      options: 'вариант',
+      icons: 'иконка',
+    },
+  },
   /** Общие слова форм и диалогов */
   common: {
     save: 'Сохранить',
