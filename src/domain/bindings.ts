@@ -78,8 +78,41 @@ export function captureError(game: Game, input: BindingInput): CaptureError | nu
   return null
 }
 
-export function bindingsOfAction(profile: Profile, actionId: string): Binding[] {
-  return profile.bindings.filter((b) => b.actionId === actionId).sort((a, b) => a.slot - b.slot)
+interface BindingsIndex {
+  /** Бинды действия по слотам */
+  byAction: Map<string, Binding[]>
+  /** Бинды клавиши в порядке профиля */
+  byCode: Map<string, Binding[]>
+}
+
+const NO_BINDINGS: readonly Binding[] = []
+const indexes = new WeakMap<readonly Binding[], BindingsIndex>()
+
+/**
+ * Индекс биндов по действию и по клавише. Массив биндов профиля не
+ * меняется на месте, поэтому индекс строится один раз на версию профиля:
+ * панель спрашивает бинды у сотен строк сразу (NFR-03).
+ */
+function indexOf(bindings: readonly Binding[]): BindingsIndex {
+  let index = indexes.get(bindings)
+  if (!index) {
+    index = { byAction: new Map(), byCode: new Map() }
+    for (const b of bindings) {
+      const own = index.byAction.get(b.actionId)
+      if (own) own.push(b)
+      else index.byAction.set(b.actionId, [b])
+      const onCode = index.byCode.get(b.input.code)
+      if (onCode) onCode.push(b)
+      else index.byCode.set(b.input.code, [b])
+    }
+    for (const own of index.byAction.values()) own.sort((a, b) => a.slot - b.slot)
+    indexes.set(bindings, index)
+  }
+  return index
+}
+
+export function bindingsOfAction(profile: Profile, actionId: string): readonly Binding[] {
+  return indexOf(profile.bindings).byAction.get(actionId) ?? NO_BINDINGS
 }
 
 export function bindingInSlot(
@@ -87,7 +120,7 @@ export function bindingInSlot(
   actionId: string,
   slot: number,
 ): Binding | undefined {
-  return profile.bindings.find((b) => b.actionId === actionId && b.slot === slot)
+  return bindingsOfAction(profile, actionId).find((b) => b.slot === slot)
 }
 
 /** Первый свободный слот действия по правилу игры; null — все заняты (TC-02) */
@@ -247,7 +280,7 @@ export function commonParam(
 
 /** Бинды на физическом входе: все слои, текущий — первым */
 export function bindingsOnInput(profile: Profile, code: string, layer: string): Binding[] {
-  const own = profile.bindings.filter((b) => b.input.code === code)
+  const own = indexOf(profile.bindings).byCode.get(code) ?? NO_BINDINGS
   return [
     ...own.filter((b) => layerKey(b.input.modifiers) === layer),
     ...own.filter((b) => layerKey(b.input.modifiers) !== layer),

@@ -11,12 +11,12 @@ import { BindingOptionsMenu, SlotButton } from './slot-button'
 
 function slotsOf(game: Game, profile: Profile, actionId: string): (1 | 2)[] {
   // Бинд в лишнем слоте (правило сменилось с 2 на 1) тоже виден — как нарушение
-  const extra = profile.bindings.some((b) => b.actionId === actionId && b.slot === 2)
+  const extra = bindingsOfAction(profile, actionId).some((b) => b.slot === 2)
   return game.rules.maxKeysPerAction === 2 || extra ? [1, 2] : [1]
 }
 
 /** Тип нажатия и параметр, отличные от умолчаний, — прямо в строке (FR-12) */
-function CustomOptions({ game, bindings }: { game: Game; bindings: Binding[] }) {
+function CustomOptions({ game, bindings }: { game: Game; bindings: readonly Binding[] }) {
   const custom = bindings.filter((b) => b.pressType !== 'press' || hasCustomParam(game, b))
   if (custom.length === 0) return null
   return (
