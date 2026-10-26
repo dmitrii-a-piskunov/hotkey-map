@@ -42,7 +42,7 @@ describe('appDataSchema', () => {
       labelLang: 'en',
       autoLang: true,
       colorMode: 'category',
-      inputMode: 'check',
+      inputMode: 'nav',
     })
     expect(
       appDataSchema.parse({ schemaVersion: CURRENT_SCHEMA_VERSION, games: [] }).appSettings,

@@ -316,7 +316,7 @@ export const appSettingsSchema = z.object({
   /** FR-30 */
   colorMode: z.enum(['category', 'group']).default('category'),
   /** FR-03 */
-  inputMode: z.enum(['check', 'nav']).default('check'),
+  inputMode: z.enum(['check', 'nav']).default('nav'),
   /** Показывать клавиатуру и мышь (шапка): скрытое не мешает настраивать другое */
   showKeyboard: z.boolean().default(true),
   showMouse: z.boolean().default(true),

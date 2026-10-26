@@ -6,6 +6,7 @@
 import { AlertTriangle, Check, Info, Loader2 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
+import { exportToFile } from '@/features/transfer/export'
 import { ru } from '@/i18n/ru'
 import { fill } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -53,16 +54,20 @@ export function StorageBanners() {
         <Banner
           tone="info"
           action={
-            // Кнопка «Экспортировать» появится вместе с экспортом (FR-21, этап 5)
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                session.dismissExportReminder()
-              }}
-            >
-              {t.later}
-            </Button>
+            <span className="flex gap-2">
+              <Button size="sm" onClick={() => void exportToFile(session, { scope: 'all' })}>
+                {t.exportNow}
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  session.dismissExportReminder()
+                }}
+              >
+                {t.later}
+              </Button>
+            </span>
           }
         >
           {t.exportReminder}

@@ -44,11 +44,15 @@ const pending = () => ui().capture?.pending
 beforeEach(resetAppStores)
 afterEach(disposeApp)
 
-const renderApp = () => renderWithData(sampleData())
+/** Главный экран с примером данных; по умолчанию режим «Навигация» (FR-03) */
+const renderApp = (inputMode: 'check' | 'nav' = 'nav') => {
+  const data = sampleData()
+  return renderWithData({ ...data, appSettings: { ...data.appSettings, inputMode } })
+}
 
 describe('layers from the real keyboard (FR-14)', () => {
   it('a combination switches the layer, a plain key returns to the base one', async () => {
-    await renderApp()
+    await renderApp('check')
     keyDown('ControlLeft', { ctrlKey: true })
     keyDown('Digit1', { ctrlKey: true })
     expect(ui().layer).toBe('ctrl')
@@ -60,7 +64,7 @@ describe('layers from the real keyboard (FR-14)', () => {
   })
 
   it('a lonely modifier selects itself in the base layer', async () => {
-    await renderApp()
+    await renderApp('check')
     setLayer('ctrl')
     keyDown('ShiftLeft', { shiftKey: true })
     keyUp('ShiftLeft')
@@ -69,7 +73,7 @@ describe('layers from the real keyboard (FR-14)', () => {
   })
 
   it('Ctrl+A in navigation selects occupied keys of the current layer', async () => {
-    await renderApp()
+    await renderApp('check')
     useDataStore.getState().updateSettings({ inputMode: 'nav' })
     keyDown('KeyA', { ctrlKey: true })
     expect(selectedCodes()).toEqual(['Space'])

@@ -29,6 +29,9 @@ for (const view of ['3D', '2D'] as const) {
     })
 
     test('TC-07: real key press selects the key', async ({ page }) => {
+      // По умолчанию «Навигация» (FR-03): нажатия выделяют клавиши в режиме проверки
+      await page.getByRole('radio', { name: 'Проверка нажатий' }).click()
+      await page.mouse.click(5, 300)
       await page.keyboard.press('KeyF')
       expect(await selectedCodes(page)).toEqual(['KeyF'])
     })

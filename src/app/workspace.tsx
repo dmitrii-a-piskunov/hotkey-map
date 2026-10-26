@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { AppHeader } from '@/components/header/app-header'
+import { ViewBar } from '@/components/header/view-bar'
 import { DeviceStage } from '@/components/devices/device-stage'
 import { StageToolbar } from '@/components/devices/stage-toolbar'
 import { SidePanel } from '@/features/bindings/panel/side-panel'
@@ -8,7 +9,7 @@ import { useKeyboardInput } from '@/features/devices/use-keyboard-input'
 import { EmptyGames } from '@/features/games/empty-games'
 import { GamesDialogs } from '@/features/games/games-dialogs'
 
-/** Главный экран: шапка, плашки, клавиатура и мышь; без игр — «Добавьте первую игру» */
+/** Главный экран: шапка, плашки, полоса вида, клавиатура и мышь; без игр — «Добавьте первую игру» */
 export function Workspace({ banners }: { banners?: ReactNode }) {
   useKeyboardInput()
   const hasGames = useDataStore((s) => s.data.games.length > 0)
@@ -21,6 +22,7 @@ export function Workspace({ banners }: { banners?: ReactNode }) {
     <div className="flex h-screen min-w-[1280px] flex-col bg-background text-foreground">
       <AppHeader />
       {banners}
+      <ViewBar />
       <main className="flex min-h-0 flex-1">
         {!hasGames && <EmptyGames />}
         {!wide && (
