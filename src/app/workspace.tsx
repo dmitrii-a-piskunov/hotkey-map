@@ -8,10 +8,13 @@ import { useDataStore, useSettings } from '@/features/data/store'
 import { useKeyboardInput } from '@/features/devices/use-keyboard-input'
 import { EmptyGames } from '@/features/games/empty-games'
 import { GamesDialogs } from '@/features/games/games-dialogs'
+import { ImportDialog } from '@/features/transfer/import-dialog'
+import { useImportDrop } from '@/features/transfer/use-import-drop'
 
 /** Главный экран: шапка, плашки, полоса вида, клавиатура и мышь; без игр — «Добавьте первую игру» */
 export function Workspace({ banners }: { banners?: ReactNode }) {
   useKeyboardInput()
+  useImportDrop()
   const hasGames = useDataStore((s) => s.data.games.length > 0)
   const showKeyboard = useSettings((s) => s.showKeyboard)
   const showMouse = useSettings((s) => s.showMouse)
@@ -34,6 +37,7 @@ export function Workspace({ banners }: { banners?: ReactNode }) {
         {hasGames && <SidePanel wide={wide} />}
       </main>
       <GamesDialogs />
+      <ImportDialog />
     </div>
   )
 }

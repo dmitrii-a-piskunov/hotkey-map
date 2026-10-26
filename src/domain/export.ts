@@ -89,7 +89,7 @@ export function pngDataUrl(bytes: Uint8Array): string {
 }
 
 /** Байты иконки из data URL; null — не PNG в Base64 */
-export function dataUrlBytes(url: string): Uint8Array | null {
+export function dataUrlBytes(url: string): Uint8Array<ArrayBuffer> | null {
   if (!url.startsWith(PNG_PREFIX)) return null
   try {
     const binary = atob(url.slice(PNG_PREFIX.length))
