@@ -12,7 +12,7 @@ export interface TabGuard {
 
 const CHANNEL = 'hotkey-map:tabs'
 /** Сколько ждать ответа другой вкладки при запуске */
-export const TAB_REPLY_MS = 150
+export const TAB_REPLY_MS = 300
 
 type Message = 'hello' | 'here'
 

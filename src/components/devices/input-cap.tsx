@@ -1,4 +1,5 @@
 import { memo, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import type { ClickModifiers, InputCode } from '@/domain/selection'
 import { useCurrentGameName } from '@/features/devices/blocked-keys'
 import { ru } from '@/i18n/ru'
@@ -34,6 +35,9 @@ export interface InputCapProps {
   children?: ReactNode
 }
 
+/** Отступ подсказки от клавиши, px */
+const HINT_GAP = 6
+
 /** Клавиша или зона мыши: клик, состояния и обводка выделения (FR-01, FR-02) */
 export const InputCap = memo(function InputCap({
   code,
@@ -59,13 +63,17 @@ export const InputCap = memo(function InputCap({
   // красная рамка, штриховка и подсказка. Выделенный такой вход остаётся
   // красным и после отпускания, подсказка — только при удержании
   const [holding, setHolding] = useState(false)
+  // Где показать подсказку: она рисуется поверх всего экрана (портал в body),
+  // а сама клавиша остаётся на своём месте среди соседей
+  const [anchor, setAnchor] = useState<DOMRect | null>(null)
   // FR-01: «Эта клавиша не передаётся в Dota 2»; без игр — общий текст
   const gameName = useCurrentGameName()
   const stopReject = useRef<(() => void) | null>(null)
   useEffect(() => () => stopReject.current?.(), [])
 
-  function startReject() {
+  function startReject(target: HTMLElement) {
     stopReject.current?.()
+    setAnchor(target.getBoundingClientRect())
     setHolding(true)
     const stop = () => {
       setHolding(false)
@@ -95,12 +103,11 @@ export const InputCap = memo(function InputCap({
       data-dimmed={dimmed || undefined}
       title={title}
       data-rejected={holding || (disabled && selected) || undefined}
-      data-hinting={holding || undefined}
       className={cn('cap', className)}
       style={{ left, top, width, height, ...style }}
       onPointerDown={(e) => {
         // Рамку и анимацию нажатия ведёт сцена; здесь только отказ для непередаваемых клавиш
-        if (disabled && e.button === 0) startReject()
+        if (disabled && e.button === 0) startReject(e.currentTarget)
       }}
       onClick={(e) => {
         // Клик мышью (detail ≥ 1) выделяет сцена по нажатию и отпусканию;
@@ -110,13 +117,24 @@ export const InputCap = memo(function InputCap({
       }}
     >
       {children}
-      {holding && (
-        <span role="status" className="cap-hint" data-place={hintPlacement}>
-          {gameName === undefined
-            ? ru.devices.notPassedToGames
-            : fill(ru.devices.notPassedToGame, { game: gameName })}
-        </span>
-      )}
+      {holding &&
+        anchor &&
+        createPortal(
+          <span
+            role="status"
+            className="cap-hint"
+            data-place={hintPlacement}
+            style={{
+              left: anchor.left + anchor.width / 2,
+              top: hintPlacement === 'below' ? anchor.bottom + HINT_GAP : anchor.top - HINT_GAP,
+            }}
+          >
+            {gameName === undefined
+              ? ru.devices.notPassedToGames
+              : fill(ru.devices.notPassedToGame, { game: gameName })}
+          </span>,
+          document.body,
+        )}
     </div>
   )
 })

@@ -135,8 +135,10 @@
     filter: drop-shadow(0 0.2em 0.4em var(--shadow));
   }
 
+  /* Каждая клавиша — свой слой: значок и штриховка не вылезают поверх соседних клавиш */
   .cap {
     position: absolute;
+    isolation: isolate;
     cursor: pointer;
   }
 
@@ -409,11 +411,11 @@
     border: var(--conflict-ring);
   }
 
+  /* Подсказка неназначаемой клавиши — в body, поверх всего; место задаёт компонент */
   .cap-hint {
-    position: absolute;
-    left: 50%;
+    position: fixed;
     transform: translateX(-50%);
-    z-index: 10;
+    z-index: 60;
     padding: 4px 8px;
     border-radius: var(--radius-sm);
     background: var(--popover);
@@ -425,17 +427,8 @@
     pointer-events: none;
   }
 
-  .cap-hint[data-place='below'] {
-    top: calc(100% + 6px);
-  }
-
   .cap-hint[data-place='above'] {
-    bottom: calc(100% + 6px);
-  }
-
-  /* Поверх соседей — только пока видна подсказка: иначе грани 3D-клавиши ложатся на соседние */
-  .cap[data-hinting] {
-    z-index: 10;
+    transform: translate(-50%, -100%);
   }
 
   @media (prefers-reduced-motion: reduce) {
