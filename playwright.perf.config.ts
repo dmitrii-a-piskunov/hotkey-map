@@ -2,8 +2,8 @@ import { defineConfig, devices } from '@playwright/test'
 
 /**
  * Замеры скорости (npm run perf): по одному тесту за раз, чтобы не мешали друг другу.
- * PERF_URL — замер готовой сборки (vite preview), только Firefox: Chrome без
- * ?storage=browser в сборке просит папку.
+ * PERF_URL — замер готовой сборки (vite preview) в обоих браузерах: сценарий
+ * прячет выбор папки, и Chrome уходит в запасной режим, как Firefox.
  */
 const url = process.env.PERF_URL
 
