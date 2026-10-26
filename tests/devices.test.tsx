@@ -144,7 +144,7 @@ describe('pointer on keys (FR-01, FR-13)', () => {
     expect(selectedCodes()).toEqual(['KeyQ'])
   })
 
-  it('marquee can start on a key and does not press it', () => {
+  it('TC-20: marquee can start on a key and does not press it', () => {
     renderWorkspace()
     fakeBoxes({ KeyQ: new DOMRect(100, 100, 40, 40), KeyW: new DOMRect(150, 100, 40, 40) })
     fireEvent.pointerDown(input('KeyQ'), { button: 0, pointerId: 1, clientX: 110, clientY: 110 })
@@ -209,7 +209,7 @@ describe('check mode (FR-03)', () => {
     expect(keyDown('KeyW', { key: 'w', ctrlKey: true })).toBe(true)
   })
 
-  it('wheel click selects MouseMiddle', () => {
+  it('TC-18: wheel click selects MouseMiddle', () => {
     renderWorkspace()
     fireEvent.mouseDown(window, { button: 1 })
     expect(selectedCodes()).toEqual(['MouseMiddle'])
@@ -218,7 +218,7 @@ describe('check mode (FR-03)', () => {
     expect(input('MouseMiddle')).not.toHaveAttribute('data-pressed')
   })
 
-  it('wheel over the keyboard selects the scroll input', () => {
+  it('TC-18: wheel over the keyboard selects the scroll input', () => {
     renderWorkspace()
     fireEvent.wheel(input('KeyQ'), { deltaY: 50 })
     expect(selectedCodes()).toEqual(['WheelDown'])
@@ -272,7 +272,7 @@ describe('navigation mode (FR-03)', () => {
 })
 
 describe('label language (FR-04)', () => {
-  it('in EN and RU switches by the typed character', () => {
+  it('TC-19: in EN and RU switches by the typed character', () => {
     useDataStore.getState().updateSettings({ labelLang: 'en' })
     renderWorkspace()
     keyDown('KeyQ', { key: 'й' })
@@ -281,7 +281,7 @@ describe('label language (FR-04)', () => {
     expect(settings().labelLang).toBe('en')
   })
 
-  it('EN/RU never switches by itself', () => {
+  it('TC-19: EN/RU never switches by itself', () => {
     renderWorkspace()
     keyDown('KeyQ', { key: 'й' })
     expect(settings().labelLang).toBe('enru')
@@ -327,7 +327,7 @@ describe('view bar switches', () => {
 })
 
 describe('not assignable keys', () => {
-  it('Fn shows the red frame and the hint below while the mouse button is held', () => {
+  it('TC-17: Fn shows the red frame and the hint below while the mouse button is held', () => {
     renderWorkspace()
     fireEvent.pointerDown(input('Fn'), { button: 0 })
     expect(input('Fn')).toHaveAttribute('data-rejected')

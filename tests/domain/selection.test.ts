@@ -114,7 +114,7 @@ describe('clickSelect', () => {
     expect(s.selected).toEqual(['Mouse4'])
   })
 
-  it('Shift ranges span the keyboard and the mouse', () => {
+  it('TC-15: Shift ranges span the keyboard and the mouse', () => {
     let s = click(emptySelection, 'KeyQ')
     s = click(s, 'MouseRight', shift)
     expect(s.selected).toEqual(expect.arrayContaining(['KeyQ', 'PageUp', 'Mouse5', 'MouseRight']))
@@ -312,7 +312,7 @@ describe('navigate', () => {
     expect(navigate(emptySelection, 'right', false, inputs).selected).toEqual(['Escape'])
   })
 
-  it('Shift+arrows Mouse 5 → left button → wheel keep the left button', () => {
+  it('TC-16: Shift+arrows Mouse 5 → left button → wheel keep the left button', () => {
     let s = click(emptySelection, 'Mouse5')
     s = navigate(s, 'right', true, inputs)
     expect([...s.selected].sort()).toEqual(['Mouse5', 'MouseLeft'])
