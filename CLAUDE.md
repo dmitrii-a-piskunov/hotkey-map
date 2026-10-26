@@ -30,6 +30,7 @@ npm run lint       # ESLint
 npm run typecheck  # tsc --noEmit
 npm test           # Vitest
 npm run e2e        # Playwright
+npm run e2e:pwa    # сборка как PWA: service worker и офлайн (NFR-06)
 npm run perf       # замер скорости выделения (docs/perf-selection.md)
 ```
 
