@@ -13,6 +13,7 @@ import { unusedIcons } from '@/domain/icons'
 import type { AppData } from '@/domain/types'
 import { useDataStore } from '@/features/data/store'
 import type { FolderAccess } from '@/storage/folder-access'
+import type { TabGuard } from './tab-guard'
 import {
   BACKUPS_TO_KEEP,
   toStorageError,
@@ -42,6 +43,8 @@ export interface PersistenceEnv {
   forceBrowser: boolean
   openFolder(handle: FileSystemDirectoryHandle): Promise<FolderStorage>
   browserStorage(): BrowserStorage
+  /** FR-27: открыто ли приложение в другой вкладке */
+  tabs: TabGuard
   now(): Date
 }
 
@@ -57,6 +60,8 @@ export class PersistenceSession {
   #backupDone = false
   /** Папку только что выбрали в окне выбора: пустой папке предлагаются заготовки */
   #folderChosen = false
+  /** FR-27: приложение открыто в другой вкладке — эта ничего не записывает */
+  #readOnly = false
   /** Текст повреждённого data.json, пока пользователь выбирает, что делать */
   #damagedText: string | null = null
   #saveTimer: Timer | null = null
@@ -79,6 +84,10 @@ export class PersistenceSession {
   async start(): Promise<void> {
     this.#set({ phase: { name: 'loading' } })
     try {
+      // FR-27: до чтения данных и записи копии
+      this.#readOnly = await this.#env.tabs.otherTabOpen()
+      useDataStore.getState().setReadOnly(this.#readOnly)
+      this.#set({ readOnly: this.#readOnly })
       const { folders, forceBrowser } = this.#env
       if (!folders.supported || forceBrowser) {
         // FR-23: папки нет, данные живут в IndexedDB
@@ -191,6 +200,7 @@ export class PersistenceSession {
   async writeIcon(name: string, data: Blob): Promise<void> {
     const storage = this.#storage
     if (!storage) throw new Error('Storage is not open')
+    if (this.#readOnly) throw new Error('Read-only tab (FR-27)')
     await storage.writeIcon(name, data)
   }
 
@@ -231,6 +241,10 @@ export class PersistenceSession {
     if (text === null) {
       // Сценарий 1: в новой папке сразу появляется data.json
       const data = createAppData()
+      if (this.#readOnly) {
+        await this.#ready(data, false)
+        return
+      }
       await storage.writeData(serializeAppData(data))
       this.#launchText = null
       this.#backupDone = true
@@ -256,7 +270,7 @@ export class PersistenceSession {
 
     this.#launchText = text
     this.#backupDone = false
-    if (result.migratedFrom !== null) {
+    if (result.migratedFrom !== null && !this.#readOnly) {
       // Раздел 9.3: перед миграцией — резервная копия
       await this.#backup(storage)
     }
@@ -264,6 +278,11 @@ export class PersistenceSession {
   }
 
   async #replaceDamaged(storage: StorageAdapter, data: AppData): Promise<void> {
+    if (this.#readOnly) {
+      // Вкладка для просмотра показывает данные, но файлы не трогает
+      await this.#ready(data, false)
+      return
+    }
     if (this.#damagedText !== null) {
       await storage.saveDamaged(this.#damagedText, this.#env.now())
       this.#damagedText = null
@@ -278,9 +297,11 @@ export class PersistenceSession {
   async #ready(data: AppData, needsSave: boolean): Promise<void> {
     this.#unsubscribe?.()
     useDataStore.getState().replaceData(data)
-    this.#unsubscribe = useDataStore.subscribe((s, prev) => {
-      if (s.data !== prev.data) this.#changed()
-    })
+    if (!this.#readOnly) {
+      this.#unsubscribe = useDataStore.subscribe((s, prev) => {
+        if (s.data !== prev.data) this.#changed()
+      })
+    }
 
     let exportReminder = false
     if (this.#browser) {
@@ -294,6 +315,7 @@ export class PersistenceSession {
       dirty: false,
       exportReminder,
     })
+    if (this.#readOnly) return
     if (needsSave) this.#changed()
     this.sweeping = this.#sweepIcons().catch((e: unknown) => {
       console.error('Icon cleanup failed', e)

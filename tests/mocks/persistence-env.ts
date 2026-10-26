@@ -23,9 +23,13 @@ export interface TestEnv {
   saved: FileSystemDirectoryHandle | null
   /** Пользователь закрыл окно выбора */
   pickCancelled: boolean
+  /** FR-27: приложение уже открыто в другой вкладке */
+  otherTab: boolean
 }
 
-export function makeTestEnv(options: { supported?: boolean; savedFolder?: boolean } = {}): TestEnv {
+export function makeTestEnv(
+  options: { supported?: boolean; savedFolder?: boolean; otherTab?: boolean } = {},
+): TestEnv {
   const folder = memoryFolder()
   const browserDb = createStore(`session-${++dbCounter}`, 'kv')
   const state: TestEnv = {
@@ -33,6 +37,7 @@ export function makeTestEnv(options: { supported?: boolean; savedFolder?: boolea
     folder,
     saved: options.savedFolder ? asHandle(folder) : null,
     pickCancelled: false,
+    otherTab: options.otherTab ?? false,
   }
 
   const folders: FolderAccess = {
@@ -52,6 +57,7 @@ export function makeTestEnv(options: { supported?: boolean; savedFolder?: boolea
     forceBrowser: false,
     openFolder: (handle) => FileSystemStorage.open(handle),
     browserStorage: () => new IndexedDbStorage(browserDb),
+    tabs: { otherTabOpen: () => Promise.resolve(state.otherTab) },
     now: () => new Date(),
   }
   return state
@@ -59,6 +65,7 @@ export function makeTestEnv(options: { supported?: boolean; savedFolder?: boolea
 
 export function resetStores(): void {
   usePersistenceStatus.setState(initialPersistenceStatus)
+  useDataStore.getState().setReadOnly(false)
   useDataStore.getState().replaceData(createAppData())
 }
 

@@ -4,6 +4,7 @@ import { FileSystemStorage } from '@/storage/file-system-storage'
 import { browserFolderAccess } from '@/storage/folder-access'
 import { IndexedDbStorage } from '@/storage/indexed-db-storage'
 import type { PersistenceEnv } from './session'
+import { broadcastTabGuard } from './tab-guard'
 
 /**
  * ?storage=browser включает IndexedDB там, где есть выбор папки. Нужно для
@@ -22,6 +23,7 @@ export function browserPersistenceEnv(): PersistenceEnv {
     forceBrowser: forceBrowserStorage(),
     openFolder: (handle) => FileSystemStorage.open(handle),
     browserStorage: () => new IndexedDbStorage(),
+    tabs: broadcastTabGuard(),
     now: () => new Date(),
   }
 }

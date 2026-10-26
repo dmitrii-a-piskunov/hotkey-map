@@ -35,6 +35,8 @@ export interface PersistenceStatus {
   exportReminder: boolean
   /** Сценарий 1, шаг 4: в выбранной папке не было данных — предложить заготовки */
   offerPresets: boolean
+  /** FR-27: приложение открыто в другой вкладке, эта — только для просмотра */
+  readOnly: boolean
 }
 
 export const initialPersistenceStatus: PersistenceStatus = {
@@ -46,6 +48,7 @@ export const initialPersistenceStatus: PersistenceStatus = {
   dirty: false,
   exportReminder: false,
   offerPresets: false,
+  readOnly: false,
 }
 
 export const usePersistenceStatus = create<PersistenceStatus>()(() => initialPersistenceStatus)

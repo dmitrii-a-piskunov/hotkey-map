@@ -1,5 +1,5 @@
 /**
- * Плашки под шапкой: режим Firefox и напоминание об экспорте (FR-23),
+ * Плашки под шапкой: вторая вкладка (FR-27), режим Firefox и напоминание об экспорте (FR-23),
  * ошибка записи с повтором (раздел 13.1). Статус сохранения — в шапке.
  */
 
@@ -46,9 +46,11 @@ export function StorageBanners() {
   const saveStatus = usePersistenceStatus((s) => s.saveStatus)
   const saveError = usePersistenceStatus((s) => s.saveError)
   const exportReminder = usePersistenceStatus((s) => s.exportReminder)
+  const readOnly = usePersistenceStatus((s) => s.readOnly)
 
   return (
     <>
+      {readOnly && <Banner tone="info">{t.otherTab}</Banner>}
       {mode === 'browser' && <Banner tone="info">{t.browserMode}</Banner>}
       {exportReminder && (
         <Banner

@@ -21,6 +21,9 @@ export const HISTORY_LIMIT = 50
 
 interface DataState {
   data: AppData
+  /** FR-27: приложение открыто в другой вкладке — правки здесь не применяются */
+  readOnly: boolean
+  setReadOnly: (readOnly: boolean) => void
   /** Данные, загруженные из хранилища или восстановленные из копии; история очищается */
   replaceData: (data: AppData) => void
   /** Изменение данных чистой функцией; тот же объект в ответ — изменений нет */
@@ -57,14 +60,20 @@ const gamesIntoData =
 export const useDataStore = create<DataState>()(
   gamesIntoData(
     temporal<DataState, [], [], HistoryState>(
-      (set) => ({
+      (set, get) => ({
         data: createAppData(),
+        readOnly: false,
+
+        setReadOnly: (readOnly) => {
+          set({ readOnly })
+        },
 
         replaceData: (data) => {
           set({ data })
           useDataStore.temporal.getState().clear()
         },
         apply: (change) => {
+          if (get().readOnly) return
           set((s) => {
             const data = change(s.data)
             return data === s.data ? s : { data }

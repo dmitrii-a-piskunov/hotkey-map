@@ -141,6 +141,11 @@ export async function confirmImport(
 ): Promise<void> {
   const state = useImport.getState()
   if (state.phase !== 'preview' || state.busy) return
+  // FR-27: вкладка только для просмотра ничего не импортирует
+  if (useDataStore.getState().readOnly) {
+    useImport.setState(fail(state.fileName, t.readOnly), true)
+    return
+  }
   useImport.setState({ ...state, busy: true }, true)
 
   const icons = await writeIcons(session, state.file, clock)

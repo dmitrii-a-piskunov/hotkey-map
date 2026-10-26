@@ -48,6 +48,8 @@ export const useUndoToast = create<UndoToast>()(() => ({ message: null, key: 0 }
 
 /** После удаления: сообщение с кнопкой «Отменить» */
 export function notifyDeleted(message: string): void {
+  // FR-27: во вкладке для просмотра удаление не применяется
+  if (useDataStore.getState().readOnly) return
   useUndoToast.setState((s) => ({ message, key: s.key + 1 }))
 }
 
