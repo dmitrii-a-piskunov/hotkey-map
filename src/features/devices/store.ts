@@ -25,12 +25,15 @@ interface DevicesData {
   selection: SelectionState
   /** Входы, которые сейчас зажаты на настоящей клавиатуре или мыши */
   pressed: readonly InputCode[]
+  /** Тянется рамка: панель показывает только «Выделено: N» (FR-13) */
+  marquee: boolean
 }
 
 interface DevicesActions {
   click: (code: InputCode, mods: ClickModifiers) => void
   selectOnly: (code: InputCode) => void
   setSelection: (selection: SelectionState) => void
+  setMarquee: (marquee: boolean) => void
   clearSelection: () => void
   navigate: (dir: Direction, extend: boolean) => void
   selectAllOccupied: () => void
@@ -44,6 +47,7 @@ export type DevicesState = DevicesData & DevicesActions
 export const initialDevicesData: DevicesData = {
   selection: emptySelection,
   pressed: [],
+  marquee: false,
 }
 
 export const useDevicesStore = create<DevicesState>()((set) => ({
@@ -64,6 +68,9 @@ export const useDevicesStore = create<DevicesState>()((set) => ({
   },
   setSelection: (selection) => {
     set({ selection })
+  },
+  setMarquee: (marquee) => {
+    set((s) => (s.marquee === marquee ? s : { marquee }))
   },
   clearSelection: () => {
     set({ selection: emptySelection })

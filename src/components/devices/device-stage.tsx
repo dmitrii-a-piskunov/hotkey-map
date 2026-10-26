@@ -269,6 +269,7 @@ export function DeviceStage() {
       // Началась рамка — в том числе от клавиши. Нажатие не показываем, указатель
       // захватываем только сейчас, чтобы обычный клик доходил до клавиши
       drag.active = true
+      useDevicesStore.getState().setMarquee(true)
       releasePressed(drag)
       e.currentTarget.setPointerCapture(e.pointerId)
     }
@@ -284,6 +285,7 @@ export function DeviceStage() {
     // Движение, которое не успело дойти до кадра, тоже выделяет
     if (drag?.frame != null) applyDrag(drag)
     showMarquee(marqueeRef.current, null)
+    useDevicesStore.getState().setMarquee(false)
     if (e.currentTarget.hasPointerCapture(e.pointerId)) {
       e.currentTarget.releasePointerCapture(e.pointerId)
     }

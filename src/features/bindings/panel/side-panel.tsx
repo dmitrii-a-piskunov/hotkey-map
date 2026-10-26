@@ -11,7 +11,7 @@ import { resetBindingsUi, setPanelTab, useBindingsUi, type PanelTab } from '../u
 import { ActionList, UnboundList } from './action-list'
 import { GroupsTab } from './groups-tab'
 import { NotesTab } from './notes-tab'
-import { SelectionView } from './selection-view'
+import { MarqueeSelectionView, SelectionView } from './selection-view'
 import { ValuesTab } from './values-tab'
 
 /** Ширина панели (FR-13, раздел 8.4) */
@@ -164,6 +164,7 @@ export function SidePanel({ wide = false }: { wide?: boolean }) {
   // панель дорисовывается следом в прерываемом рендере (FR-13, NFR-02)
   const selected = useDeferredValue(useDevicesStore((s) => s.selection.selected))
   const hasSelection = selected.length > 0
+  const marquee = useDevicesStore((s) => s.marquee)
   const [width, setWidth] = useState(savedWidth)
 
   // Захват, отклик и подсветка относятся к действиям прежней игры или профиля
@@ -232,10 +233,14 @@ export function SidePanel({ wide = false }: { wide?: boolean }) {
         </TabsList>
         <div className="@container min-h-0 flex-1 overflow-y-auto p-2">
           <TabsContent value="actions">
-            {hasSelection && <SelectionView game={game} profile={profile} selected={selected} />}
+            {marquee ? (
+              <MarqueeSelectionView />
+            ) : (
+              hasSelection && <SelectionView game={game} profile={profile} selected={selected} />
+            )}
             {/* Список действий при выделении только прячется: снятие выделения
                 показывает готовый список, а не строит сотни строк заново (NFR-02) */}
-            <Activity mode={hasSelection ? 'hidden' : 'visible'}>
+            <Activity mode={hasSelection || marquee ? 'hidden' : 'visible'}>
               <ActionList key={profile.id} game={game} profile={profile} />
             </Activity>
           </TabsContent>

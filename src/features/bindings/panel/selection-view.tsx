@@ -179,6 +179,39 @@ const KeySection = memo(function KeySection({
   )
 })
 
+/** Заголовок выделения: клавиша или «Выделено: N» и кнопка «Снять выделение» */
+export function SelectionHeader({ title }: { title: string }) {
+  const clearSelection = useDevicesStore((s) => s.clearSelection)
+  return (
+    <div className="flex items-center gap-2 px-2">
+      <h2 className="min-w-0 flex-1 truncate text-base font-semibold">{title}</h2>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="size-7"
+        aria-label={ru.panel.clearSelection}
+        title={ru.panel.clearSelection}
+        onClick={clearSelection}
+      >
+        <X />
+      </Button>
+    </div>
+  )
+}
+
+/**
+ * Пока тянется рамка, панель не строит список действий — только число
+ * выделенных входов. Список строится после отпускания кнопки (FR-13, NFR-02)
+ */
+export function MarqueeSelectionView() {
+  const count = useDevicesStore((s) => s.selection.selected.length)
+  return (
+    <div className="grid gap-3">
+      <SelectionHeader title={fill(ru.panel.selectedKeys, { count })} />
+    </div>
+  )
+}
+
 /**
  * Панель выделенных клавиш (FR-13): одна — её действия; несколько —
  * действия каждой клавиши и «Создать группу» (FR-29).
@@ -193,27 +226,14 @@ export function SelectionView({
   /** Выделенные входы; панель получает их с задержкой (useDeferredValue) */
   selected: readonly string[]
 }) {
-  const clearSelection = useDevicesStore((s) => s.clearSelection)
   const layer = useBindingsUi((s) => s.layer)
   const single = selected.length === 1 ? selected[0] : undefined
 
   return (
     <div className="grid gap-3">
-      <div className="flex items-center gap-2 px-2">
-        <h2 className="min-w-0 flex-1 truncate text-base font-semibold">
-          {single ? inputName(single) : fill(ru.panel.selectedKeys, { count: selected.length })}
-        </h2>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="size-7"
-          aria-label={ru.panel.clearSelection}
-          title={ru.panel.clearSelection}
-          onClick={clearSelection}
-        >
-          <X />
-        </Button>
-      </div>
+      <SelectionHeader
+        title={single ? inputName(single) : fill(ru.panel.selectedKeys, { count: selected.length })}
+      />
       {single ? (
         <SingleInput game={game} profile={profile} code={single} />
       ) : (

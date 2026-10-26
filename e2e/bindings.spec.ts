@@ -103,3 +103,30 @@ test('a mouse button is bound in the bind window; hidden devices give the settin
   await nav.getByRole('button', { name: 'Мини-карта' }).click()
   await expect(panel(page).getByRole('heading', { name: 'Мини-карта', level: 3 })).toBeInViewport()
 })
+
+test('while the marquee is dragged the panel shows only the count, the list comes after release (FR-13)', async ({
+  page,
+}) => {
+  await page.goto(APP_URL)
+  await page.getByRole('button', { name: 'Из заготовок' }).click()
+  await importPreset(page, 'Dota 2')
+  await expect(panel(page)).toBeVisible()
+  const q = await key(page, 'KeyQ').boundingBox()
+  const w = await key(page, 'KeyW').boundingBox()
+  const stage = await page.getByTestId('device-stage').boundingBox()
+  if (!q || !w || !stage) throw new Error('no layout')
+
+  await page.mouse.move(q.x + q.width / 2, stage.y + 5)
+  await page.mouse.down()
+  await page.mouse.move(w.x + w.width / 2, w.y + w.height / 2, { steps: 5 })
+  const heading = panel(page).getByRole('heading', { level: 2 })
+  await expect(heading).toHaveText(/^Выделено: \d+$/)
+  const count = await heading.textContent()
+  await expect(panel(page).getByRole('button', { name: 'Создать группу' })).toHaveCount(0)
+  await expect(panel(page).getByRole('region', { name: 'Q' })).toHaveCount(0)
+
+  await page.mouse.up()
+  await expect(heading).toHaveText(count ?? '')
+  await expect(panel(page).getByRole('button', { name: 'Создать группу' })).toBeVisible()
+  await expect(panel(page).getByRole('region', { name: 'Q' })).toBeVisible()
+})
