@@ -34,6 +34,9 @@ import { setProfileNotes } from '@/domain/profiles'
 import { resetAllSettingValues, resetSettingValue, setSettingValue } from '@/domain/setting-values'
 import type { Game, Modifier, PressType, Profile, SettingValue } from '@/domain/types'
 import { useDataStore } from '@/features/data/store'
+import { notifyDeleted } from '@/features/history/history'
+import { ru } from '@/i18n/ru'
+import { fill } from '@/lib/format'
 import {
   cancelCapture,
   setHighlight,
@@ -202,7 +205,9 @@ export function removeFromKeyGroupCmd(groupId: string, codes: readonly string[])
 export function removeKeyGroupCmd(groupId: string): void {
   const cur = current()
   if (!cur) return
+  const name = cur.profile.keyGroups.find((g) => g.id === groupId)?.name
   onGame(cur.game.id, (g) => removeKeyGroup(g, cur.profile.id, groupId, clock.now()))
+  if (name !== undefined) notifyDeleted(fill(ru.history.deleted.keyGroup, { name }))
 }
 
 export function copyKeyGroupCmd(groupId: string, toProfileId: string): void {

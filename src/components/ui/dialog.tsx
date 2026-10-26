@@ -32,10 +32,17 @@ function DialogOverlay({
   )
 }
 
+/**
+ * Элементы поверх модальных окон, клик по которым не закрывает окно:
+ * сообщение «Отменить» после удаления в редакторе (FR-24)
+ */
+export const KEEP_DIALOG_ATTR = 'data-keep-dialog'
+
 function DialogContent({
   className,
   children,
   closeLabel,
+  onInteractOutside,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & { closeLabel?: string }) {
   return (
@@ -47,6 +54,11 @@ function DialogContent({
           'fixed top-1/2 left-1/2 z-50 grid max-h-[calc(100vh-2rem)] w-full max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 overflow-y-auto rounded-lg border bg-background p-6 shadow-lg duration-200 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
           className,
         )}
+        onInteractOutside={(e) => {
+          const target = e.target instanceof Element ? e.target : null
+          if (target?.closest(`[${KEEP_DIALOG_ATTR}]`)) e.preventDefault()
+          else onInteractOutside?.(e)
+        }}
         {...props}
       >
         {children}

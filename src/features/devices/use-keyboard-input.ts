@@ -17,6 +17,7 @@ import { BASE_LAYER } from '@/domain/layers'
 import { captureInputCmd } from '@/features/bindings/commands'
 import { cancelCapture, isCapturing, setHighlight, setLayer } from '@/features/bindings/ui-store'
 import { useDataStore } from '@/features/data/store'
+import { redoCmd, undoCmd } from '@/features/history/history'
 import { isKeyboardCode, mouseLayout } from './devices'
 import { useDevicesStore } from './store'
 
@@ -106,6 +107,11 @@ export function useKeyboardInput(): void {
         const dir = arrowDirection(e.code)
         if (dir) store.navigate(dir, e.shiftKey)
         else if (e.code === 'KeyA' && e.ctrlKey) store.selectAllOccupied()
+        // FR-24: отмена и повтор только в навигации — в проверке Ctrl+Z выделяет клавиши
+        else if (e.code === 'KeyZ' && e.ctrlKey && !e.repeat) {
+          if (e.shiftKey) redoCmd()
+          else undoCmd()
+        }
         return
       }
 

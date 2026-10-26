@@ -49,6 +49,9 @@ import {
 } from '@/domain/settings-template'
 import type { Game } from '@/domain/types'
 import { useDataStore } from '@/features/data/store'
+import { notifyDeleted } from '@/features/history/history'
+import { ru } from '@/i18n/ru'
+import { fill } from '@/lib/format'
 
 const clock = systemClock
 
@@ -60,6 +63,15 @@ function onGame(gameId: string, fn: (game: Game) => Game): void {
   useDataStore.getState().apply((d) => updateGame(d, gameId, fn, clock.now()))
 }
 
+type Deleted = keyof typeof ru.history.deleted
+
+/** FR-24: после удаления — сообщение с кнопкой «Отменить» */
+function deleted(kind: Deleted, name: string | undefined): void {
+  if (name !== undefined) notifyDeleted(fill(ru.history.deleted[kind], { name }))
+}
+
+const gameOf = (gameId: string) => data().games.find((g) => g.id === gameId)
+
 // Игры (FR-05)
 
 /** Новая игра с контекстом «Везде» и профилем «Основной»; становится текущей */
@@ -70,7 +82,9 @@ export function createGameCmd(name: string): string {
 }
 
 export function removeGameCmd(gameId: string): void {
+  const name = gameOf(gameId)?.name
   useDataStore.getState().apply((d) => removeGame(d, gameId))
+  deleted('game', name)
 }
 
 export function setGeneralCmd(gameId: string, draft: GeneralDraft): void {
@@ -104,7 +118,9 @@ export function reorderContextsCmd(gameId: string, ids: readonly string[]): void
 }
 
 export function removeContextCmd(gameId: string, id: string, moveTo: string): void {
+  const name = gameOf(gameId)?.contexts.find((c) => c.id === id)?.name
   onGame(gameId, (g) => removeContext(g, id, moveTo))
+  deleted('context', name)
 }
 
 // Категории (FR-07)
@@ -122,7 +138,9 @@ export function reorderCategoriesCmd(gameId: string, ids: readonly string[]): vo
 }
 
 export function removeCategoryCmd(gameId: string, id: string): void {
+  const name = gameOf(gameId)?.categories.find((c) => c.id === id)?.name
   onGame(gameId, (g) => removeCategory(g, id))
+  deleted('category', name)
 }
 
 // Действия (FR-08)
@@ -145,7 +163,9 @@ export function moveActionCmd(
 }
 
 export function removeActionCmd(gameId: string, id: string): void {
+  const name = gameOf(gameId)?.actions.find((a) => a.id === id)?.name
   onGame(gameId, (g) => removeAction(g, id))
+  deleted('action', name)
 }
 
 // Параметр бинда (FR-09)
@@ -173,7 +193,9 @@ export function moveSettingCmd(gameId: string, id: string, group: string, index:
 }
 
 export function removeSettingCmd(gameId: string, id: string): void {
+  const name = gameOf(gameId)?.settingsTemplate.find((s) => s.id === id)?.name
   onGame(gameId, (g) => removeSetting(g, id))
+  deleted('setting', name)
 }
 
 // Профили (FR-11)
@@ -207,6 +229,7 @@ export function duplicateProfileCmd(gameId: string, id: string): void {
 }
 
 export function removeProfileCmd(gameId: string, id: string): void {
+  deleted('profile', gameOf(gameId)?.profiles.find((p) => p.id === id)?.name)
   onGame(gameId, (g) => removeProfile(g, id))
   const settings = data().appSettings
   if (settings.lastProfileId === id) {

@@ -95,6 +95,22 @@ export const ru = {
     exportGame: 'Текущая игра',
     exportProfile: 'Текущий профиль',
   },
+  /** Отмена и повтор (FR-24) */
+  history: {
+    undo: 'Отменить',
+    redo: 'Повторить',
+    undoHint: 'Отменить (Ctrl+Z в режиме «Навигация»)',
+    redoHint: 'Повторить (Ctrl+Shift+Z в режиме «Навигация»)',
+    deleted: {
+      game: 'Игра «{name}» удалена',
+      profile: 'Профиль «{name}» удалён',
+      context: 'Контекст «{name}» удалён',
+      category: 'Категория «{name}» удалена',
+      action: 'Действие «{name}» удалено',
+      setting: 'Настройка «{name}» удалена',
+      keyGroup: 'Группа «{name}» удалена',
+    },
+  },
   /** Импорт (FR-21, TC-10) */
   import: {
     menuItem: 'Импорт…',
