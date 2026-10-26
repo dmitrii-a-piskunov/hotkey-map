@@ -128,6 +128,11 @@ export const ru = {
     restoreFailed: 'Копию от {date} не удалось прочитать. Данные не изменились.',
     version: 'Версия',
   },
+  /** Обновление PWA (FR-28) */
+  pwa: {
+    updateReady: 'Доступна новая версия',
+    update: 'Обновить',
+  },
   /** Темы (FR-25) */
   theme: {
     label: 'Тема',

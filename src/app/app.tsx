@@ -5,6 +5,8 @@ import type { PersistenceSession } from '@/features/persistence/session'
 import { StartScreen } from '@/features/persistence/start-screens'
 import { usePersistenceStatus } from '@/features/persistence/status-store'
 import { StorageBanners } from '@/features/persistence/storage-banners'
+import { useServiceWorker } from '@/features/pwa/pwa-update'
+import { UpdateBanner } from '@/features/pwa/update-banner'
 import { useTheme } from '@/features/theme/use-theme'
 import { Workspace } from './workspace'
 
@@ -39,11 +41,19 @@ export function App({ session }: { session: PersistenceSession }) {
   const phase = usePersistenceStatus((s) => s.phase)
   useUnsavedChangesGuard(session)
   useTheme(phase.name === 'ready')
+  useServiceWorker()
 
   return (
     <PersistenceContext value={session}>
       {phase.name === 'ready' ? (
-        <Workspace banners={<StorageBanners />} />
+        <Workspace
+          banners={
+            <>
+              <UpdateBanner />
+              <StorageBanners />
+            </>
+          }
+        />
       ) : (
         <StartScreen phase={phase} />
       )}
