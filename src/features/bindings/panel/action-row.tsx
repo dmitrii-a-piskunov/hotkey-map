@@ -113,8 +113,12 @@ export const ActionRow = memo(function ActionRow({
       data-action-id={action.id}
       data-picked={picked || undefined}
       className={cn(
-        'grid gap-1.5 rounded-md px-2 hover:bg-muted/60',
-        compact ? 'py-1' : 'py-1.5',
+        // Строки за пределами экрана браузер не раскладывает и не рисует: в
+        // панели их бывает до 500 (NFR-03). Высота-заглушка — обычная строка
+        'grid gap-1.5 rounded-md px-2 [content-visibility:auto] hover:bg-muted/60',
+        compact
+          ? 'py-1 [contain-intrinsic-size:auto_36px]'
+          : 'py-1.5 [contain-intrinsic-size:auto_52px]',
         picked && 'bg-muted ring-1 ring-sky-500/50',
       )}
       onMouseEnter={
