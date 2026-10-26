@@ -10,7 +10,7 @@
 
 import { bindingInSlot, freeSlot, sameInput } from './bindings'
 import type { Clock } from './clock'
-import { gameFromPreset } from './games'
+import { copyGame } from './games'
 import { LIMITS, sameName, uniqueName } from './names'
 import { appDataSchema } from './schema'
 import type {
@@ -517,6 +517,8 @@ export function applyImport(
   const usedGames = new Set(data.games.map((g) => g.id))
   let games = [...data.games]
   const names = (exceptId?: string) => games.filter((g) => g.id !== exceptId).map((g) => g.name)
+  /** Первая добавленная игра становится текущей, как при обычном добавлении */
+  let firstAdded: Game | undefined
 
   for (const incoming of file.games) {
     const target = matches.get(incoming.id)
@@ -524,20 +526,23 @@ export function applyImport(
     const strategy = choice?.strategy ?? 'merge'
 
     if (!target) {
-      games.push({
+      const added: Game = {
         ...incoming,
         id: keepOrNew(incoming.id, usedGames, clock),
         name: uniqueName(incoming.name, names(), LIMITS.game),
         icon: iconOf(incoming),
-      })
+      }
+      games.push(added)
+      firstAdded ??= added
       report.gamesAdded++
       report.profilesAdded += incoming.profiles.length
       report.actionsAdded += incoming.actions.length
       report.bindingsAdded += countBindings(incoming)
     } else if (strategy === 'copy') {
-      const copy = gameFromPreset(incoming, clock, names())
-      games.push({ ...copy, icon: iconOf(incoming) })
+      const copy: Game = { ...copyGame(incoming, clock, names()), icon: iconOf(incoming) }
+      games.push(copy)
       usedGames.add(copy.id)
+      firstAdded ??= copy
       report.gamesCopied++
       report.profilesAdded += incoming.profiles.length
       report.actionsAdded += incoming.actions.length
@@ -561,8 +566,17 @@ export function applyImport(
     }
   }
 
+  // В пустое приложение настройки приходят из файла вместе с последней игрой
+  const fromFile = data.games.length === 0 ? file.appSettings : undefined
   const appSettings =
-    data.games.length === 0 && file.appSettings ? file.appSettings : data.appSettings
+    fromFile ??
+    (firstAdded
+      ? {
+          ...data.appSettings,
+          lastGameId: firstAdded.id,
+          lastProfileId: firstAdded.profiles[0]?.id,
+        }
+      : data.appSettings)
   const checked = appDataSchema.safeParse({ ...data, games, appSettings })
   if (!checked.success) {
     return {

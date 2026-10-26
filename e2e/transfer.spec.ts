@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import { expect, test, type Page } from '@playwright/test'
 import { APP_URL } from './app-url.ts'
+import { importPreset } from './presets.ts'
 
 async function exportVia(page: Page, item: string) {
   await page.getByRole('button', { name: 'Меню' }).click()
@@ -21,8 +22,7 @@ async function exportVia(page: Page, item: string) {
 test('export of everything, a game and a profile downloads files (FR-21)', async ({ page }) => {
   await page.goto(APP_URL)
   await page.getByRole('button', { name: 'Из заготовок' }).click()
-  await page.getByRole('button', { name: 'Добавить PUBG: BATTLEGROUNDS' }).click()
-  await page.keyboard.press('Escape')
+  await importPreset(page, 'PUBG: BATTLEGROUNDS')
 
   const all = await exportVia(page, 'Всё')
   expect(all.name).toMatch(/^hotkeymap-\d{4}-\d{2}-\d{2}\.hotkeymap\.json$/)

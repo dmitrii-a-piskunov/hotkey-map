@@ -8,6 +8,7 @@
 
 import { expect, test, type Page } from '@playwright/test'
 import { APP_URL } from '../app-url.ts'
+import { importPreset } from '../presets.ts'
 
 /** Ширина панели: две колонки, как у автора */
 const PANEL_WIDTH = 800
@@ -114,8 +115,7 @@ async function openDotaTest(page: Page) {
   // Относительный путь: у сборки адрес начинается с /hotkey-map/
   await page.goto(`.${APP_URL}`)
   await page.getByRole('button', { name: 'Из заготовок' }).click()
-  await page.getByRole('button', { name: 'Добавить Dota 2' }).click()
-  await page.keyboard.press('Escape')
+  await importPreset(page, 'Dota 2')
   await page.getByRole('button', { name: 'Выбор профиля' }).click()
   await page.getByRole('menuitemradio', { name: 'Тестовый' }).click()
   await expect(page.getByTestId('current-profile')).toHaveText('Тестовый')

@@ -78,6 +78,28 @@ describe('first launch (scenario 1, FR-19)', () => {
     expect(status()).toMatchObject({ mode: 'folder', folderName: 'hotkey-map-test' })
   })
 
+  it('offers presets only after choosing an empty folder (scenario 1, step 4)', async () => {
+    const empty = makeTestEnv()
+    const first = await launch(empty)
+    expect(status().offerPresets).toBe(false)
+    await first.chooseFolder()
+    expect(status().offerPresets).toBe(true)
+    first.dispose()
+
+    resetStores()
+    const withData = makeTestEnv()
+    withData.folder.writeText('data.json', serializeAppData(sampleData()))
+    const second = await launch(withData)
+    await second.chooseFolder()
+    expect(status().offerPresets).toBe(false)
+    second.dispose()
+
+    resetStores()
+    const browser = makeTestEnv({ supported: false })
+    await launch(browser)
+    expect(status()).toMatchObject({ mode: 'browser', offerPresets: false })
+  })
+
   it('stays on the first-run screen when the picker is cancelled', async () => {
     const t = makeTestEnv()
     const session = await launch(t)

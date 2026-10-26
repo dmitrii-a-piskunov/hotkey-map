@@ -143,10 +143,10 @@ export function parseSteamAppId(text: string): { value?: number; error: boolean 
 }
 
 /**
- * Игра из заготовки (FR-22): все id новые, ссылки пересчитаны, при
- * совпадении названия — «Dota 2 (2)». Иконка заготовки не переносится.
+ * Копия игры при импорте (FR-21, FR-22): все id новые, ссылки пересчитаны,
+ * при совпадении названия — «Dota 2 (2)». Иконку назначает импорт.
  */
-export function gameFromPreset(preset: Game, clock: Clock, takenNames: readonly string[]): Game {
+export function copyGame(preset: Game, clock: Clock, takenNames: readonly string[]): Game {
   const ids = new Map<string, string>()
   const remap = (id: string): string => {
     let next = ids.get(id)

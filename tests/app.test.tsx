@@ -35,6 +35,9 @@ describe('App', () => {
     expect(screen.getByRole('heading', { name: t.welcomeTitle })).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: t.chooseFolder }))
+    // Сценарий 1, шаг 4: в пустой папке сразу предлагаются заготовки
+    expect(await screen.findByRole('dialog', { name: ru.games.presetsTitle })).toBeInTheDocument()
+    await user.keyboard('{Escape}')
     expect(await screen.findByRole('heading', { name: ru.app.title })).toBeInTheDocument()
     expect(screen.getByText(__APP_VERSION__)).toBeInTheDocument()
     expect(screen.getByRole('group', { name: ru.devices.keyboard })).toBeInTheDocument()

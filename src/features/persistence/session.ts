@@ -55,6 +55,8 @@ export class PersistenceSession {
   /** data.json в момент запуска: из него делается копия перед первой записью */
   #launchText: string | null = null
   #backupDone = false
+  /** Папку только что выбрали в окне выбора: пустой папке предлагаются заготовки */
+  #folderChosen = false
   /** Текст повреждённого data.json, пока пользователь выбирает, что делать */
   #damagedText: string | null = null
   #saveTimer: Timer | null = null
@@ -110,6 +112,7 @@ export class PersistenceSession {
       if (!handle) return
       await this.#env.folders.save(handle)
       this.#handle = handle
+      this.#folderChosen = true
       this.#set({ phase: { name: 'loading' } })
       await this.#openFolder()
     } catch (e) {
@@ -232,6 +235,8 @@ export class PersistenceSession {
       this.#launchText = null
       this.#backupDone = true
       await this.#ready(data, false)
+      // Шаг 4 — заготовки. В режиме Firefox папку не выбирают: там пустой экран с «Из заготовок»
+      if (this.#folderChosen) this.#set({ offerPresets: true })
       return
     }
 

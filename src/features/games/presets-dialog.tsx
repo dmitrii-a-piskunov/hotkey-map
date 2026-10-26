@@ -8,8 +8,9 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { ru } from '@/i18n/ru'
+import { usePersistenceStatus } from '@/features/persistence/status-store'
+import { showPreview } from '@/features/transfer/import'
 import { fill } from '@/lib/format'
-import { addPresetGameCmd } from './commands'
 import { GameIcon } from './game-icon'
 import { loadPresets, type Preset } from './presets'
 import { useGamesUi } from './ui-store'
@@ -38,7 +39,7 @@ function PresetList() {
 
   return (
     <ul className="grid gap-2">
-      {presets.map(({ key, game }) => (
+      {presets.map(({ key, file, game }) => (
         <li key={key} className="flex items-center gap-3 rounded-md border p-3">
           <GameIcon game={game} className="size-8" />
           <div className="min-w-0 flex-1">
@@ -54,8 +55,8 @@ function PresetList() {
             size="sm"
             aria-label={`${ru.common.add} ${game.name}`}
             onClick={() => {
-              addPresetGameCmd(game)
               useGamesUi.setState({ presets: false })
+              showPreview(game.name, file)
             }}
           >
             {ru.common.add}
@@ -66,9 +67,18 @@ function PresetList() {
   )
 }
 
-/** «Из заготовок» (FR-22): игра добавляется копией с новыми id */
+/** «Из заготовок» (FR-22): заготовка добавляется общим импортом с предпросмотром */
 export function PresetsDialog() {
   const open = useGamesUi((s) => s.presets)
+  const offer = usePersistenceStatus((s) => s.offerPresets)
+
+  // Сценарий 1, шаг 4: после выбора новой папки сразу предлагаем заготовки
+  useEffect(() => {
+    if (!offer) return
+    usePersistenceStatus.setState({ offerPresets: false })
+    useGamesUi.setState({ presets: true })
+  }, [offer])
+
   return (
     <Dialog
       open={open}

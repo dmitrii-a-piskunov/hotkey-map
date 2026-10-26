@@ -5,7 +5,7 @@ import {
   addGame,
   createGame,
   fillSteamAppId,
-  gameFromPreset,
+  copyGame,
   gameImpact,
   gameNameError,
   parseSteamAppId,
@@ -147,11 +147,11 @@ describe('current game and profile (8.2)', () => {
   })
 })
 
-describe('gameFromPreset (FR-22)', () => {
+describe('copyGame (FR-21, FR-22)', () => {
   it('gives every entity a new id and keeps the references valid', () => {
     const preset = at(exportFileSchema.parse(dota2).games, 0)
     const clock = testClock(LATER)
-    const game = gameFromPreset(preset, clock, ['Dota 2'])
+    const game = copyGame(preset, clock, ['Dota 2'])
     expect(game.name).toBe('Dota 2 (2)')
     expect(game.id).not.toBe(preset.id)
     const oldIds = new Set([
@@ -198,7 +198,7 @@ describe('gameFromPreset (FR-22)', () => {
         },
       })),
     }
-    const game = gameFromPreset(preset, testClock(), [])
+    const game = copyGame(preset, testClock(), [])
     const data = addGame(createAppData(), game)
     expect(appDataSchema.safeParse(data).success).toBe(true)
     const select = at(game.settingsTemplate, 1)

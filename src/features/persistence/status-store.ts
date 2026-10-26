@@ -33,6 +33,8 @@ export interface PersistenceStatus {
   dirty: boolean
   /** FR-23: давно не было экспорта */
   exportReminder: boolean
+  /** Сценарий 1, шаг 4: в выбранной папке не было данных — предложить заготовки */
+  offerPresets: boolean
 }
 
 export const initialPersistenceStatus: PersistenceStatus = {
@@ -43,6 +45,7 @@ export const initialPersistenceStatus: PersistenceStatus = {
   saveError: null,
   dirty: false,
   exportReminder: false,
+  offerPresets: false,
 }
 
 export const usePersistenceStatus = create<PersistenceStatus>()(() => initialPersistenceStatus)

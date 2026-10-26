@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import { expect, test, type Page } from '@playwright/test'
 import { APP_URL } from './app-url.ts'
+import { importPreset } from './presets.ts'
 
 /** Красный квадрат 1×1 в PNG */
 const PNG_1PX =
@@ -34,7 +35,7 @@ function comparable(file: ExportJson) {
 async function addPreset(page: Page, name: string) {
   await page.getByRole('button', { name: 'Выбор игры' }).click()
   await page.getByRole('menuitem', { name: 'Из заготовок' }).click()
-  await page.getByRole('button', { name: `Добавить ${name}` }).click()
+  await importPreset(page, name)
 }
 
 /** Перетаскивание файла в окно приложения (FR-21) */
@@ -117,8 +118,7 @@ test('TC-09: export everything and import into a clean browser (FR-21)', async (
 test('TC-10: a broken file shows errors and changes nothing (FR-21)', async ({ page }) => {
   await page.goto(APP_URL)
   await page.getByRole('button', { name: 'Из заготовок' }).click()
-  await page.getByRole('button', { name: 'Добавить PUBG: BATTLEGROUNDS' }).click()
-  await page.keyboard.press('Escape')
+  await importPreset(page, 'PUBG: BATTLEGROUNDS')
   await expect(page.getByTestId('save-status')).toHaveText('Сохранено')
   const before = comparable(await exportAll(page))
 

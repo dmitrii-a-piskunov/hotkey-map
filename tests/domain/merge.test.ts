@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { createAppData } from '@/domain/app-data'
 import type { Clock } from '@/domain/clock'
 import { buildExport } from '@/domain/export'
-import { gameFromPreset } from '@/domain/games'
+import { copyGame } from '@/domain/games'
 import { applyImport, previewImport, type ImportChoices } from '@/domain/merge'
 import { appDataSchema, CURRENT_SCHEMA_VERSION } from '@/domain/schema'
 import type { AppData, ExportFile, Game, Profile, SettingDef } from '@/domain/types'
@@ -27,7 +27,7 @@ function fileOf(games: Game[], scope: ExportFile['scope'] = 'game'): ExportFile 
 
 /** Та же игра, но с другими id — как созданная заново на другом компьютере */
 function sameGameOtherIds(game: Game = sampleGame()): Game {
-  return gameFromPreset(game, fileClock(), [])
+  return copyGame(game, fileClock(), [])
 }
 
 function run(data: AppData, file: ExportFile, choices: ImportChoices = {}, icons = {}) {
@@ -428,5 +428,22 @@ describe('previewImport', () => {
     expect(preview.games.map((g) => g.match?.id ?? null)).toEqual([null, byId.id])
     const { data } = run(sampleData(), fileOf([byName, byId], 'all'))
     expect(data.games.map((g) => g.name)).toEqual(['PUBG', 'PUBG (2)'])
+  })
+})
+
+describe('current game after import', () => {
+  it('the first added game becomes current; a merge keeps the current game', () => {
+    const dota = { ...sameGameOtherIds(), name: 'Dota 2' }
+    const added = run(sampleData(), fileOf([dota]))
+    expect(added.data.appSettings).toMatchObject({
+      lastGameId: dota.id,
+      lastProfileId: at(dota.profiles, 0).id,
+    })
+    const data = {
+      ...sampleData(),
+      appSettings: { ...sampleData().appSettings, lastGameId: sampleGame().id },
+    }
+    const merged = run(data, fileOf([sampleGame()]))
+    expect(merged.data.appSettings.lastGameId).toBe(sampleGame().id)
   })
 })

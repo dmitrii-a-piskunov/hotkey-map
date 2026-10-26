@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { APP_URL } from './app-url.ts'
+import { importPreset } from './presets.ts'
 
 const panel = (page: Page) => page.getByRole('complementary', { name: 'Панель профиля' })
 const dialog = (page: Page) => page.getByRole('dialog', { name: 'Привязка клавиши' })
@@ -24,8 +25,7 @@ test('bindings, a conflict and the Ctrl layer survive a reload (FR-12, FR-14, FR
 }) => {
   await page.goto(APP_URL)
   await page.getByRole('button', { name: 'Из заготовок' }).click()
-  await page.getByRole('button', { name: 'Добавить PUBG: BATTLEGROUNDS' }).click()
-  await page.keyboard.press('Escape')
+  await importPreset(page, 'PUBG: BATTLEGROUNDS')
   await expect(panel(page)).toBeVisible()
 
   // E на «Взаимодействие» (Везде) — нажатием настоящей клавиши
@@ -85,8 +85,7 @@ test('a mouse button is bound in the bind window; hidden devices give the settin
 }) => {
   await page.goto(APP_URL)
   await page.getByRole('button', { name: 'Из заготовок' }).click()
-  await page.getByRole('button', { name: 'Добавить Dota 2' }).click()
-  await page.keyboard.press('Escape')
+  await importPreset(page, 'Dota 2')
 
   // Боковая кнопка мыши над полем окна привязки (FR-12)
   await search(page, 'Патрулировать')

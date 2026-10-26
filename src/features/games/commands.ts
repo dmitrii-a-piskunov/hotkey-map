@@ -26,7 +26,6 @@ import { selectGame, selectProfile } from '@/domain/current'
 import {
   addGame,
   createGame,
-  gameFromPreset,
   fillSteamAppId,
   removeGame,
   setGameIcon,
@@ -66,16 +65,6 @@ function onGame(gameId: string, fn: (game: Game) => Game): void {
 /** Новая игра с контекстом «Везде» и профилем «Основной»; становится текущей */
 export function createGameCmd(name: string): string {
   const game = createGame(clock, name)
-  useDataStore.getState().apply((d) => addGame(d, game))
-  return game.id
-}
-
-export function addPresetGameCmd(preset: Game): string {
-  const game = gameFromPreset(
-    preset,
-    clock,
-    data().games.map((g) => g.name),
-  )
   useDataStore.getState().apply((d) => addGame(d, game))
   return game.id
 }
