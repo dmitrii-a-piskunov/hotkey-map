@@ -27,9 +27,7 @@ function summarize(json: string): Record<string, number> {
   const main = traceEvents.find(
     (e) => e.name === 'thread_name' && e.args?.name === 'CrRendererMain',
   )
-  const on = traceEvents.filter(
-    (e) => e.ph === 'X' && e.tid === main?.tid && e.pid === main.pid,
-  )
+  const on = traceEvents.filter((e) => e.ph === 'X' && e.tid === main?.tid && e.pid === main.pid)
   const sum = (names: string[]) =>
     Math.round(
       on.filter((e) => names.includes(e.name)).reduce((s, e) => s + (e.dur ?? 0), 0) / 1000,
