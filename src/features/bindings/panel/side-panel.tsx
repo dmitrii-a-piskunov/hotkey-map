@@ -1,7 +1,8 @@
-import { Activity, useDeferredValue, useEffect, useRef, useState, type PointerEvent } from 'react'
+import { Activity, useEffect, useRef, useState, type PointerEvent } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { settingSections } from '@/domain/settings-template'
 import type { Game } from '@/domain/types'
+import { useAfterPaint } from '@/lib/use-after-paint'
 import { cn } from '@/lib/utils'
 import { BindDialog } from '@/features/bindings/bind-dialog'
 import { useDevicesStore } from '@/features/devices/store'
@@ -162,9 +163,9 @@ export function SidePanel({ wide = false }: { wide?: boolean }) {
   const tab = useBindingsUi((s) => s.tab)
   // Панель отстаёт от клавиатуры: клавиши подсвечиваются в том же кадре, а
   // панель дорисовывается следом в прерываемом рендере (FR-13, NFR-02)
-  const selected = useDeferredValue(useDevicesStore((s) => s.selection.selected))
+  const selected = useAfterPaint(useDevicesStore((s) => s.selection.selected))
   const hasSelection = selected.length > 0
-  const marquee = useDevicesStore((s) => s.marquee)
+  const marquee = useAfterPaint(useDevicesStore((s) => s.marquee))
   const [width, setWidth] = useState(savedWidth)
 
   // Захват, отклик и подсветка относятся к действиям прежней игры или профиля
