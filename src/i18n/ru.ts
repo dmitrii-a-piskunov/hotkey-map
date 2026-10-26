@@ -95,6 +95,13 @@ export const ru = {
     exportGame: 'Текущая игра',
     exportProfile: 'Текущий профиль',
   },
+  /** Темы (FR-25) */
+  theme: {
+    label: 'Тема',
+    system: 'Системная',
+    light: 'Светлая',
+    dark: 'Тёмная',
+  },
   /** Отмена и повтор (FR-24) */
   history: {
     undo: 'Отменить',

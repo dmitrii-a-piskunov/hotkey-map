@@ -5,6 +5,7 @@ import type { PersistenceSession } from '@/features/persistence/session'
 import { StartScreen } from '@/features/persistence/start-screens'
 import { usePersistenceStatus } from '@/features/persistence/status-store'
 import { StorageBanners } from '@/features/persistence/storage-banners'
+import { useTheme } from '@/features/theme/use-theme'
 import { Workspace } from './workspace'
 
 /**
@@ -37,6 +38,7 @@ function useUnsavedChangesGuard(session: PersistenceSession): void {
 export function App({ session }: { session: PersistenceSession }) {
   const phase = usePersistenceStatus((s) => s.phase)
   useUnsavedChangesGuard(session)
+  useTheme(phase.name === 'ready')
 
   return (
     <PersistenceContext value={session}>

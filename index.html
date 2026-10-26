@@ -5,6 +5,18 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hotkey Map</title>
+    <script>
+      // FR-25: тема прошлого запуска до загрузки данных, чтобы тёмная не мигала светлой
+      try {
+        const theme = localStorage.getItem('hotkey-map:theme') || 'system'
+        const dark =
+          theme === 'dark' ||
+          (theme === 'system' && matchMedia('(prefers-color-scheme: dark)').matches)
+        if (dark) document.documentElement.classList.add('dark')
+      } catch {
+        // Без localStorage тема применится после загрузки данных
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
