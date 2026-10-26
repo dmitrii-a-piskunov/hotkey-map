@@ -41,7 +41,7 @@ function StrategySelect({
     <NativeSelect
       aria-label={label}
       title={t.strategyHints[value]}
-      className="h-8 w-40 shrink-0 text-sm"
+      className="h-8 w-auto min-w-40 shrink-0 text-sm"
       value={value}
       onChange={(e) => {
         const next = STRATEGIES.find((s) => s === e.target.value)

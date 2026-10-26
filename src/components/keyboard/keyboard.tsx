@@ -147,6 +147,7 @@ function Keyboard2D({
     '--cap-radius': `${cap.radius}em`,
     '--ring': `${state.selected.width}em solid ${state.selected.color}`,
     '--reject-ring': `${state.conflict.width}em solid ${state.conflict.color}`,
+    '--conflict-ring': `${state.selected.width}em solid ${state.conflict.color}`,
     '--reject-hatch': rejectHatch(state.conflict.width, 'em'),
   } as CSSProperties
 

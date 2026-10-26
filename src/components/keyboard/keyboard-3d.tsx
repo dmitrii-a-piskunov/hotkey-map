@@ -162,6 +162,7 @@ export function Keyboard3D({
     '--ring': `${state.selected.width * unit}px solid ${state.selected.color}`,
     '--press-ms': `${deviceTheme.view3d.pressMs}ms`,
     '--reject-ring': `${state.conflict.width * unit}px solid ${state.conflict.color}`,
+    '--conflict-ring': `${state.selected.width * unit}px solid ${state.conflict.color}`,
     '--reject-hatch': rejectHatch(state.conflict.width * unit, 'px'),
     '--cap-top-radius': `${deviceTheme.view3d.capShape3d.topRadius}em`,
   } as CSSProperties

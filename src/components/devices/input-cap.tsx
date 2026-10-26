@@ -95,6 +95,7 @@ export const InputCap = memo(function InputCap({
       data-dimmed={dimmed || undefined}
       title={title}
       data-rejected={holding || (disabled && selected) || undefined}
+      data-hinting={holding || undefined}
       className={cn('cap', className)}
       style={{ left, top, width, height, ...style }}
       onPointerDown={(e) => {

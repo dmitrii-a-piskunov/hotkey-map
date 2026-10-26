@@ -205,6 +205,11 @@
     outline: var(--ring);
   }
 
+  /* FR-15: выделенная клавиша с конфликтом — та же рамка выделения, но красная */
+  .cap3d[data-selected][data-conflict]:not([data-rejected]) .cap3d-top {
+    outline: var(--conflict-ring);
+  }
+
   .cap3d[data-rejected] .cap3d-top {
     outline: var(--reject-ring);
   }
@@ -308,14 +313,10 @@
     color: var(--legend-ru);
   }
 
-  /* FR-15: конфликт — красная обводка верха клавиши и значок в углу */
-  .key[data-conflict] .key-top,
-  .cap3d[data-conflict] .cap3d-top {
-    box-shadow: inset 0 0 0 var(--conflict-width) var(--conflict-color);
-  }
-
+  /* FR-15: конфликт — значок «!» в углу, поверх штриховки непередаваемой клавиши */
   .cap-badge {
     position: absolute;
+    z-index: 1;
     top: 0.06em;
     right: 0.06em;
     display: flex;
@@ -404,6 +405,10 @@
     pointer-events: none;
   }
 
+  .key[data-selected][data-conflict]:not([data-rejected])::after {
+    border: var(--conflict-ring);
+  }
+
   .cap-hint {
     position: absolute;
     left: 50%;
@@ -428,7 +433,8 @@
     bottom: calc(100% + 6px);
   }
 
-  .cap[data-rejected] {
+  /* Поверх соседей — только пока видна подсказка: иначе грани 3D-клавиши ложатся на соседние */
+  .cap[data-hinting] {
     z-index: 10;
   }
 

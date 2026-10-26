@@ -62,7 +62,6 @@ const SCENE_STYLE = {
   '--scene-bg-dark': scene.dark.background,
   '--scene-shadow-dark': scene.dark.shadow,
   // em — от юнита клавиши: у верхней грани font-size равен юниту
-  '--conflict-width': `${state.conflict.width}em`,
   '--conflict-color': state.conflict.color,
   '--dim-opacity': state.dimOpacity,
   '--capture-color': state.selected.color,
