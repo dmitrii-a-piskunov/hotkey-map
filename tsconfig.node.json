@@ -26,6 +26,7 @@
     "playwright.config.ts",
     "playwright.perf.config.ts",
     "playwright.pwa.config.ts",
+    "playwright.screenshots.config.ts",
     "eslint.config.js",
     "e2e"
   ]
