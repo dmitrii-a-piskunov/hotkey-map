@@ -33,15 +33,15 @@ npm run perf            # сравнить с docs/perf-selection.md (NFR-02)
 | NFR | Как проверено | Итог на 26.10.2026 |
 | --- | --- | --- |
 | NFR-01 | Сборка на `vite preview`, Playwright: время до `load` | Первая загрузка 88 мс, повторная из кэша PWA 39–44 мс. На GitHub Pages — вручную (раздел 2) |
-| NFR-02 | `npm run perf` | Как в последнем разделе `docs/perf-selection.md`; Ctrl+A выше 50 мс — известно, запасные шаги описаны там же |
-| NFR-03 | `tests/domain/bindings.test.ts`: 500 биндов | Пересчёт конфликтов меньше 50 мс |
+| NFR-02 | `npm run perf` (dev и сборка, Chromium и Firefox, 3D и 2D) | Рамка без кадров дольше 50 мс, ответ на Ctrl+A, снятие выделения, Shift+стрелку и клик — до 50 мс (`docs/perf-selection.md`, «Перед 1.0.0»). Исключение: Firefox, 500 биндов, Esc или клик по пустому месту в первые ~100 мс после Ctrl+A — 48–96 мс |
+| NFR-03 | `tests/domain/bindings.test.ts`: 500 биндов; `npm run perf` на профиле с 500 биндами | Пересчёт конфликтов меньше 50 мс; выделение — как в строке NFR-02 |
 | NFR-04 | `tests/storage/adapters.test.ts`: при сбое записи прежний `data.json` цел; `tests/persistence/session.test.ts`: `flush` пишет сразу (вызывается при закрытии вкладки). Предупреждение браузера о закрытии — вручную | Да |
 | NFR-05 | TC-12 | Да |
 | NFR-06 | `npm run e2e:pwa`: офлайн после первой загрузки, заготовки в кэше | Да |
 | NFR-07 | e2e в Chromium и Firefox | Да, кроме известного исключения: боковые кнопки мыши в Firefox |
 | NFR-08 | Вручную (раздел 2) | — |
 | NFR-09 | `npm run build` | 278 КБ gzip (норма — 500 КБ) |
-| NFR-10 | ESLint (`no-explicit-any`), `npm run test:coverage` | `src/domain` — 97% строк |
+| NFR-10 | ESLint (`no-explicit-any`), `npm run test:coverage` | `src/domain` — 99% строк |
 
 ## 2. Вручную
 
